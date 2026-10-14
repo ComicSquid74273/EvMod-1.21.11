@@ -1,6 +1,6 @@
 /**
  * Tool/page metadata for routing, nav labels, titles, and favicons.
- * Exports: `TOOL_PAGES`, `withTrailingSlash`, `getPageMeta`.
+ * Exports: `TOOL_PAGES`, `getPngToDatLabel`, `withTrailingSlash`, `getPageMeta`.
  */
 import datToPngIcon from "@/assets/DAT-to-PNG.png";
 import nbtFormatIcon from "@/assets/NBT-to-PNG.png";
@@ -28,6 +28,8 @@ interface ToolPageMeta extends PageMeta {
 
 const siteIcon = `${import.meta.env.BASE_URL}favicon.png`;
 
+export const getPngToDatLabel = (legacyNames: boolean) => `PNG → ${legacyNames ? "map_" : ""}#.dat`;
+
 const HOME_PAGE: PageMeta = {
   path: "/",
   tabTitle: "EvMod Tools",
@@ -39,8 +41,8 @@ export const TOOL_PAGES: ToolPageMeta[] = [
     id: "pngToDat",
     path: "/PNG-to-DAT",
     tabTitle: "PNG → DAT",
-    navLabel: "PNG → map_#.dat",
-    cardDesc: "Convert images into map_#.dat files. Splits composite images into 128x128 tiles and assigns incrementing map indices.",
+    navLabel: getPngToDatLabel(true),
+    cardDesc: "Convert images into map_#.dat or #.dat files. Splits composite images into 128x128 tiles and assigns incrementing map indices.",
     favicon: { href: datToPngIcon, type: "image/png" },
   },
   {
@@ -48,7 +50,7 @@ export const TOOL_PAGES: ToolPageMeta[] = [
     path: "/DAT-to-PNG",
     tabTitle: "DAT → PNG",
     navLabel: ".dat → PNG",
-    cardDesc: "Convert Minecraft map_#.dat files to PNG images. Supports bulk upload with gallery preview and ZIP download.",
+    cardDesc: "Convert Minecraft map .dat files to PNG images. Supports bulk upload with gallery preview and ZIP download.",
     favicon: { href: datToPngIcon, type: "image/png" },
   },
   {

@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import type { DatFilenameFormat } from "@/components/Layout";
 import DropZone from "@/components/DropZone";
 import { parseMapDataFromImageData } from "@/lib/mapColors";
 import { encodeMapDataToDat } from "@/lib/mapDat";
 import { downloadUrl, loadImageFromFile, zipAndDownload } from "@/lib/browser";
 
 interface GeneratedDat {
-  name: string;
+  index: number;
   blob: Blob;
   url: string;
 }
@@ -25,6 +27,11 @@ export default function PngToDat() {
   const [warnings, setWarnings] = useState<FileMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [startIndex, setStartIndex] = useState("0");
+  const { legacyNames, setLegacyNames } = useOutletContext<DatFilenameFormat>();
+  const namedFiles = useMemo(() => filesOut.map(({ index, ...file }) => ({
+    ...file,
+    name: `${legacyNames ? "map_" : ""}${index}.dat`,
+  })), [filesOut, legacyNames]);
 
   const handleFiles = useCallback(async (files: File[]) => {
     setErrors([]);
@@ -73,10 +80,9 @@ export default function PngToDat() {
               ++approxTilesForFile;
               for (const key of approximatedColorKeys) approxColorKeysForFile.add(key);
             }
-            const name = `map_${mapIndex}.dat`;
-            ++mapIndex;
             const blob = encodeMapDataToDat(mapData);
-            next.push({ name, blob, url: URL.createObjectURL(blob) });
+            next.push({ index: mapIndex, blob, url: URL.createObjectURL(blob) });
+            ++mapIndex;
           }
         }
 
@@ -109,7 +115,7 @@ export default function PngToDat() {
   return (
     <div>
       <p className="mb-4 text-sm text-muted-foreground">
-        Convert image files to Minecraft map_#.dat files
+        Convert image files to Minecraft map .dat files
       </p>
 
       <DropZone
@@ -120,17 +126,33 @@ export default function PngToDat() {
         onFiles={handleFiles}
       />
 
-      <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-        <label htmlFor="start-index">Starting Index:</label>
-        <input
-          id="start-index"
-          className="w-28 rounded border border-border bg-background px-2 py-1 text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          type="number"
-          min={0}
-          step={1}
-          value={startIndex}
-          onChange={e => setStartIndex(e.target.value)}
-        />
+      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <label htmlFor="start-index">Starting Index:</label>
+          <input
+            id="start-index"
+            className="w-28 rounded border border-border bg-background px-2 py-1 text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            type="number"
+            min={0}
+            step={1}
+            value={startIndex}
+            onChange={e => setStartIndex(e.target.value)}
+          />
+        </div>
+        <div role="group" aria-label="Filename format" className="flex flex-wrap items-center gap-2">
+          <span>Filename format:</span>
+          {[true, false].map(legacy => (
+            <button
+              key={String(legacy)}
+              type="button"
+              aria-pressed={legacyNames === legacy}
+              onClick={() => setLegacyNames(legacy)}
+              className="rounded border border-border px-3 py-1 transition-colors hover:border-accent aria-pressed:bg-accent aria-pressed:text-accent-foreground"
+            >
+              {legacy ? "map_#.dat" : "#.dat (26.1+)"}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading && <p className="mt-4 text-sm text-muted-foreground">Processing…</p>}
@@ -158,13 +180,13 @@ export default function PngToDat() {
               {filesOut.length} .dat file{filesOut.length !== 1 && "s"}
             </span>
             {filesOut.length > 1 && (
-              <button onClick={() => zipAndDownload(filesOut, "maps_dat.zip")} className="rounded bg-accent px-3 py-1 text-sm text-accent-foreground transition-colors hover:bg-accent/80">
+              <button onClick={() => zipAndDownload(namedFiles, "maps_dat.zip")} className="rounded bg-accent px-3 py-1 text-sm text-accent-foreground transition-colors hover:bg-accent/80">
                 Download All (ZIP)
               </button>
             )}
           </div>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 lg:grid-cols-9">
-            {filesOut.map(f => (
+            {namedFiles.map(f => (
               <button
                 key={f.name}
                 onClick={() => downloadUrl(f.url, f.name)}

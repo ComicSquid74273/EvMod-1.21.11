@@ -1,11 +1,27 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useTheme } from "@/hooks/useTheme";
 import { useFavicon } from "@/hooks/useFavicon";
-import { TOOL_PAGES, withTrailingSlash } from "@/lib/toolPages";
+import { TOOL_PAGES, getPngToDatLabel, withTrailingSlash } from "@/lib/toolPages";
 import { MoonIcon, SunIcon } from "@/components/ThemeIcons";
+
+export interface DatFilenameFormat {
+  legacyNames: boolean;
+  setLegacyNames: (value: boolean) => void;
+}
+
+const DAT_FILENAME_FORMAT_KEY = "evmod_dat_filename_format";
 
 export default function Layout() {
   const { resolved, toggle } = useTheme();
+  const [legacyNames, setLegacyNames] = useState(() => {
+    try { return localStorage.getItem(DAT_FILENAME_FORMAT_KEY) !== "modern"; }
+    catch { return true; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(DAT_FILENAME_FORMAT_KEY, legacyNames ? "legacy" : "modern"); }
+    catch { /* Storage may be blocked; keep the in-memory selection. */ }
+  }, [legacyNames]);
   const siteIcon = `${import.meta.env.BASE_URL}favicon.png`;
   useFavicon();
   return (
@@ -35,7 +51,7 @@ export default function Layout() {
                       }`
                     }
                   >
-                    {navLabel}
+                    {id === "pngToDat" ? getPngToDatLabel(legacyNames) : navLabel}
                   </NavLink>
                 </div>
               ))}
@@ -51,7 +67,7 @@ export default function Layout() {
         </div>
       </nav>
       <main className="w-full p-6">
-        <Outlet />
+        <Outlet context={{ legacyNames, setLegacyNames } satisfies DatFilenameFormat} />
       </main>
     </div>
   );

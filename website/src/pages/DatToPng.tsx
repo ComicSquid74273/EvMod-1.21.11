@@ -28,7 +28,7 @@ export default function DatToPng() {
   return (
     <div>
       <p className="text-sm text-muted-foreground mb-4">
-        Convert Minecraft map_#.dat files to PNG images
+        Convert Minecraft map .dat files to PNG images
       </p>
 
       <DropZone

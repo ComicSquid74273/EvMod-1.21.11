@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
-import { TOOL_PAGES, withTrailingSlash } from "@/lib/toolPages";
+import { Link, useOutletContext } from "react-router-dom";
+import type { DatFilenameFormat } from "@/components/Layout";
+import { TOOL_PAGES, getPngToDatLabel, withTrailingSlash } from "@/lib/toolPages";
 
 const LINKS = [
   {
@@ -20,6 +21,7 @@ const LINKS = [
 ];
 
 export default function Home() {
+  const { legacyNames } = useOutletContext<DatFilenameFormat>();
   return (
     <div>
       <div className="mb-8">
@@ -29,14 +31,14 @@ export default function Home() {
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {TOOL_PAGES.map(({ path, navLabel, cardDesc }) => (
+        {TOOL_PAGES.map(({ id, path, navLabel, cardDesc }) => (
           <Link
             key={path}
             to={withTrailingSlash(path)}
             className="group block rounded-lg border border-border p-5 hover:border-accent hover:bg-accent/5 transition-colors"
           >
             <h2 className="text-lg font-semibold mb-2 group-hover:text-accent transition-colors">
-              {navLabel}
+              {id === "pngToDat" ? getPngToDatLabel(legacyNames) : navLabel}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">{cardDesc}</p>
           </Link>
