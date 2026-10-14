@@ -19,10 +19,7 @@ function getFileExtension(name: string): string {
   return dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
 }
 
-const dedupeUuids = (list: string[]) => {
-  const seen = new Set<string>();
-  return list.filter(uuid => !seen.has(uuid) && !!seen.add(uuid));
-};
+const dedupeUuids = (list: string[]) => [...new Set(list)];
 
 const mapDataToUuid = ({ colors }: MapData, locked: boolean) => {
   const uuid = nameUUIDFromBytes(colors);
@@ -123,17 +120,10 @@ export default function MapHasher() {
     ? editText.split("\n").map(l => l.trim().toLowerCase()).filter(Boolean)
     : [];
   const invalidCount = editLines.filter(l => !UUID_RE.test(l)).length;
-  const uniqueCount = isEditing
-    ? new Set(editLines).size
-    : new Set(uuids.map(u => u.toLowerCase())).size;
-
-  const saveDisabled = (() => {
-    if (!isEditing) return true;
-    if (invalidCount > 0) return true;
-    const editSet = new Set(editLines);
-    const origSet = new Set(uuids.map(u => u.toLowerCase()));
-    return editSet.size === origSet.size && [...editSet].every(u => origSet.has(u));
-  })();
+  const editSet = new Set(editLines);
+  const origSet = new Set(uuids.map(u => u.toLowerCase()));
+  const uniqueCount = (isEditing ? editSet : origSet).size;
+  const saveDisabled = !isEditing || invalidCount > 0 || editSet.symmetricDifference(origSet).size === 0;
 
   return (
     <div>

@@ -40,8 +40,7 @@ replay_*.log
 ########## Website
 website/node_modules/
 website/dist/
-website/.bun_version
-website/bun.lock
+website/dist-check/
 
 ########## Other
 src/main/resources/assets/evmod/*.png

@@ -11,66 +11,27 @@
     <meta property="og:description" content="Convert map-related files and extract map hashes" />
     <meta property="og:type" content="website" />
     <!-- GitHub Pages SPA redirect restore -->
-    <script type="text/javascript">
-      (function(l) {
-        var configuredBase = "%BASE_URL%";
-        var base = configuredBase.endsWith("/") ? configuredBase : configuredBase + "/";
-        var baseNoSlash = base === "/" ? "/" : base.slice(0, -1);
-        var hasAppBase = base === "/" || l.pathname === baseNoSlash || l.pathname.startsWith(base);
-        var collapseTrailingSlashes = function(pathname) {
-          var q = pathname.indexOf("?");
-          var pathOnly = q < 0 ? pathname : pathname.slice(0, q);
-          var query = q < 0 ? "" : pathname.slice(q);
-          if (pathOnly !== "/") pathOnly = pathOnly.replace(/\/{2,}$/, "/");
-          return pathOnly + query;
-        };
-        var needsTrailingSlash = function(pathname) {
-          var q = pathname.indexOf("?");
-          var pathOnly = q < 0 ? pathname : pathname.slice(0, q);
-          if (pathOnly.endsWith("/")) return false;
-          var last = pathOnly.split("/").pop() || "";
-          return last.indexOf(".") < 0;
-        };
-        var withSlash = function(pathname) {
-          var q = pathname.indexOf("?");
-          if (q < 0) return pathname.endsWith("/") ? pathname : pathname + "/";
-          var pathOnly = pathname.slice(0, q);
-          var query = pathname.slice(q);
-          return (pathOnly.endsWith("/") ? pathOnly : pathOnly + "/") + query;
-        };
-        var stripIndexHtml = function(pathname) {
-          return pathname.replace(/\/index\.html\/?$/i, "/");
-        };
+    <script>
+      (() => {
+        const base = "%BASE_URL%";
+        const { pathname, search, hash } = location;
+        if (base !== "/" && pathname !== base.slice(0, -1) && !pathname.startsWith(base)) return;
 
-        if (configuredBase !== "/" && l.pathname === baseNoSlash) {
-          l.replace(base + l.search + l.hash);
-          return;
-        }
-        if (hasAppBase) {
-          var canonicalPath = stripIndexHtml(collapseTrailingSlashes(l.pathname));
-          if (canonicalPath !== l.pathname) {
-            l.replace(canonicalPath + l.search + l.hash);
-            return;
-          }
-        }
+        // Restore the 404 fallback's encoded route/query before canonicalizing its path.
+        const redirected = search.startsWith("?/");
+        const restored = redirected
+          ? pathname.replace(/\/+$/, "") + search.slice(1).split("&").map(s => s.replaceAll("~and~", "&")).join("?")
+          : pathname + search;
+        const queryStart = restored.indexOf("?");
+        const path = (queryStart < 0 ? restored : restored.slice(0, queryStart))
+          .replace(/\/index\.html\/*$/i, "/")
+          .replace(/\/+$/, "");
+        const query = queryStart < 0 ? "" : restored.slice(queryStart);
+        const canonical = path + (path.split("/").at(-1).includes(".") ? "" : "/") + query + hash;
 
-        if (l.search[1] === '/') {
-          var decoded = l.search.slice(1).split('&').map(function(s) {
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          var basePath = l.pathname.endsWith("/") ? l.pathname.slice(0, -1) : l.pathname;
-          var restored = collapseTrailingSlashes(basePath + decoded);
-          if (hasAppBase && needsTrailingSlash(restored)) restored = withSlash(restored);
-          window.history.replaceState(null, null,
-            restored + l.hash
-          );
-          return;
-        }
-
-        if (hasAppBase && needsTrailingSlash(l.pathname)) {
-          l.replace(withSlash(l.pathname) + l.search + l.hash);
-        }
-      }(window.location))
+        if (redirected) history.replaceState(null, "", canonical);
+        else if (canonical !== pathname + search + hash) location.replace(canonical);
+      })();
     </script>
   </head>
 

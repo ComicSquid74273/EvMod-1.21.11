@@ -2,18 +2,18 @@
  * NBT codec used by map DAT and structure decoding paths.
  * Exports: `parseNbtRoot`, `parseMapDataFromDat`, `encodeMapDataToDat`.
  */
-import pako from "pako";
+import { inflate, gzip } from "pako";
 import type { LockedMapData, MapData } from "@/lib/map";
 
 const inflateIfNeeded = (buffer: ArrayBuffer): Uint8Array => {
-  let data: Uint8Array;
   try {
-    data = pako.inflate(new Uint8Array(buffer));
+    return inflate(new Uint8Array(buffer));
   } catch {
-    data = new Uint8Array(buffer);
+    return new Uint8Array(buffer);
   }
-  return data;
 };
+
+const textDecoder = new TextDecoder();
 
 // Exported for mapNbt.ts, which reuses the same NBT root parser for .nbt/.litematic/.schem decoding.
 export function parseNbtRoot(buffer: ArrayBuffer): unknown {
@@ -60,25 +60,22 @@ export function encodeMapDataToDat(mapData: MapData, locked = true): Blob {
   out.push(0); // end data compound
   out.push(0); // end root compound
 
-  return new Blob([pako.gzip(new Uint8Array(out))], { type: "application/octet-stream" });
+  return new Blob([gzip(new Uint8Array(out))], { type: "application/octet-stream" });
 }
 
 export function parseMapDataFromDat(buffer: ArrayBuffer): LockedMapData {
-  const data = inflateIfNeeded(buffer);
-
-  const reader = new NbtReader(data);
-  const root = reader.readNamedTag();
-  const d = root.value?.data ?? root.value;
+  const root = new NbtReader(inflateIfNeeded(buffer)).readNamedTag().value;
+  const d = root?.data ?? root;
   if (!d) throw new Error('No "data" tag found in NBT');
 
   const colors = d.colors;
-  if (!colors || colors.length !== 16384)
+  if (!(colors instanceof Uint8Array) || colors.length !== 16384)
     throw new Error("Invalid or missing colors array (expected 16384 bytes)");
   if (d.locked !== 0 && d.locked !== 1)
     throw new Error('Invalid or missing "locked" flag (expected byte 0 or 1)');
 
   return {
-    colors: new Uint8Array(colors),
+    colors,
     locked: d.locked === 1,
   };
 }
@@ -98,7 +95,7 @@ class NbtReader {
     return { name, value: this.payload(type) };
   }
 
-  private u8() { return this.data[this.pos++]; }
+  private u8() { return this.view.getUint8(this.pos++); }
   private i8() { return this.view.getInt8(this.pos++); }
   private i16() { const v = this.view.getInt16(this.pos); this.pos += 2; return v; }
   private i32() { const v = this.view.getInt32(this.pos); this.pos += 4; return v; }
@@ -109,9 +106,14 @@ class NbtReader {
   private str(): string {
     const len = this.view.getUint16(this.pos);
     this.pos += 2;
-    const s = new TextDecoder().decode(this.data.slice(this.pos, this.pos + len));
-    this.pos += len;
-    return s;
+    return textDecoder.decode(this.readBytes(len));
+  }
+
+  private readBytes(length: number) {
+    if (length < 0 || this.pos + length > this.data.length) throw new Error("Invalid NBT byte/string length");
+    const bytes = this.data.subarray(this.pos, this.pos + length);
+    this.pos += length;
+    return bytes;
   }
 
   private payload(type: number): any {
@@ -122,7 +124,7 @@ class NbtReader {
       case 4: return Number(this.i64());
       case 5: return this.f32();
       case 6: return this.f64();
-      case 7: { const n = this.i32(); const a = this.data.slice(this.pos, this.pos + n); this.pos += n; return a; }
+      case 7: return this.readBytes(this.i32());
       case 8: return this.str();
       case 9: { const et = this.u8(); const n = this.i32(); const a: any[] = []; for (let i = 0; i < n; ++i) a.push(this.payload(et)); return a; }
       case 10: {

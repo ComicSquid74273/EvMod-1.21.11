@@ -3,7 +3,7 @@
  * Exports: `parseMapDataFromNbt`.
  */
 import { parseNbtRoot } from "@/lib/mapDat";
-import { WATER_BASE_INDEX, BASE_COLORS } from "@/lib/mapColorDataSynced";
+import { WATER_BASE_INDEX, BASE_COLORS, EXCLUDED_BLOCKS } from "@/lib/mapColorDataSynced";
 import type { MapData } from "@/lib/map";
 
 interface StructurePaletteEntry {
@@ -34,12 +34,29 @@ const BLOCK_TO_BASE = new Map<string, number>();
 const NAME_TO_BASE = new Map<string, number>();
 const AIR_NAMES = new Set(["air", "cave_air", "void_air"]);
 for (let i = 0; i < BASE_COLORS.length; ++i) {
-  for (const block of BASE_COLORS[i].blocks) {
+  // Generator-excluded blocks are still valid inputs to a schematic decoder.
+  for (const block of [...BASE_COLORS[i].blocks, ...EXCLUDED_BLOCKS[i]]) {
     if (!BLOCK_TO_BASE.has(block)) BLOCK_TO_BASE.set(block, i);
     const nameOnly = block.replace(/\[.*$/, "");
     if (!NAME_TO_BASE.has(nameOnly)) NAME_TO_BASE.set(nameOnly, i);
   }
 }
+
+// Growing/living blocks and wall attachments omitted entirely by the generator still decode.
+// Keep the old "chain" name for older schematics as well.
+for (const [base, names] of [
+  [0, ["chain", "ladder", "wall_torch", "soul_wall_torch", "tripwire_hook"]],
+  [7, ["cactus", "vine", "sugar_cane", "tall_grass"]],
+  [10, ["hanging_roots"]],
+  [13, ["bamboo_sapling"]],
+  [20, ["brain_coral_block"]],
+  [24, ["bubble_coral_block"]],
+  [25, ["tube_coral_block"]],
+  [28, ["fire_coral_block"]],
+  [35, ["weeping_vines"]],
+] as const)
+  for (const name of names)
+    if (!NAME_TO_BASE.has(name)) NAME_TO_BASE.set(name, base);
 
 const getSize = (root: StructureRoot): number[] | undefined => {
   if (Array.isArray(root.size)) return root.size;

@@ -2,7 +2,7 @@
  * Map image encoding + batch helpers.
  * Exports: `revokeMapImageUrls`, `buildMapImages`, `MapImage`.
  */
-import pako from "pako";
+import { deflate } from "pako";
 import { MAP_RGBA_PALETTE } from "@/lib/mapColors";
 import type { MapData } from "@/lib/map";
 
@@ -20,7 +20,7 @@ const CRC_TABLE = (() => {
   const table = new Uint32Array(256);
   for (let i = 0; i < 256; ++i) {
     let c = i;
-    for (let k = 0; k < 8; ++k) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    for (let k = 0; k < 8; ++k) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
     table[i] = c >>> 0;
   }
   return table;
@@ -83,7 +83,7 @@ function encodeMapDataToPng({ colors }: MapData): Blob {
     indexed[row] = 0; // no PNG row filter
     indexed.set(colors.subarray(y * 128, y * 128 + 128), row + 1);
   }
-  const idat = chunk(CHUNK_IDAT, pako.deflate(indexed, { level: 1 }));
+  const idat = chunk(CHUNK_IDAT, deflate(indexed, { level: 1 }));
   const png = concat(PNG_SIGNATURE, IHDR_CHUNK, PLTE_CHUNK, TRNS_CHUNK, idat, IEND_CHUNK);
   return new Blob([png], { type: "image/png" });
 }
@@ -113,7 +113,7 @@ interface BuildMapImagesParams<TMeta = unknown> {
 export async function buildMapImages<TMeta = unknown>({ files, parseMaps, buildName, onFileParsed }: BuildMapImagesParams<TMeta>): Promise<{ images: MapImage[]; errors: string[] }> {
   const errors: string[] = [];
   const images: MapImage[] = [];
-  let lastYieldAt = typeof performance !== "undefined" ? performance.now() : 0;
+  let lastYieldAt = performance.now();
 
   for (const [fileIndex, file] of files.entries()) {
     try {
@@ -133,7 +133,7 @@ export async function buildMapImages<TMeta = unknown>({ files, parseMaps, buildN
           url: URL.createObjectURL(blob),
         });
         // Yield only when we've spent enough main-thread time to keep UI responsive on large batches.
-        if ((index & 31) === 31 && typeof performance !== "undefined" && performance.now() - lastYieldAt > 24) {
+        if ((index & 31) === 31 && performance.now() - lastYieldAt > 24) {
           await new Promise<void>(resolve => setTimeout(resolve, 0));
           lastYieldAt = performance.now();
         }

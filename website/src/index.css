@@ -1,36 +1,26 @@
-@import "tailwindcss";
+@import "tailwindcss" source("./");
 
-@theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-border: hsl(var(--border));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-}
-
-:root {
-  --background: 220 20% 97%;
-  --foreground: 220 20% 10%;
-  --muted: 220 15% 94%;
-  --muted-foreground: 220 10% 45%;
-  --border: 220 15% 88%;
-  --accent: 220 70% 50%;
-  --accent-foreground: 0 0% 100%;
+@theme {
+  --color-background: hsl(220 20% 97%);
+  --color-foreground: hsl(220 20% 10%);
+  --color-muted: hsl(220 15% 94%);
+  --color-muted-foreground: hsl(220 10% 45%);
+  --color-border: hsl(220 15% 88%);
+  --color-accent: hsl(220 70% 50%);
+  --color-accent-foreground: hsl(0 0% 100%);
 }
 
 .dark {
-  --background: 220 20% 8%;
-  --foreground: 220 15% 95%;
-  --muted: 220 15% 16%;
-  --muted-foreground: 220 10% 55%;
-  --border: 220 15% 20%;
-  --accent: 220 70% 55%;
-  --accent-foreground: 0 0% 100%;
+  --color-background: hsl(220 20% 8%);
+  --color-foreground: hsl(220 15% 95%);
+  --color-muted: hsl(220 15% 16%);
+  --color-muted-foreground: hsl(220 10% 55%);
+  --color-border: hsl(220 15% 20%);
+  --color-accent: hsl(220 70% 55%);
+  --color-accent-foreground: hsl(0 0% 100%);
 }
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }

@@ -115,18 +115,16 @@ function md5blk(s: Uint8Array): number[] {
 
 export function md5(data: Uint8Array): Uint8Array {
   const n = data.length;
-  let state = [1732584193, -271733879, -1732584194, 271733878];
+  const state = [1732584193, -271733879, -1732584194, 271733878];
 
   let i: number;
   for (i = 64; i <= n; i += 64) {
-    md5cycle(state, md5blk(data.slice(i - 64, i)));
+    md5cycle(state, md5blk(data.subarray(i - 64, i)));
   }
 
   const tail = new Uint8Array(64);
   const remaining = n - (i - 64);
-  for (let j = 0; j < remaining; ++j) {
-    tail[j] = data[i - 64 + j];
-  }
+  tail.set(data.subarray(i - 64));
   tail[remaining] = 0x80;
 
   if (remaining > 55) {

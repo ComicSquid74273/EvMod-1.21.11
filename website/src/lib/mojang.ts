@@ -80,7 +80,7 @@ const setCached = (uuid: DashedUuid, name: string | null) => {
 };
 
 const getContainerFlagNibble = (uuid: DashedUuid) =>
-  Number.parseInt(uuid[CONTAINER_FLAG_NIBBLE_INDEX] ?? "0", 16);
+  Number.parseInt(uuid[CONTAINER_FLAG_NIBBLE_INDEX], 16);
 
 const toggleFirstBit = (uuid: DashedUuid): DashedUuid => {
   const nibble = getContainerFlagNibble(uuid);
@@ -100,16 +100,13 @@ const fetchProfileNameByUuid = async (uuid: DashedUuid): Promise<string | null> 
   if (inflight) return inflight;
 
   const promise = (async () => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), LOOKUP_TIMEOUT_MS);
     try {
       // GH Pages is static-only; browser CORS for Mojang endpoints is unreliable.
       // Keep a single Ashcon lookup endpoint that is CORS-friendly for static sites.
       const resp = await fetch(`https://api.ashcon.app/mojang/v2/user/${uuid}`, {
-        method: "GET",
-        signal: controller.signal,
+        signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
       });
-      if (resp.status !== 404 && resp.status !== 204 && resp.ok) {
+      if (resp.ok && resp.status !== 204) {
         const json = await resp.json() as { username?: unknown; name?: unknown };
         const name = readProfileName(json);
         if (name) {
@@ -117,12 +114,12 @@ const fetchProfileNameByUuid = async (uuid: DashedUuid): Promise<string | null> 
           return name;
         }
       }
-      setCached(uuid, null);
+      // Only definitive misses are permanent; rate limits/server failures must be retryable.
+      if (resp.status === 404 || resp.status === 204) setCached(uuid, null);
       return null;
     } catch {
       return null;
     } finally {
-      clearTimeout(timeout);
       inflightByUuid.delete(uuid);
     }
   })();
@@ -135,13 +132,13 @@ const lookupContainerPlayerName = async (base: DashedUuid) => {
   const toggled = toggleFirstBit(base);
   const [direct, toggledName] = await Promise.all([
     fetchProfileNameByUuid(base),
-    toggled === base ? Promise.resolve<string | null>(null) : fetchProfileNameByUuid(toggled),
+    fetchProfileNameByUuid(toggled),
   ]);
   return direct ?? toggledName ?? null;
 };
 
-export const lookupContainerPlayerNames = async (uuids: readonly string[], concurrency = 8) => {
-  const unique = [...new Set(uuids.map(parseDashedUuid).filter((uuid): uuid is DashedUuid => !!uuid))];
+export const lookupContainerPlayerNames = async (uuids: readonly DashedUuid[], concurrency = 8) => {
+  const unique = [...new Set(uuids)];
   const out = new Map<DashedUuid, string>();
   let next = 0;
   const worker = async () => {

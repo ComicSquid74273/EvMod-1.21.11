@@ -27,13 +27,11 @@ const sanitizeStem = (raw: string) => {
   return WINDOWS_RESERVED.test(stem) ? `${stem}_` : stem;
 };
 
-const shortUuid = (uuid: DashedUuid) => uuid.slice(0, 8) || "unknown";
-
 const buildSlotLabelPrefix = (key: DashedUuid, playerNameByUuid: Map<DashedUuid, string>) => {
   const playerName = playerNameByUuid.get(key);
   return playerName
     ? `${sanitizeStem(playerName)}_${containerTypeFromUuid(key)}_`
-    : `${shortUuid(key)}_`;
+    : `${key.slice(0, 8)}_`;
 };
 
 export default function CacheToPng() {

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
 type StoredTheme = "light" | "dark";
-type ResolvedTheme = StoredTheme;
-
 const getSystemTheme = () =>
   matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
@@ -12,11 +10,10 @@ const readStoredTheme = (): StoredTheme | null => {
 };
 
 export function useTheme() {
-  const initialSystemTheme = getSystemTheme();
-  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(initialSystemTheme);
+  const [systemTheme, setSystemTheme] = useState<StoredTheme>(getSystemTheme);
   const [override, setOverride] = useState<StoredTheme | null>(() => {
     const stored = readStoredTheme();
-    return stored === initialSystemTheme ? null : stored;
+    return stored === systemTheme ? null : stored;
   });
   const resolved = override ?? systemTheme;
 

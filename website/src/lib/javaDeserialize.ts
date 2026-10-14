@@ -162,7 +162,7 @@ class JavaDeserializer {
 
   // --- Primitives ---
   private checkBounds(n: number) {
-    if (this.pos + n > this.buf.byteLength) throw new Error(`EOF: need ${n} bytes at position ${this.pos}, have ${this.buf.byteLength - this.pos}`);
+    if (n < 0 || this.pos + n > this.buf.byteLength) throw new Error(`EOF: need ${n} bytes at position ${this.pos}, have ${this.buf.byteLength - this.pos}`);
     if (++this.ops > this.MAX_OPS) throw new Error(`Exceeded max operations (${this.MAX_OPS}), likely infinite loop`);
   }
   private u8() { this.checkBounds(1); return this.view.getUint8(this.pos++); }
@@ -331,7 +331,8 @@ class JavaDeserializer {
     const tc = this.u8();
     if (tc !== 0x77) throw new Error("Unsupported blockdata type 0x" + tc.toString(16) + " at position " + (this.pos - 1));
     const len = this.u8();
-    const data = this.bytes.slice(this.pos, this.pos + len);
+    this.checkBounds(len);
+    const data = this.bytes.subarray(this.pos, this.pos + len);
     this.pos += len;
     return data;
   }
@@ -361,7 +362,8 @@ class JavaDeserializer {
     const et = desc.name.charAt(1);
 
     if (et !== "B") throw new Error("Unsupported array type in cache shape: " + desc.name);
-    const arr = this.bytes.slice(this.pos, this.pos + length);
+    this.checkBounds(length);
+    const arr = this.bytes.subarray(this.pos, this.pos + length);
     this.pos += length;
     return this.handle(arr);
   }
