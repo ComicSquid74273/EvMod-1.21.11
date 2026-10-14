@@ -36,7 +36,6 @@ database: true
 listener.game_message.read: false
 listener.game_message.filter: false
 listener.player_move: false
-map_bot.loader: false
 broadcaster: false
 epearl_owners: false
 

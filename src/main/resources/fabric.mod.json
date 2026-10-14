@@ -23,8 +23,5 @@
 		"java": ">=${java_version}",
 		"fabric-api": "*",
 		"malilib": ">=${malilib_version}-"
-	},
-	"suggests": {
-		"baritone": "*"
 	}
 }

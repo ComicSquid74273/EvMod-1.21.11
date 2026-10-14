@@ -14,9 +14,7 @@ def modVersion = property('mod.version')
 def loaderVersion = property('deps.fabric_loader')
 def fabricApiVersion = property('deps.fabric_api')
 def malilibVersion = property('deps.malilib')
-def baritoneVersion = property('deps.baritone')
 def requiredJava = JavaVersion.toVersion(property('deps.java'))
-def baritoneJar = rootProject.file("libs/baritone-api-fabric-${baritoneVersion}.jar")
 
 group = mavenGroup
 version = modVersion
@@ -48,15 +46,6 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
 	modImplementation "com.github.sakura-ryoko:malilib:${sc.current.version}-${malilibVersion}"
-	modImplementation files(baritoneJar)
-
-	// Loom strips the nested-jar declaration while remapping Baritone 1.13.1.
-	// Expose its already-embedded native pathfinder to Fabric's development runtime.
-	if (sc.current.version == '1.21.4') {
-		modRuntimeOnly files(zipTree(baritoneJar).matching {
-			include 'META-INF/jars/nether-pathfinder-1.4.1.jar'
-		})
-	}
 }
 
 // https://github.com/EvModder/EvLib

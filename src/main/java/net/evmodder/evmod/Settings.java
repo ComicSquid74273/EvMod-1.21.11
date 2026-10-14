@@ -17,7 +17,7 @@ final class Settings{
 	final boolean storeDataInInstanceFolder, database, epearlOwners;
 	final boolean placementHelperIframeAutoPlace, placementHelperMapArt, placementHelperMapArtAutoPlace, placementHelperMapArtAutoRemove;
 	final boolean serverJoinListener, serverQuitListener, gameMessageListener, gameMessageFilter, blockClickListener;
-	final boolean onTickInventory, onTickContainer, onTickIframes, muteMusicOnMenuScreen, containerOpenCloseListener, mapLoaderBot, playerMoveListener, broadcaster;
+	final boolean onTickInventory, onTickContainer, onTickIframes, muteMusicOnMenuScreen, containerOpenCloseListener, playerMoveListener, broadcaster;
 	final boolean tooltipMapHighlights, tooltipMapMetadata, tooltipRepairCost;
 	final boolean cmdAssignPearl, cmdDeletedMapsNearby, cmdExportMapImg, cmdExportMapNames, cmdMapArtGroup, cmdMapHashCode, cmdSeen, cmdSendAs, cmdTimeOnline;
 
@@ -78,7 +78,6 @@ final class Settings{
 		placementHelperMapArt = onTickInventory && extractConfigValue(settings, "placement_helper.mapart");
 		placementHelperMapArtAutoPlace = placementHelperMapArt && extractConfigValue(settings, "placement_helper.mapart.autoplace");
 		placementHelperMapArtAutoRemove = placementHelperMapArt && extractConfigValue(settings, "placement_helper.mapart.autoremove");
-		mapLoaderBot = extractConfigValue(settings, "map_bot.loader");
 		playerMoveListener = extractConfigValue(settings, "listener.player_move");
 		serverJoinListener = extractConfigValue(settings, "listener.server_join");
 		serverQuitListener = extractConfigValue(settings, "listener.server_quit");
@@ -99,6 +98,7 @@ final class Settings{
 		cmdSendAs = database && extractConfigValue(settings, "command.sendas");
 		cmdTimeOnline = database && extractConfigValue(settings, "command.timeonline");
 
+		settings.remove("map_bot.loader"); // Retired feature; accept existing settings files.
 		if(!settings.isEmpty()) Main.LOGGER.error("Unrecognized config setting(s)!: "+settings);
 
 		{//==================================================

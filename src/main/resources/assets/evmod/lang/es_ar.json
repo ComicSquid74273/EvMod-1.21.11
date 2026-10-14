@@ -171,7 +171,6 @@
 	"evmod.config.generic.name.mapArtAutoRemoveThreshold": "mapArtAutoRemoveThreshold",
 	"evmod.config.generic.comment.mapArtAutoRemoveThreshold": "How many iFrames you must manually punch before autoRemover kicks in",
 	"evmod.config.generic.name.mapArtAutoRemoveReach": "mapArtAutoRemoveReach",
-	"evmod.config.generic.name.mapArtSuppressBot": "mapArtSuppressBot",
 
 	"evmod.config.generic.name.ignoreNullMapsInHighlightsAndKeybinds": "ignoreNullMapsInHighlightsAndKeybinds",
 	"evmod.config.generic.comment.ignoreNullMapsInHighlightsAndKeybinds": "Treat maps with confirmed missing* MapState as filler items.\n(NOT merely unloaded MapState, but actually deleted (thx Hause))",

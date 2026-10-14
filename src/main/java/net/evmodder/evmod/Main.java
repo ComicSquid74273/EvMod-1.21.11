@@ -33,7 +33,6 @@ import net.evmodder.evmod.keybinds.KeybindInventoryRestock;
 import net.evmodder.evmod.listeners.*;
 import net.evmodder.evmod.onTick.AutoPlaceItemFrames;
 import net.evmodder.evmod.onTick.ContainerOpenCloseListener;
-import net.evmodder.evmod.onTick.MapLoaderBot;
 import net.evmodder.evmod.onTick.MuteMusicOnMenuScreen;
 import net.evmodder.evmod.onTick.SyncPlayerPos;
 import net.evmodder.evmod.onTick.TooltipMapLoreMetadata;
@@ -169,10 +168,6 @@ public class Main{
 		if(settings.onTickContainer) TickListener.register(new UpdateContainerContents());
 		if(settings.muteMusicOnMenuScreen) TickListener.register(new MuteMusicOnMenuScreen());
 		if(settings.containerOpenCloseListener) TickListener.register(new ContainerOpenCloseListener(kbInvRestock));
-		if(settings.mapLoaderBot){
-			if(FabricLoader.getInstance().isModLoaded("baritone")) TickListener.register(new MapLoaderBot());
-			else LOGGER.warn("Map-loader bot is enabled, but a compatible Baritone mod is not installed; disabling the bot");
-		}
 
 		if(settings.tooltipMapHighlights) Tooltip.register(new TooltipMapNameColor());
 		if(settings.tooltipMapMetadata) Tooltip.register(new TooltipMapLoreMetadata());

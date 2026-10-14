@@ -11,7 +11,6 @@ mod.version = "2.4"
 
 # https://fabricmc.net/develop
 # https://jitpack.io/com/github/sakura-ryoko/malilib/
-# https://github.com/cabaletta/baritone/releases
 # https://github.com/LlamaLad7/MixinExtras
 
 loomx.loom_version = "1.17-SNAPSHOT"
@@ -21,25 +20,21 @@ deps.java = "22"
 deps.fabric_loader = "0.16.9"
 deps.fabric_api = "0.110.5+1.21.4"
 deps.malilib = "0.23.2"
-deps.baritone = "1.13.1"
 
 ["1.21.11"]
 deps.java = "22"
 deps.fabric_loader = "0.17.3"
 deps.fabric_api = "0.139.4+1.21.11"
 deps.malilib = "0.27.6"
-deps.baritone = "1.17.0"
 
 ["26.2"]
 deps.java = "25"
 deps.fabric_loader = "0.19.3"
 deps.fabric_api = "0.152.1+26.2"
 deps.malilib = "0.29.0"
-deps.baritone = "1.19.0"
 
 ["26.3"]
 deps.java = "25"
 deps.fabric_loader = "0.19.5"
 deps.fabric_api = "0.162.0+26.3"
 deps.malilib = "0.30.1"
-deps.baritone = "1.20.0"
