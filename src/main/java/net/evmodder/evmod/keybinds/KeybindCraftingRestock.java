@@ -49,7 +49,7 @@ public final class KeybindCraftingRestock implements TickListener{
 	private record Layout(int resultSlot, int[] inputSlots){}
 	private record Ingredient(int slot, ItemStack stack){}
 	private record CachedRecipe(Class<? extends AbstractContainerMenu> menuClass, int resultSlot,
-			List<Ingredient> ingredients, int selectionButton, String anvilName, String anvilInputName){}
+			List<Ingredient> ingredients, int selectionButton, String anvilName, String anvilInputName, int anvilCost){}
 	private static final int MAX_RECIPES_PER_MENU = 16;
 	private static final class PendingCraft{
 		final CachedRecipe recipe;
@@ -146,19 +146,25 @@ public final class KeybindCraftingRestock implements TickListener{
 				.mapToObj(i -> new Ingredient(i, menu.getSlot(i).getItem().copy())).toList();
 		final ItemStack result = menu.getSlot(layout.resultSlot).getItem();
 		final String anvilName, anvilInputName;
-		if(menu instanceof AnvilMenu){
+		final int anvilCost;
+		if(menu instanceof AnvilMenu anvil){
 			anvilName = getCustomName(result);
 			anvilInputName = getCustomName(menu.getSlot(AnvilMenu.INPUT_SLOT).getItem());
+			anvilCost = anvil.getCost();
 		}
-		else anvilName = anvilInputName = null;
+		else{anvilName = anvilInputName = null; anvilCost = 0;}
 
 		cacheRecipe(new CachedRecipe(menu.getClass(), layout.resultSlot, ingredients,
-				getSelectionButton(menu), anvilName, anvilInputName));
+				getSelectionButton(menu), anvilName, anvilInputName, anvilCost));
 		pendingCraft = null;
 		Main.LOGGER.info("CraftRestock: Cached "+menu.getClass().getSimpleName()+" recipe");
 	}
 
 	private static final boolean isSameMenu(CachedRecipe recipe, AbstractContainerMenu menu){return recipe.menuClass == menu.getClass();}
+	private static final boolean canAffordBulk(CachedRecipe recipe, Minecraft client){
+		return recipe.anvilCost == 0 || client.player.getAbilities().instabuild
+				|| client.player.experienceLevel >= recipe.anvilCost;
+	}
 
 	private static final List<Ingredient> getMissingIngredients(CachedRecipe recipe, AbstractContainerMenu menu){
 		final List<Ingredient> missing = new ArrayList<>();
@@ -404,6 +410,7 @@ public final class KeybindCraftingRestock implements TickListener{
 		if(recipe == null) return;
 
 		final boolean bulk = Configs.Hotkeys.CRAFT_BULK_MODIFIER.getKeybind().isKeybindHeld();
+		if(bulk && !canAffordBulk(recipe, client)) return;
 		restock(client, handledScreen, recipe, /*craftAfter=*/bulk, bulk);
 	}
 
@@ -471,6 +478,7 @@ public final class KeybindCraftingRestock implements TickListener{
 		if(repeat.recipe.menuClass != menu.getClass() || repeat.containerId != menu.containerId){
 			pendingBulkRepeat = null; return;
 		}
+		if(!canAffordBulk(repeat.recipe, client)){pendingBulkRepeat = null; return;}
 
 		pendingBulkRepeat = null;
 		restock(client, handledScreen, repeat.recipe, /*craftAfter=*/true, /*bulk=*/true);
