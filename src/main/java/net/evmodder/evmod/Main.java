@@ -124,7 +124,10 @@ public class Main{
 
 		if(settings.serverJoinListener) new ServerJoinListener(remoteSender);
 		if(settings.serverQuitListener) new ServerQuitListener(remoteSender);
-		if(settings.blockClickListener) new BlockClickListener();
+		if(settings.blockClickListener){
+			if(!mapArtFeaturesOnly) new FireworkBoostListener();
+			new BlockClickListener();
+		}
 		final WhisperPlaySound whisperPlaySound;
 		final GameMessageFilter gameMessageFilter;
 		final KeybindInventoryOrganize[] kbInvOrgs;

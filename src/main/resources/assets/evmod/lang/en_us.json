@@ -197,6 +197,8 @@
 	"evmod.config.generic.comment.whisperPearlPull": "/w msg to trigger a pearl",
 	"evmod.config.generic.name.muteMusicOnMenuScreen": "Mute music on menu screen",
 	"evmod.config.generic.comment.muteMusicOnMenuScreen": "Mute music while no world is loaded.\nMusic returns to its configured volume after joining a world.",
+	"evmod.config.generic.name.dontWasteFireworks": "dontWasteFireworks",
+	"evmod.config.generic.comment.dontWasteFireworks": "While gliding, use rockets without explosion effects to boost even when aiming at a block.\nBehaves like using the rocket in air; ground use and rockets with explosion effects are unchanged.",
 
 	// Dormant; superseded by mapArtGroupUnlockedMapHandling:
 	// "evmod.config.generic.name.mapArtGroupIncludeUnlocked": "mapArtGroupIncludeUnlocked",
