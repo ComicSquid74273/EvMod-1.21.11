@@ -136,7 +136,7 @@ public class Main{
 
 		epearlLookup = settings.epearlOwners ? new EpearlLookupFabric(remoteSender) : null;
 
-		if(settings.serverJoinListener) new ServerJoinListener(remoteSender);
+		if(settings.serverJoinListener || settings.cmdTimeOnline) new ServerJoinListener(remoteSender);
 		if(settings.serverQuitListener) new ServerQuitListener(remoteSender);
 		if(settings.blockClickListener){
 			if(!mapArtFeaturesOnly) new FireworkBoostListener();

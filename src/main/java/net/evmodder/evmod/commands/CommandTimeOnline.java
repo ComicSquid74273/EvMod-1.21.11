@@ -30,7 +30,7 @@ public class CommandTimeOnline{
 				.executes(ctx->{
 					Minecraft client = Minecraft.getInstance();
 					if(client.getCurrentServer() == null){
-						if(client.getSingleplayerServer() != null) tellTimeOnline(ctx.getSource(), client.getSingleplayerServer().getTickCount()*50);
+						if(client.getSingleplayerServer() != null) tellTimeOnline(ctx.getSource(), ServerJoinListener.lastJoinTs);
 						else ctx.getSource().sendFeedback(Component.literal("Error: No remote/local server found (this should be unreachable!)"));
 						return 1;
 					}
