@@ -90,7 +90,7 @@ public final class GameMessageListener{
 			if(literal == null) return;
 //			if(literal.contains(myName)) Main.LOGGER.info("GameMsgListener: Account mentioned (literal):\n"+literal);
 
-			if(literal.matches("^\\w+ whispers: .*")){// TODO: per-server format support
+			if(literal.matches("^\\w+ whispers: .*")){  // TODO: per-server format support
 //				Main.LOGGER.info("GameMsgListener: whisper detected");
 				if(wps != null) wps.playSound();
 

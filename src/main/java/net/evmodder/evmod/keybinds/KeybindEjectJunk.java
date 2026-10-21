@@ -154,14 +154,14 @@ public final class KeybindEjectJunk{
 				Main.LOGGER.info("EjectJunk: GenericContainer"); invStart = 0; invEnd = 9*gcs.getMenu().getRowCount();}
 			else{Main.LOGGER.info("EjectJunk: Unsupported screen type. syncId: "+syncId); return;}
 
-			for(int i=invStart; i<invEnd; ++i) shouldEject(hs.getMenu().getSlot(i).getItem()); // Detect junk category
+			for(int i=invStart; i<invEnd; ++i) shouldEject(hs.getMenu().getSlot(i).getItem());  // Detect junk category
 			for(int i=invStart; i<invEnd; ++i) if(shouldEject(hs.getMenu().getSlot(i).getItem())){
 				client.gameMode.handleContainerInput(syncId, i, 0, ContainerInput.THROW, client.player);
 			}
 		}
 		else{
 			Main.LOGGER.info("EjectJunk: Default (no Screen)");
-			for(int i=9; i<45; ++i) shouldEject(client.player.getInventory().getItem(i%36)); // Detect junk category
+			for(int i=9; i<45; ++i) shouldEject(client.player.getInventory().getItem(i%36));  // Detect junk category
 			for(int i=9; i<45; ++i) if(shouldEject(client.player.getInventory().getItem(i%36))){
 				client.gameMode.handleContainerInput(syncId, i, 1, ContainerInput.THROW, client.player);
 			}

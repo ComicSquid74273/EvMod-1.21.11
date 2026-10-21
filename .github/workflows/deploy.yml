@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'website/**' # Trigger only if files inside the website/ folder change
+      - 'website/**'  # Trigger only if files inside the website/ folder change
   pull_request:
     branches:
       - main

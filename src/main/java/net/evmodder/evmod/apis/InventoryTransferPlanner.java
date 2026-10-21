@@ -190,8 +190,8 @@ public final class InventoryTransferPlanner{
 			final int excess = cursorCount-amount;
 			for(int strategy=0; strategy<4; ++strategy){
 				final int cost = switch(strategy){
-					case 0 -> 2+excess; // Return singles to source, then place cursor.
-					case 1 -> 1+amount+(excess > 0 ? 1 : 0); // Place singles, return remainder.
+					case 0 -> 2+excess;  // Return singles to source, then place cursor.
+					case 1 -> 1+amount+(excess > 0 ? 1 : 0);  // Place singles, return remainder.
 					case 2 -> destinationCount+cursorCount > maxStackSize ? Integer.MAX_VALUE
 							: 2+(excess > 0 ? pickupCost(destinationCount+cursorCount, excess)+1 : 0);
 					default -> destinationCount+amount == maxStackSize ? 2+(excess > 0 ? 1 : 0) : Integer.MAX_VALUE;

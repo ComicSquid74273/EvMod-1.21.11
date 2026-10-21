@@ -33,8 +33,8 @@ public final class ServerQuitListener{
 					if(Configs.Generic.MAP_CACHE_BY_NAME.getBooleanValue()) MapStateCacher.saveMapStatesByNameToFile();
 				}
 				MapStateCacher.saveMapStatesByPos(client.player.getInventory().getNonEquipmentItems().stream(), MapStateCacher.BY_PLAYER_INV);
-				ContainerOpenCloseListener.echestCacheLoaded = false; // TODO: ewww
-				ContainerOpenCloseListener.containerCachesLoaded.clear(); // TODO: ewww
+				ContainerOpenCloseListener.echestCacheLoaded = false;  // TODO: ewww
+				ContainerOpenCloseListener.containerCachesLoaded.clear();  // TODO: ewww
 			}
 		});
 	}

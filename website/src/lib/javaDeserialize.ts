@@ -228,7 +228,7 @@ class JavaDeserializer {
 
   private readNewClassDesc(): ClassDesc {
     const name = this.utf();
-    this.i64(); // serialVersionUID
+    this.i64();  // serialVersionUID
     // Per Java spec: handle is assigned BEFORE classDescInfo (flags, fields, annotations, superclass)
     const desc: ClassDesc = { name, flags: 0, fields: [], superClass: null };
     this.handle(desc);
@@ -239,7 +239,7 @@ class JavaDeserializer {
     for (let i = 0; i < fc; ++i) {
       const type = String.fromCharCode(this.u8());
       const fn = this.utf();
-      if (type === "L" || type === "[") this.readContent(); // field class name string/object
+      if (type === "L" || type === "[") this.readContent();  // field class name string/object
       fields.push({ type, name: fn });
     }
     desc.fields = fields;
@@ -281,10 +281,10 @@ class JavaDeserializer {
     if (!desc) return;
     this.readClassData(desc.superClass, obj);
 
-    if (desc.flags & 0x02) { // SC_SERIALIZABLE
+    if (desc.flags & 0x02) {  // SC_SERIALIZABLE
       for (const f of desc.fields) obj[f.name] = this.readFieldValue(f);
-      if (desc.flags & 0x01) this.readWriteObjectData(desc, obj); // SC_WRITE_METHOD
-    } else if (desc.flags & 0x04) { // SC_EXTERNALIZABLE
+      if (desc.flags & 0x01) this.readWriteObjectData(desc, obj);  // SC_WRITE_METHOD
+    } else if (desc.flags & 0x04) {  // SC_EXTERNALIZABLE
       this.readExternalData(desc, obj);
     }
   }
@@ -338,7 +338,7 @@ class JavaDeserializer {
   }
 
   private readExternalData(desc: ClassDesc, obj: JavaObj) {
-    if (desc.flags & 0x08) { // SC_BLOCK_DATA
+    if (desc.flags & 0x08) {  // SC_BLOCK_DATA
       if (desc.name.includes("CollSer") || desc.name.includes("ImmutableCollections")) {
         const bd = this.readBlockData();
         const bv = new DataView(bd.buffer, bd.byteOffset, bd.byteLength);

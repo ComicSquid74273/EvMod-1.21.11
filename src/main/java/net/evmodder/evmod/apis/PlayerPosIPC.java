@@ -18,9 +18,9 @@ public final class PlayerPosIPC{
 	// All these are static-final to take advantage of Constant Folding
 	private static final int MAX_SLOTS = 64;
 	// PID + TS + version + data
-	public static final int METADATA_SIZE = 8 + 8 + 8; //=24
+	public static final int METADATA_SIZE = 8 + 8 + 8;  //=24
 	// UUID + serverHashCode + worldHashCode + x + y + z + yaw + pitch + headYaw + velX + velY + velZ + pose (+ health?)
-	public static final int DATA_SIZE = 16 + 4 + 4 + 8 + 8 + 8 + 4 + 4 + 4 + 8 + 8 + 8 + 4; //=92
+	public static final int DATA_SIZE = 16 + 4 + 4 + 8 + 8 + 8 + 4 + 4 + 4 + 8 + 8 + 8 + 4;  //=92
 	public static final int CPU_CACHE_LINE_SIZE = 128;
 	private static final int SLOT_SIZE = Math.ceilDiv(METADATA_SIZE + DATA_SIZE, CPU_CACHE_LINE_SIZE) * CPU_CACHE_LINE_SIZE;
 	// Treat PID as "dead" if no update for > 15s
@@ -29,7 +29,7 @@ public final class PlayerPosIPC{
 	private static final long TIMEOUT_NS = 15_000l * 1000000l;
 
 	private static final int CLAIM_LOOP_MAX_ATTEMPTS = 3;
-	private static final int LAST_SLOT_BASE = (MAX_SLOTS-1)*SLOT_SIZE; // Cached compuation
+	private static final int LAST_SLOT_BASE = (MAX_SLOTS-1)*SLOT_SIZE;  // Cached compuation
 
 	// Offsets within a slot
 	private static final int TIME_OFFSET = 8;
@@ -39,8 +39,8 @@ public final class PlayerPosIPC{
 //	private static final String MEM_TABLE_FILENAME = "minecraft_player_pos.bin";
 	private static final VarHandle LONG_HANDLE = MethodHandles.byteBufferViewVarHandle(long[].class, ByteOrder.nativeOrder());
 
-	private static final long myPID = ProcessHandle.current().pid(); // Static for Constant Propagation (not Constant Folding)
-	private final long[] lastReadVersions; // No benefit to making these static (memory addresses to dynamic values)
+	private static final long myPID = ProcessHandle.current().pid();  // Static for Constant Propagation (not Constant Folding)
+	private final long[] lastReadVersions;  // No benefit to making these static (memory addresses to dynamic values)
 	private final byte[] data;
 	private final MappedByteBuffer buffer;
 
@@ -93,7 +93,7 @@ public final class PlayerPosIPC{
 		lastReadVersions = new long[MAX_SLOTS];
 		data = new byte[DATA_SIZE];
 		Arrays.fill(lastReadVersions, -1l);
-		claimSlot(); // Not strictly-necessary to call this prior to postData()
+		claimSlot();  // Not strictly-necessary to call this prior to postData()
 	}
 
 	private final int claimSlot(){
@@ -103,16 +103,16 @@ public final class PlayerPosIPC{
 				final int base = i*SLOT_SIZE;
 				final long owner = (long)LONG_HANDLE.getVolatile(buffer, base);
 				if(owner > 0l && now - (long)LONG_HANDLE.getAcquire(buffer, base + TIME_OFFSET) < TIMEOUT_NS) continue;
-				LONG_HANDLE.setOpaque(buffer, base + TIME_OFFSET, now); // Update heartbeat (reduces contention fighting for this slot)
+				LONG_HANDLE.setOpaque(buffer, base + TIME_OFFSET, now);  // Update heartbeat (reduces contention fighting for this slot)
 				if(LONG_HANDLE.compareAndSet(buffer, base, owner, myPID)){
 //					Main.LOGGER.info("[EvMod] Claimed IPC slot "+i);
-					return i; // Nice, we snagged this slot!
+					return i;  // Nice, we snagged this slot!
 				}
 //				i=-1; // Another PID grabbed the slot before us; start again from i=0.
 			}
 		}
 		assert false : "shared-mem table is out of slots!";
-		return -1; // Failed to acquire a slot!!
+		return -1;  // Failed to acquire a slot!!
 	}
 
 	private final void reapZombies() {
@@ -121,7 +121,7 @@ public final class PlayerPosIPC{
 			final int base = i*SLOT_SIZE;
 //			final int base = i << 7;// Assumes `SLOT_SIZE == 128`!
 			final long owner = (long) LONG_HANDLE.getOpaque(buffer, base);
-			if(owner == myPID) continue; // Given its own line / branch prediction here, unlike in readData()
+			if(owner == myPID) continue;  // Given its own line / branch prediction here, unlike in readData()
 			if(owner <= 0l){
 				if(owner == 0l) return;
 				continue;
@@ -137,17 +137,17 @@ public final class PlayerPosIPC{
 		// Ensure slot ownership, and claim a new slot if necessary
 		if(myPID != (long)LONG_HANDLE.getVolatile(buffer, mySlot*SLOT_SIZE) && (mySlot=claimSlot()) == -1) return;
 		final int base = mySlot*SLOT_SIZE;
-		final long currentVer = (long)LONG_HANDLE.get(buffer, base + VERSION_OFFSET); // Get current version
+		final long currentVer = (long)LONG_HANDLE.get(buffer, base + VERSION_OFFSET);  // Get current version
 		final long nextEvenVer = (currentVer+1l)&-2l;
-		LONG_HANDLE.setRelease(buffer, base + VERSION_OFFSET, nextEvenVer); // Move current version to EVEN (signals write in-progress)
-		buffer.put(base + DATA_OFFSET, data); // Publish data
+		LONG_HANDLE.setRelease(buffer, base + VERSION_OFFSET, nextEvenVer);  // Move current version to EVEN (signals write in-progress)
+		buffer.put(base + DATA_OFFSET, data);  // Publish data
 		final long nextOddVer = nextEvenVer + 1l;
-		lastReadVersions[mySlot] = nextOddVer; // Ensure I don't read my own data
-		LONG_HANDLE.setRelease(buffer, base + VERSION_OFFSET, nextOddVer); // Move current version to ODD (signals write completed)
+		lastReadVersions[mySlot] = nextOddVer;  // Ensure I don't read my own data
+		LONG_HANDLE.setRelease(buffer, base + VERSION_OFFSET, nextOddVer);  // Move current version to ODD (signals write completed)
 	}
 
 	public final void readData(final Consumer<byte[]> consumer){
-		if((++readCount & 1023) == 0) reapZombies(); // Only call every 1024 cycles
+		if((++readCount & 1023) == 0) reapZombies();  // Only call every 1024 cycles
 		for(int i=0; i<MAX_SLOTS; ++i){
 			final int base = i*SLOT_SIZE;
 //			final int base = i << 7; // Assumes `SLOT_SIZE == 128`!
@@ -158,10 +158,10 @@ public final class PlayerPosIPC{
 				if(owner == 0l) return;
 				continue;
 			}
-			if((version & 1l) != 0l){ // Only read if non-busy
-				buffer.get(base + DATA_OFFSET, data); // Read data
-				VarHandle.loadLoadFence(); // Explicitly prevent the next load from occurring before the 'get' finishes
-				if(version == (long)LONG_HANDLE.getOpaque(buffer, base + VERSION_OFFSET)){ // Verify data wasn't altered mid-read
+			if((version & 1l) != 0l){  // Only read if non-busy
+				buffer.get(base + DATA_OFFSET, data);  // Read data
+				VarHandle.loadLoadFence();  // Explicitly prevent the next load from occurring before the 'get' finishes
+				if(version == (long)LONG_HANDLE.getOpaque(buffer, base + VERSION_OFFSET)){  // Verify data wasn't altered mid-read
 					consumer.accept(data);
 					lastReadVersions[i] = version;
 				}

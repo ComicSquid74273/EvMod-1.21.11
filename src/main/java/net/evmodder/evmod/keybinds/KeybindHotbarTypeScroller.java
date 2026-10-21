@@ -30,12 +30,12 @@ public final class KeybindHotbarTypeScroller{
 			Main.LOGGER.warn("Scroll list is too short: "+colors.toString());
 			return; 
 		}
-		final boolean hasEmpty = colors[0].isEmpty();//TODO: icky
+		final boolean hasEmpty = colors[0].isEmpty();  //TODO: icky
 		final String colorA = hasEmpty ? colors[1] : colors[0];
 		final String[] colorsB = Arrays.copyOfRange(colors, hasEmpty? 2 : 1, colors.length);
 
 		Stream<Identifier> s = BuiltInRegistries.ITEM.keySet().stream().filter(id -> id.getPath().contains(colorA));
-		if(hasEmpty) s = s.filter(id -> BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath().replace(colorA+"_", ""))));//TODO: icky
+		if(hasEmpty) s = s.filter(id -> BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath().replace(colorA+"_", ""))));  //TODO: icky
 		s = s.filter(id -> Arrays.stream(colorsB).allMatch(b -> BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath().replace(colorA, b)))));
 		List<Identifier> ids = s.toList();
 		if(ids.isEmpty()){
@@ -45,7 +45,7 @@ public final class KeybindHotbarTypeScroller{
 		variantLists.add(colors);
 		ids.stream().map(id -> id.getNamespace()+":"+id.getPath().replace(colorA, "*")).forEach(name -> {
 			scrollableItems.put(name, colors);
-			if(hasEmpty) scrollableItems.put(name.replace("*_", ""), colors);//TODO: icky
+			if(hasEmpty) scrollableItems.put(name.replace("*_", ""), colors);  //TODO: icky
 		});
 	}
 
@@ -57,7 +57,7 @@ public final class KeybindHotbarTypeScroller{
 		Identifier id = BuiltInRegistries.ITEM.getKey(is.getItem());
 		if(!ItemStack.isSameItemSameComponents(is, new ItemStack(BuiltInRegistries.ITEM.getValue(id)))) return;  // don't scroll if has custom NBT
 		String path = id.getPath();
-		String[] colors = scrollableItems.get(id.toString());//e.g., "rail" -> [,powered,detector,activator]"
+		String[] colors = scrollableItems.get(id.toString());  //e.g., "rail" -> [,powered,detector,activator]"
 		int i = 0;
 		if(colors == null) for(String[] cs : variantLists){
 			for(i=0; !path.contains(cs[i]+"_") && ++i < cs.length;);
@@ -65,17 +65,17 @@ public final class KeybindHotbarTypeScroller{
 				colors = cs; break;
 			}
 		}
-		if(colors == null) return; // not a supported item (eg: "red_sandstone")
+		if(colors == null) return;  // not a supported item (eg: "red_sandstone")
 
 		final int original_i = i;
 		i = upOrDown ? (i == colors.length-1 ? 0 : i+1) : (i == 0 ? colors.length-1 : i-1);
 		id = Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath().replace(colors[original_i], colors[i]));
 		if(client.player.hasInfiniteMaterials()){
-			inventory.setItem(inventory.getSelectedSlot(), new ItemStack(BuiltInRegistries.ITEM.getValue(id), is.getCount()));//TODO: doesn't seem to work on servers (visually yes, but not when u place the block)
+			inventory.setItem(inventory.getSelectedSlot(), new ItemStack(BuiltInRegistries.ITEM.getValue(id), is.getCount()));  //TODO: doesn't seem to work on servers (visually yes, but not when u place the block)
 			//client.interactionManager.clickCreativeStack(new ItemStack(Registries.ITEM.get(id)), inventory.selectedSlot);//TODO: this doesn't work either :sob:
 			//inventory.markDirty();
 		}
-		else{// survival mode
+		else{  // survival mode
 			do{
 				int j = 0;
 				for(; j<inventory.getNonEquipmentItems().size(); ++j){

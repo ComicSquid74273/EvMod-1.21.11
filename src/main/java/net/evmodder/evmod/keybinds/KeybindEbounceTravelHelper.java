@@ -350,7 +350,7 @@ public final class KeybindEbounceTravelHelper{
 				selectBlocksInHotbar(null);
 				sendOverlay(client.player, Component.literal("Mined: ").copy().append(bs.getBlock().getName()));
 			}
-			return true; // Wait a bit before declaring it done
+			return true;  // Wait a bit before declaring it done
 		}
 		return false;
 	}

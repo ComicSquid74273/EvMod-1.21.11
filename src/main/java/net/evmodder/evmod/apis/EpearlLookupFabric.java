@@ -42,7 +42,7 @@ public final class EpearlLookupFabric extends EpearlLookup{
 	@Override protected boolean enableKeyXZ(){return Configs.Database.EPEARL_OWNERS_BY_XZ.getBooleanValue();}
 	@Override protected boolean enableRemoteDbUUID(){return enableKeyUUID() && Configs.Database.SHARE_EPEARL_OWNERS.getBooleanValue() && !Configs.Database.ADDRESS.getStringValue().isBlank();}
 	@Override protected boolean enableRemoteDbXZ(){return enableKeyXZ() && Configs.Database.SHARE_EPEARL_OWNERS.getBooleanValue() && !Configs.Database.ADDRESS.getStringValue().isBlank();}
-	public final boolean isDisabled(){return !enableKeyUUID() && !enableKeyXZ();} // Accessed by: MixinEntityRendererPearl
+	public final boolean isDisabled(){return !enableKeyUUID() && !enableKeyXZ();}  // Accessed by: MixinEntityRendererPearl
 
 	private PearlPositionKey.Block anchorBlock(int x, int y, int z){
 		final var pos = new BlockPos(x, y, z);
@@ -96,8 +96,8 @@ public final class EpearlLookupFabric extends EpearlLookup{
 //			assert added;
 		});
 		ClientChunkEvents.CHUNK_UNLOAD.register((ClientLevel level, LevelChunk listener)->{
-			if(level != world) return; // Ignore delayed unload callbacks from the previous world.
-			resetCleanup(); // Even unload/reload between two scans invalidates continuous absence.
+			if(level != world) return;  // Ignore delayed unload callbacks from the previous world.
+			resetCleanup();  // Even unload/reload between two scans invalidates continuous absence.
 			recentlyLoadedChunks.remove(listener.getPos());
 			final boolean removed = loadedChunks.remove(listener.getPos());
 			if(!removed) Main.LOGGER.error("EPLF: Unloading chunk "+listener.getPos().toString()+" before it was loaded!");
@@ -113,7 +113,7 @@ public final class EpearlLookupFabric extends EpearlLookup{
 				}
 				final long now = System.nanoTime()/1_000_000;
 				if(now < nextCleanup) return;
-				if(now-nextCleanup > 2_000) resetConnectionReadiness(); // Do not count a paused/stalled client as continuous observation.
+				if(now-nextCleanup > 2_000) resetConnectionReadiness();  // Do not count a paused/stalled client as continuous observation.
 				nextCleanup = now+1_000;
 				if(client.getConnection() == null || client.player.touchingUnloadedChunk()
 						//? >=1.21.11 {
@@ -136,7 +136,7 @@ public final class EpearlLookupFabric extends EpearlLookup{
 						final UUID key = toKeyXZ(pearl);
 						if(key != null) seenXZ.add(key);
 					}
-					getOwnerName(pearl); // Refresh locations even when render culling hides the pearl.
+					getOwnerName(pearl);  // Refresh locations even when render culling hides the pearl.
 				}
 				cleanupPearls(seenUUID, seenXZ, pdc -> {
 					final double dx = pdc.x()+.5-client.player.getX(), dz = pdc.z()+.5-client.player.getZ();
@@ -214,6 +214,6 @@ public final class EpearlLookupFabric extends EpearlLookup{
 	// Accessed by: CommandAssignPearl
 	public void assignPearlOwner(final ThrownEnderpearl epearl, final UUID owner){
 		setPearlUUID(epearl, owner);
-		getOwnerName(epearl); // Reuse normal owner observation and cache/database persistence.
+		getOwnerName(epearl);  // Reuse normal owner observation and cache/database persistence.
 	}
 }

@@ -21,7 +21,7 @@ import net.evmodder.evmod.config.*;
 import net.evmodder.evmod.config.ConfigPlayerList.NameAndUUID;
 
 public final class Configs implements IConfigHandler{
-	int guiTab; // used by ConfigGui
+	int guiTab;  // used by ConfigGui
 
 	//====================================================================================================
 	// Generic
@@ -202,14 +202,14 @@ public final class Configs implements IConfigHandler{
 		public static final ConfigBoolean MAP_HIGHLIGHT_HOTBAR_HUD = new ConfigBoolean("mapHighlightInHotbarHUD", true).apply(VISUALS_KEY);
 		public static final ConfigBoolean MAP_HIGHLIGHT_CONTAINER_NAME = new ConfigBoolean("mapHighlightInContainerName", true).apply(VISUALS_KEY);
 
-		public static final ConfigColor MAP_COLOR_UNLOADED = new ConfigColor("highlightColorUnloaded", "#FFC8AAD2").apply(VISUALS_KEY); // 13150930 Peach
-		public static final ConfigColor MAP_COLOR_UNLOCKED = new ConfigColor("highlightColorUnlocked", "#FFE03165").apply(VISUALS_KEY); // 14692709 Redish
-		public static final ConfigColor MAP_COLOR_UNNAMED = new ConfigColor("highlightColorUnnamed", "#FFEED7D7").apply(VISUALS_KEY); // 15652823 Pink
-		public static final ConfigColor MAP_COLOR_NOT_IN_GROUP = new ConfigColor("highlightColorNotInGroup", "#FF0AC864").apply(VISUALS_KEY); // 706660 Green
-		public static final ConfigColor MAP_COLOR_IN_INV = new ConfigColor("highlightColorInInv", "#FFB4FFFF").apply(VISUALS_KEY); // 11862015 Aqua
-		public static final ConfigColor MAP_COLOR_IN_IFRAME = new ConfigColor("highlightColorInIFrame", "#FF55AAE6").apply(VISUALS_KEY); // 5614310 Blue
-		public static final ConfigColor MAP_COLOR_MULTI_IFRAME = new ConfigColor("highlightColorMultiIFrame", "#FFB450E6").apply(VISUALS_KEY); // 11817190 Purple
-		public static final ConfigColor MAP_COLOR_MULTI_CONTAINER = new ConfigColor("highlightColorMultiContainer", "#FFB450E6").apply(VISUALS_KEY); // 11817190 Purple
+		public static final ConfigColor MAP_COLOR_UNLOADED = new ConfigColor("highlightColorUnloaded", "#FFC8AAD2").apply(VISUALS_KEY);  // 13150930 Peach
+		public static final ConfigColor MAP_COLOR_UNLOCKED = new ConfigColor("highlightColorUnlocked", "#FFE03165").apply(VISUALS_KEY);  // 14692709 Redish
+		public static final ConfigColor MAP_COLOR_UNNAMED = new ConfigColor("highlightColorUnnamed", "#FFEED7D7").apply(VISUALS_KEY);  // 15652823 Pink
+		public static final ConfigColor MAP_COLOR_NOT_IN_GROUP = new ConfigColor("highlightColorNotInGroup", "#FF0AC864").apply(VISUALS_KEY);  // 706660 Green
+		public static final ConfigColor MAP_COLOR_IN_INV = new ConfigColor("highlightColorInInv", "#FFB4FFFF").apply(VISUALS_KEY);  // 11862015 Aqua
+		public static final ConfigColor MAP_COLOR_IN_IFRAME = new ConfigColor("highlightColorInIFrame", "#FF55AAE6").apply(VISUALS_KEY);  // 5614310 Blue
+		public static final ConfigColor MAP_COLOR_MULTI_IFRAME = new ConfigColor("highlightColorMultiIFrame", "#FFB450E6").apply(VISUALS_KEY);  // 11817190 Purple
+		public static final ConfigColor MAP_COLOR_MULTI_CONTAINER = new ConfigColor("highlightColorMultiContainer", "#FFB450E6").apply(VISUALS_KEY);  // 11817190 Purple
 
 		public static final ConfigBoolean MAP_HIGHLIGHT_IN_INV_INCLUDE_BUNDLES = new ConfigBoolean("mapHighlightInInvIncludeBundles", false).apply(VISUALS_KEY);
 
@@ -236,8 +236,8 @@ public final class Configs implements IConfigHandler{
 
 		public static final ConfigInteger EXPORT_MAP_IMG_UPSCALE = new ConfigInteger("exportMapImageUpscale", 128, 128, 1280).apply(VISUALS_KEY);
 		public static final ConfigBoolean EXPORT_MAP_IMG_BORDER = new ConfigBoolean("exportMapImageBorder", false).apply(VISUALS_KEY);
-		public static final ConfigColor EXPORT_MAP_IMG_BORDER_COLOR1 = new ConfigColor("exportMapImageBorderColor1", "#FFFFC864").apply(VISUALS_KEY); // -14236 Yellow
-		public static final ConfigColor EXPORT_MAP_IMG_BORDER_COLOR2 = new ConfigColor("exportMapImageBorderColor2", "#00322D32").apply(VISUALS_KEY); // 3288370 Gray
+		public static final ConfigColor EXPORT_MAP_IMG_BORDER_COLOR1 = new ConfigColor("exportMapImageBorderColor1", "#FFFFC864").apply(VISUALS_KEY);  // -14236 Yellow
+		public static final ConfigColor EXPORT_MAP_IMG_BORDER_COLOR2 = new ConfigColor("exportMapImageBorderColor2", "#00322D32").apply(VISUALS_KEY);  // 3288370 Gray
 		public static final ConfigBoolean EXPORT_MAP_IMG_ATOMIC_NAMING = new ConfigBoolean("exportMapAtomicIdNaming", false).apply(VISUALS_KEY);
 
 		private static List<IConfigBase> configs;
@@ -436,7 +436,7 @@ public final class Configs implements IConfigHandler{
 			configs.add(MAP_MOVE_NEIGHBORS);
 //			if(settings.keybindMapMoveBundle){
 				configs.addAll(List.of(MAP_MOVE_BUNDLE, MAP_MOVE_BUNDLE_REVERSE));
-				if(settings.showNicheConfigs) // Non-keybinds
+				if(settings.showNicheConfigs)  // Non-keybinds
 					configs.addAll(List.of(MAP_MOVE_BUNDLE_PREFER_STOW, MAP_MOVE_BUNDLE_STOW_NON_SINGLE_MAPS, MAP_MOVE_BUNDLE_TAKE_MAX,
 							MAP_MOVE_BUNDLE_SELECT_PRIORITY_STOW, MAP_MOVE_BUNDLE_SELECT_PRIORITY_TAKE)); 
 //			}

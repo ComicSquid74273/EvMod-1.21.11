@@ -38,7 +38,7 @@ public final class PearlPositionKey{
 					if(above == Block.UNLOADED || above == Block.MOVING) return PENDING_Y;
 					if(above != Block.BUBBLE) return top;
 				}
-				return UNKNOWN_Y; // No verified surface within the bounded search.
+				return UNKNOWN_Y;  // No verified surface within the bounded search.
 			}
 			if(block == Block.SLIME){
 				// The stationary base stays a piston (extended is a state); head/slime may become moving_piston.

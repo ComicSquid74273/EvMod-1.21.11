@@ -24,12 +24,12 @@ import net.minecraft.world.phys.Vec3;
 
 public final class UpdateItemFrameContents implements TickListener{
 	private record XYZD(int x, int y, int z, int d, int w){}
-	private static final HashMap<XYZD, UUID> hangLocsReverse = new HashMap<>(); // XYZD -> colorsId
+	private static final HashMap<XYZD, UUID> hangLocsReverse = new HashMap<>();  // XYZD -> colorsId
 	// Accessed by: MixinItemFrameRenderer
-	private static final HashMap<UUID, HashSet<XYZD>> iFrameMapGroup = new HashMap<>(); // colorsId -> {HangLocs}
+	private static final HashMap<UUID, HashSet<XYZD>> iFrameMapGroup = new HashMap<>();  // colorsId -> {HangLocs}
 	private static int lastGroupInvHash, numLoadedIfes;
 
-	public enum Highlight{INV_OR_NESTED_INV, NOT_IN_CURR_GROUP, MULTI_HUNG, UNLOCKED_OR_UNNAMED}; // Accessed by: MixinItemFrameRenderer
+	public enum Highlight{INV_OR_NESTED_INV, NOT_IN_CURR_GROUP, MULTI_HUNG, UNLOCKED_OR_UNNAMED};  // Accessed by: MixinItemFrameRenderer
 	// Accessed by: MixinItemFrameRenderer
 	private static final HashMap<Integer, Highlight> highlightedIFrames = new HashMap<>();
 	// Accessed by: MixinItemFrameRenderer
@@ -39,7 +39,7 @@ public final class UpdateItemFrameContents implements TickListener{
 
 	// Accessed by: MixinItemFrameRenderer
 	private static Vec3 clientRotationNormalized;
-	public static long lastIFrameMapGroupUpdateTs; // Accessed by: CommandExportMapImg::getNearbyMapNames
+	public static long lastIFrameMapGroupUpdateTs;  // Accessed by: CommandExportMapImg::getNearbyMapNames
 
 	public UpdateItemFrameContents(){
 		ClientEntityEvents.ENTITY_UNLOAD.register((entity, _) -> {
@@ -102,7 +102,7 @@ public final class UpdateItemFrameContents implements TickListener{
 			}
 			if(oldColorsIdForXYZD != null && !oldColorsIdForXYZD.equals(colorsId)){
 //				Main.LOGGER.info("IFHU: "+(colorsId == null ? "Removed" : "Replaced")+" map at xyzd");
-				if(colorsId == null) highlightedIFrames.remove(ife.getId()); // IFHU: Removed map at xyzd
+				if(colorsId == null) highlightedIFrames.remove(ife.getId());  // IFHU: Removed map at xyzd
 				anyMapGroupUpdate = true;
 				final HashSet<XYZD> oldLocs = iFrameMapGroup.get(oldColorsIdForXYZD);
 				if(oldLocs != null && oldLocs.remove(xyzd) && oldLocs.isEmpty()) iFrameMapGroup.remove(oldColorsIdForXYZD);
@@ -119,7 +119,7 @@ public final class UpdateItemFrameContents implements TickListener{
 
 			final ItemStack stack = ife.getItem();
 			final MapItemSavedData state = MapItem.getSavedData(ife.getItem(), ife.level());
-			if(state == null) continue; // Can happen in creative worlds!
+			if(state == null) continue;  // Can happen in creative worlds!
 
 			final Highlight highlight;
 			if(UpdateInventoryContents.isInInventory(colorsId) || UpdateInventoryContents.isNestedInInventory(colorsId))
@@ -144,7 +144,7 @@ public final class UpdateItemFrameContents implements TickListener{
 		final Vec3 newClientRot = client.player.getViewVector(1.0F).normalize();
 		if(!newClientRot.equals(clientRotationNormalized) || MiscUtils.hasMoved(client.player)){
 			clientRotationNormalized = newClientRot;
-			hasLabelCache.clear(); // Depends on client looking direction
+			hasLabelCache.clear();  // Depends on client looking direction
 		}
 
 //		final boolean anyHangLocUpdate = client.world.getEntitiesByClass(ItemFrameEntity.class,

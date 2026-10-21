@@ -16,7 +16,7 @@ public final class TooltipRepairCost implements Tooltip{
 		switch((OptionTooltipDisplay)Configs.Visuals.REPAIR_COST_TOOLTIP.getOptionListValue()){
 			case OFF: return;
 			case ADVANCED_TOOLTIPS: if(type == TooltipFlag.NORMAL) return;
-			case ON: /*no op*/
+			case ON:  /*no op*/
 		}
 		final int rc = item.getComponents().get(DataComponents.REPAIR_COST);
 		if(rc == 0 && !item.isEnchanted() && !item.getComponents().has(DataComponents.STORED_ENCHANTMENTS)) return;

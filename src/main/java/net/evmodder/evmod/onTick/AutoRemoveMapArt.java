@@ -20,7 +20,7 @@ import net.minecraft.world.phys.AABB;
 import net.evmodder.evmod.apis.MapRelationUtils.RelatedMapsData;
 
 public final class AutoRemoveMapArt/* extends MapLayoutFinder*/ implements TickListener{
-	private Direction dir; // non-null implies autoremover is active
+	private Direction dir;  // non-null implies autoremover is active
 	private Level world;
 	private int constAxis;
 	private int numMatchingRemoved;

@@ -133,7 +133,7 @@ public final class KeybindInventoryRestock{
 					}
 				}
 				if(quickMoveToTarget){
-					clicks.add(new InvAction(j, 0, ActionType.SHIFT_CLICK)); // Shift-click
+					clicks.add(new InvAction(j, 0, ActionType.SHIFT_CLICK));  // Shift-click
 				}
 				else{
 					final int destinationInventorySlot = hs.getMenu().getSlot(i).container == client.player.getInventory()

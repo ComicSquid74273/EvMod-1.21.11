@@ -100,7 +100,7 @@ public abstract class MapClickMoveNeighbors{
 					if(scoreTop > scoreBottom) tl -= 9; else br += 9;
 					Main.LOGGER.info("MapMoveClick: extending height of 1-wide map, scoreTop:"+scoreTop+", scoreBottom:"+scoreBottom);
 				}
-			}//state != null
+			}  //state != null
 		}
 
 		//Main.LOGGER.info("MapMoveClick: tl="+tl+",br="+br+" | h="+h+",w="+w+" | x>"+destSlot);
@@ -145,11 +145,11 @@ public abstract class MapClickMoveNeighbors{
 		int hotbarButton = 40;
 		if(!moveHalf){
 			final boolean isPlayerInv = player.containerMenu instanceof InventoryMenu;
-			final int hbStart = slots.length-(isPlayerInv ? 10 : 9); // extra slot at end to account for offhand
+			final int hbStart = slots.length-(isPlayerInv ? 10 : 9);  // extra slot at end to account for offhand
 			final boolean fromHotbar = br >= hbStart, toHotbar = brDest >= hbStart;
 			//Main.LOGGER.warn("MapMoveClick: fromHotbar:"+fromHotbar+", toHotbar:"+toHotbar+", brDest:"+brDest+", last  hotbar if to: "+(brDest-hbStart));
 			for(int i=0; i<9; ++i){
-				if((fromHotbar || toHotbar) && slotsInvolved.contains(hbStart+i)) continue; // Avoid slots the map is moving from or into
+				if((fromHotbar || toHotbar) && slotsInvolved.contains(hbStart+i)) continue;  // Avoid slots the map is moving from or into
 				if(player.getInventory().getItem(i).isEmpty()){hotbarButton = i; break;}
 			}
 			if(hotbarButton == 40) Main.LOGGER.warn("MapMoveClick: Using offhand for swaps");

@@ -62,7 +62,7 @@ public final class MapGroupUtils{
 		}
 		return loadedMaps;
 	}*/
-	public static final Set<UUID> getLegitLoadedMaps(final Level world){ // Accessed by: CommandMapArtGroup
+	public static final Set<UUID> getLegitLoadedMaps(final Level world){  // Accessed by: CommandMapArtGroup
 		Stream<MapItemSavedData> states = loadedMapIds.stream().map(i -> world.getMapData(new MapId(i)))
 				.filter(Objects::nonNull).filter(s -> !MapStateCacher.hasCacheMarker(s));
 		if(Configs.Generic.MAPART_GROUP_UNLOCKED_HANDLING.getOptionListValue() == OptionUnlockedMapHandling.SKIP) states = states.filter(s -> s.locked);
@@ -72,7 +72,7 @@ public final class MapGroupUtils{
 		currentMapGroup = newGroup;
 		mapsInGroupHash = newGroup == null ? 0 : newGroup.hashCode();
 	}
-	public static final int getCurrentGroupHash(){return mapsInGroupHash;} // Currently only called by UpdateItemFrameHighlights
+	public static final int getCurrentGroupHash(){return mapsInGroupHash;}  // Currently only called by UpdateItemFrameHighlights
 
 	/*public static final boolean isMapNotInCurrentGroup(final UUID colorsUUID){
 		return currentMapGroup != null && !currentMapGroup.contains(colorsUUID);

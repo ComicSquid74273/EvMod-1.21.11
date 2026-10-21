@@ -128,7 +128,7 @@ public final class KeybindInventoryOrganize{
 		return plannedSlots;
 	}
 
-	private int depth; // TODO: instead of running up to 3 times, just sort things properly the first time
+	private int depth;  // TODO: instead of running up to 3 times, just sort things properly the first time
 	public void organizeInventory(final boolean RESTOCK_ONLY, Runnable onComplete){
 		//Main.LOGGER.info("InvOrganize: keybind pressed");
 		if(ClickUtils.hasOngoingClicks()) return;
@@ -179,7 +179,7 @@ public final class KeybindInventoryOrganize{
 					plannedSlots[dstSlot] = plannedSlots[srcSlot] = true;
 				}
 
-				if(dstSlot < 5 || dstSlot > 8) continue; // Skip non-armor slots
+				if(dstSlot < 5 || dstSlot > 8) continue;  // Skip non-armor slots
 				final int srcSlot = findSlotWithItem(simSlots, p.name, doneSlots);
 				if(srcSlot == -1) continue;
 				if(!simSlots[dstSlot].isEmpty()){
@@ -219,7 +219,7 @@ public final class KeybindInventoryOrganize{
 
 				final int srcSlot = findSlotWithItem(simSlots, p.name, doneSlots);
 				//if(srcSlot == -1) continue;
-				if(srcSlot < HOTBAR_START) continue; // We want items coming FROM hotbar/offhand
+				if(srcSlot < HOTBAR_START) continue;  // We want items coming FROM hotbar/offhand
 //				client.player.sendMessage(Text.literal("Click: "+srcSlot+"->"+dstSlot+", Hotbar->Anywhere (sorting)"), false);
 				if(isInvScreen && srcSlot == 45) clicks.add(new InvAction(dstSlot, 40, ActionType.HOTBAR_SWAP));
 				else clicks.add(new InvAction(dstSlot, srcSlot-HOTBAR_START, ActionType.HOTBAR_SWAP));
@@ -291,7 +291,7 @@ public final class KeybindInventoryOrganize{
 
 		// Sort upper-inventory items
 		plannedSlots = Arrays.copyOf(doneSlots, doneSlots.length);
-		int hb = -1; for(int i=0; i<9; ++i) if(emptySlots[i+HOTBAR_START]){hb = i; break;} // Find usable hb slot
+		int hb = -1; for(int i=0; i<9; ++i) if(emptySlots[i+HOTBAR_START]){hb = i; break;}  // Find usable hb slot
 		if(hb == -1 && isInvScreen) hb = 40;
 		if(hb != -1) for(SlotAndItemName p : layoutMap){
 			if(!isInvScreen && (p.slot == -106 || p.slot == 45)) continue;
@@ -308,8 +308,8 @@ public final class KeybindInventoryOrganize{
 				plannedSlots[dstSlot] = plannedSlots[srcSlot] = true;
 			}
 
-			if(dstSlot >= HOTBAR_START) continue; // Sort items going INTO hotbar/offhand last
-			if(dstSlot < MAIN_INV_START){ // Armor slot that got missed during armor sort section! Likely not in an invScreen
+			if(dstSlot >= HOTBAR_START) continue;  // Sort items going INTO hotbar/offhand last
+			if(dstSlot < MAIN_INV_START){  // Armor slot that got missed during armor sort section! Likely not in an invScreen
 				assert !isInvScreen;
 				continue;
 			}
@@ -319,7 +319,7 @@ public final class KeybindInventoryOrganize{
 			if(!CAN_RESTOCK_FROM_CONTAINER && srcSlot < MAIN_INV_START) continue;
 			if(RESTOCK_ONLY_1_SLOT_PER_TYPE && srcSlot < MAIN_INV_START && alreadyRestockedItems.contains(simSlots[srcSlot].getItem())) continue;
 			if(DONT_RESTOCK_IF_ALREADY_IN_INV && srcSlot < MAIN_INV_START && itemsInInv.contains(simSlots[srcSlot].getItem())) continue;
-			if(srcSlot < MAIN_INV_START && LEAVE_ONE){ // Avoid taking 100% of any item type from src container
+			if(srcSlot < MAIN_INV_START && LEAVE_ONE){  // Avoid taking 100% of any item type from src container
 				Integer occ = countainerCounts.get(simSlots[srcSlot].getItem());
 				assert occ != null && occ > 0;
 				if(occ > 1) countainerCounts.put(simSlots[srcSlot].getItem(), occ-1);
@@ -354,14 +354,14 @@ public final class KeybindInventoryOrganize{
 			if(p.name.equals(getName(simSlots[dstSlot]))){doneSlots[dstSlot]=true; continue;}
 			//needEarlier.add(p.b().getPath());
 
-			if(dstSlot < HOTBAR_START) continue; // items going INTO hotbar/offhand
+			if(dstSlot < HOTBAR_START) continue;  // items going INTO hotbar/offhand
 			final int srcSlot = findSlotWithItem(simSlots, p.name, doneSlots);
 			if(srcSlot == -1 || doneSlots[srcSlot]) continue;
 			if(RESTOCK_ONLY && srcSlot >= MAIN_INV_START) continue;
 			if(!CAN_RESTOCK_FROM_CONTAINER && srcSlot < MAIN_INV_START) continue;
 			if(RESTOCK_ONLY_1_SLOT_PER_TYPE && srcSlot < MAIN_INV_START && alreadyRestockedItems.contains(simSlots[srcSlot].getItem())) continue;
 			if(DONT_RESTOCK_IF_ALREADY_IN_INV && srcSlot < MAIN_INV_START && itemsInInv.contains(simSlots[srcSlot].getItem())) continue;
-			if(srcSlot < MAIN_INV_START && LEAVE_ONE){ // Avoid taking 100% of any item type from src container
+			if(srcSlot < MAIN_INV_START && LEAVE_ONE){  // Avoid taking 100% of any item type from src container
 				Integer occ = countainerCounts.get(simSlots[srcSlot].getItem());
 				assert occ != null && occ > 0;
 				if(occ > 1) countainerCounts.put(simSlots[srcSlot].getItem(), occ-1);
@@ -390,10 +390,10 @@ public final class KeybindInventoryOrganize{
 		if(!isInvScreen && CAN_RESTOCK_FROM_CONTAINER) for(SlotAndItemName p : layoutMap){
 			if(p.slot == -106 || p.slot == 45) continue;
 			if(p.slot > 8) continue;
-			if(!getArmorSlot(client.player, 3 - (p.slot - 5)).isEmpty()) continue; // -5 to get armor index, 3-x to reverse order
+			if(!getArmorSlot(client.player, 3 - (p.slot - 5)).isEmpty()) continue;  // -5 to get armor index, 3-x to reverse order
 			final int srcSlot = findSlotWithItem(simSlots, p.name, doneSlots);
 			if(srcSlot == -1 || srcSlot >= MAIN_INV_START) continue;
-			if(srcSlot < MAIN_INV_START && LEAVE_ONE){ // Avoid taking 100% of any item type from src container
+			if(srcSlot < MAIN_INV_START && LEAVE_ONE){  // Avoid taking 100% of any item type from src container
 				Integer occ = countainerCounts.get(simSlots[srcSlot].getItem());
 				assert occ != null && occ > 0;
 				if(occ > 1) countainerCounts.put(simSlots[srcSlot].getItem(), occ-1);
@@ -429,7 +429,7 @@ public final class KeybindInventoryOrganize{
 				()->{
 //					client.player.sendMessage(Text.literal("InvOrganize: done! clicks required: "+numClicks), false);
 					Main.LOGGER.info("InvOrganize: done! clicks required: "+numClicks);
-					if(++depth <= 3 && !RESTOCK_ONLY) organizeInventory(false, onComplete); // Try running again in case of straggler items
+					if(++depth <= 3 && !RESTOCK_ONLY) organizeInventory(false, onComplete);  // Try running again in case of straggler items
 					else{
 						depth = 0;
 						if(onComplete != null) onComplete.run();

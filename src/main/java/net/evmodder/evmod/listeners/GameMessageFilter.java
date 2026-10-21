@@ -70,7 +70,7 @@ public final class GameMessageFilter{
 			else for(int i=0; i<reply.length/16; ++i){
 				final UUID u = new UUID(bb.getLong(), bb.getLong());
 				if(!ignoreList.remove(u)){
-					ignoreList.add(u); // Basically, toggle if set contains ignored uuid
+					ignoreList.add(u);  // Basically, toggle if set contains ignored uuid
 					incrIgnore(u);
 				}
 				else decrIgnore(u);

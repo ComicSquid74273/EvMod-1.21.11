@@ -27,7 +27,7 @@ public class MiscUtils{
 		final Vec3 vec3d = player.getViewVector(1f).normalize();
 		Vec3 vec3d2 = new Vec3(entity.getX() - player.getX(), entity.getEyeY() - player.getEyeY(), entity.getZ() - player.getZ());
 		final double d = vec3d2.length();
-		vec3d2 = new Vec3(vec3d2.x / d, vec3d2.y / d, vec3d2.z / d);//normalize
+		vec3d2 = new Vec3(vec3d2.x / d, vec3d2.y / d, vec3d2.z / d);  //normalize
 		final double e = vec3d.dot(vec3d2);
 		return e > 1.0D - 0.03D / d ? /*client.player.canSee(entity)*/true : false;
 	}
@@ -44,8 +44,8 @@ public class MiscUtils{
 	public static final long setLSB(final long input, final boolean set){return (input & ~1l) | (set ? 1l : 0l);}
 //	public static final long setMSB(final long input, final boolean set){return (input & ~(1l << 63)) | (set ? 1l << 63 : 0l);}
 
-	private static final String ADDRESS_2B2T = "2b2t.org"; // TODO: make EvMod more server-independent 
-	public static final int HASHCODE_2B2T = ADDRESS_2B2T.hashCode(); // -437714968;
+	private static final String ADDRESS_2B2T = "2b2t.org";  // TODO: make EvMod more server-independent 
+	public static final int HASHCODE_2B2T = ADDRESS_2B2T.hashCode();  // -437714968;
 	private static final String normalizeServerName(final String name){
 		return Normalizer.normalize(name, Normalizer.Form.NFKD).toLowerCase(Locale.ROOT)
 				.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]+", "");
@@ -93,7 +93,7 @@ public class MiscUtils{
 		final String address = getServerAddress(/*useCanonical=*/true);
 		return switch(address){
 			case null -> 0;
-			case ADDRESS_2B2T -> HASHCODE_2B2T; // Tiny optimization (no need to compute hash), since we store it anyway
+			case ADDRESS_2B2T -> HASHCODE_2B2T;  // Tiny optimization (no need to compute hash), since we store it anyway
 			default -> address.hashCode();
 		};
 	}

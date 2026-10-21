@@ -65,7 +65,7 @@ public final class MapHangListener{
 	private final PosData2D getPosData2D(final List<String> posStrs, final boolean isSideways){
 		assert posStrs.size() >= 2 : "PosData2D requires at least 2 related maps";
 		final boolean hasSpace = posStrs.stream().anyMatch(n -> n.indexOf(' ') != -1);
-		final boolean cutMid = !hasSpace && posStrs.stream().allMatch(n -> n.length() == 2); // TODO: A9->A10 support
+		final boolean cutMid = !hasSpace && posStrs.stream().allMatch(n -> n.length() == 2);  // TODO: A9->A10 support
 		final boolean someSpace = hasSpace && posStrs.stream().anyMatch(n -> n.indexOf(' ') == -1);
 		final List<String> pos2s;
 		if(cutMid){
@@ -103,21 +103,21 @@ public final class MapHangListener{
 	// 1,2 = not impossibly next
 	private final int checkComesAfter1d(final String posA, final String posB, final boolean infoLogs){
 		if(posA.equals("L") && posB.equals("M")) return 5;
-		if(posA.equals("M") && posB.equals("R")) return 4;//4 not 5, because m->n->l->o.. vs m->r
+		if(posA.equals("M") && posB.equals("R")) return 4;  //4 not 5, because m->n->l->o.. vs m->r
 		if(posA.equals("L") && posB.equals("R")) return 4;
-		if(posA.equals("9") && posB.equals("A")) return 3;//hex?
+		if(posA.equals("9") && posB.equals("A")) return 3;  //hex?
 
 		final boolean sameLen = posA.length() == posB.length();
 		if(sameLen && posA.regionMatches(0, posB, 0, posA.length()-1) && (
 				posA.codePointAt(posA.length()-1)+1 == posB.codePointAt(posB.length()-1)) ||
-				(posA.codePointAt(posA.length()-1) == '9' && posB.codePointAt(posB.length()-1) == 'A' && posA.length() > 1)//49->4a
+				(posA.codePointAt(posA.length()-1) == '9' && posB.codePointAt(posB.length()-1) == 'A' && posA.length() > 1)  //49->4a
 		){
 			if(infoLogs) Main.LOGGER.info("MapRestock: confidence=5. c->c+1");
-			return 5; // 4->5, E->F
+			return 5;  // 4->5, E->F
 		}
 		if((sameLen || posA.length()+1 == posB.length()) && posA.matches("\\d{1,3}") && (""+(Integer.parseInt(posA)+1)).equals(posB)){
 			if(infoLogs) Main.LOGGER.info("MapRestock: i4. i->i+1");
-			return 4; // 4->5, 9->10
+			return 4;  // 4->5, 9->10
 		}
 //		if(infoLogs) Main.LOGGER.info("MapRestock: confidence=0. A:"+posA+", B:"+posB);
 		return 0;
@@ -173,7 +173,7 @@ public final class MapHangListener{
 		return new Pos2DPair(posA1, posA2, posB1, posB2);
 	}
 	private final int checkComesAfterStrict(String posA, String posB, PosData2D posData2d, boolean infoLogs){
-		if(posA.isBlank() || posB.isBlank() || posA.equals(posB)) return 1; // "Map"->"Map p2", "Map start"->"Map"
+		if(posA.isBlank() || posB.isBlank() || posA.equals(posB)) return 1;  // "Map"->"Map p2", "Map start"->"Map"
 
 		if(posA.equals("T R") && posB.equals("M L")) return 5;
 		if(posA.equals("M R") && posB.equals("B L")) return 5;
@@ -203,7 +203,7 @@ public final class MapHangListener{
 		int a = MapRelationUtils.commonPrefixLen(name1, name2);
 		int b = MapRelationUtils.commonSuffixLen(name1, name2);
 		final int o = a-(Math.min(name1.length(), name2.length())-b);
-		if(o>0){a-=o; b-=o;}//Handle special case: "a 11/x"+"a 111/x", a=len(a 11)=4,b=len(11/x)=4,o=2 => a=len(a ),b=len(/x)
+		if(o>0){a-=o; b-=o;}  //Handle special case: "a 11/x"+"a 111/x", a=len(a 11)=4,b=len(11/x)=4,o=2 => a=len(a ),b=len(/x)
 		final String posA = MapRelationUtils.simplifyPosStr(name1.substring(a, name1.length()-b));
 		final String posB = MapRelationUtils.simplifyPosStr(name2.substring(a, name2.length()-b));
 		final boolean name1ValidPos = MapRelationUtils.isValidPosStr(posA);
@@ -212,7 +212,7 @@ public final class MapHangListener{
 		if(!name1ValidPos || !name2ValidPos) return false;
 		if((posA.indexOf(' ') == -1) != (posB.indexOf(' ') == -1)){
 			Main.LOGGER.warn("simpleCanComeAfter: mismatched pos data: "+posA+", "+posB);
-			return true; // TODO: or return false?
+			return true;  // TODO: or return false?
 		}
 		final PosData2D regular2dData = getPosData2D(List.of(posA, posB), /*isSideways=*/false);
 		final PosData2D rotated2dData = getPosData2D(List.of(posA, posB), /*isSideways=*/true);
@@ -236,11 +236,11 @@ public final class MapHangListener{
 			final int confidence = checkComesAfterAnyOrder(prevPosStr, posStr, posData2d, infoLogs);
 			if(Math.abs(confidence) > Math.abs(bestConfidence)/* || (confidence==bestConfidence && name.compareTo(bestName) < 0)*/){
 				if(infoLogs) Main.LOGGER.info("MapRestock: new best confidence for "+prevPosStr+"->"+posStr+": "+confidence+" (slot"+i+")");
-				bestConfidence = confidence; bestSlot = i;// bestName = name;
+				bestConfidence = confidence; bestSlot = i; //bestName = name;
 			}
 		}
 		if(bestConfidence == 0 && infoLogs) Main.LOGGER.warn("MapRestock: bestConfidence==0! Likely skipping a map");
-		return bestSlot * (bestConfidence < 0 ? -1 : 1);//TODO: remove horrible hack
+		return bestSlot * (bestConfidence < 0 ? -1 : 1);  //TODO: remove horrible hack
 	}
 	private final record TrailLenAndScore(int len, long score){}
 	private final TrailLenAndScore getTrailLengthAndScore(final List<ItemStack> slots, final RelatedMapsData data, ItemStack prevMap, int prevSlot,
@@ -277,7 +277,7 @@ public final class MapHangListener{
 			Main.LOGGER.info("MapRestock: getNextSlotByName() found no related named maps ");
 			return -1;
 		}
-		if(data.prefixLen() == -1) return -1; // Indicates all related map slots have identical item names
+		if(data.prefixLen() == -1) return -1;  // Indicates all related map slots have identical item names
 
 //		Main.LOGGER.info("prevSlot: "+prevSlot+", related slots: "+data.slots());
 
@@ -325,13 +325,13 @@ public final class MapHangListener{
 				+(posData2d == null ? ", posData2d=null" : ", minPos2="+posData2d.minPos2+", maxPos2="+posData2d.maxPos2+", sideways="+posData2d.isSideways)
 				+", name: "+prevName);
 
-		final int i = getNextSlotByNameUsingPosData2d(slots, data, prevPosStr, posData2d, /*infoLogs=*/false);//TODO: set to true for debugging
+		final int i = getNextSlotByNameUsingPosData2d(slots, data, prevPosStr, posData2d, /*infoLogs=*/false);  //TODO: set to true for debugging
 		if(i == -999){
 			Main.LOGGER.info("MapRestock: getNextSlotByName() failed");
 			return -1;
 		}
 		Main.LOGGER.info("MapRestock: getNextSlotByName() succeeded, slot="+i+", name="+getCustomNameOrNull(slots.get(Math.abs(i))));
-		return Math.abs(i);//i != -999 ? i : getNextSlotAny(slots, prevSlot, world);
+		return Math.abs(i); //i != -999 ? i : getNextSlotAny(slots, prevSlot, world);
 	}
 
 	private final int getNextSlotByImage(final List<ItemStack> slots, final ItemStack prevMap, final int prevSlot, final Level world){
@@ -343,7 +343,7 @@ public final class MapHangListener{
 		final List<Integer> relatedSlots = MapRelationUtils.getRelatedMapsByName(slots, prevName, prevCount, prevState.locked, world).slots();
 		//List<Integer> usedSlots = !data.slots().isEmpty() ? data.slots() : IntStream.range(0, slots.length).boxed().toList();
 
-		int bestSlot = -1, bestScore = 50;//TODO: magic number
+		int bestSlot = -1, bestScore = 50;  //TODO: magic number
 		//for(int i : usedSlots){
 		for(int i=0; i<slots.size(); ++i){
 			if(!MapRelationUtils.isMapArtWithCount(slots.get(i), prevCount) || i == prevSlot) continue;
@@ -396,20 +396,20 @@ public final class MapHangListener{
 		).toArray();
 		for(int i : slotScanOrder){
 			if(!MapRelationUtils.isMapArtWithCount(slots.get(i), prevCount) || i == prevSlot) continue;
-			if(bestScore < 1){bestScore = 1; bestSlot = i;} // It's a map with the same count
+			if(bestScore < 1){bestScore = 1; bestSlot = i;}  // It's a map with the same count
 			final MapItemSavedData state = MapItem.getSavedData(slots.get(i), world);
 //			assert state != null;
-			if(state == null) continue; // Only possible if map IDs get corrupted (or a player in creative spawns an id that doesn't exist yet)
+			if(state == null) continue;  // Only possible if map IDs get corrupted (or a player in creative spawns an id that doesn't exist yet)
 			if(prevLocked != null && state.locked != prevLocked) continue;
-			if(bestScore < 2){bestScore = 2; bestSlot = i;} // It's a map with the same locked state
+			if(bestScore < 2){bestScore = 2; bestSlot = i;}  // It's a map with the same locked state
 			final String name = getCustomNameOrNull(slots.get(i));
 			if(name == null) continue;
-			if(bestScore < 3){bestScore = 3; bestSlot = i;} // It's a named map
+			if(bestScore < 3){bestScore = 3; bestSlot = i;}  // It's a named map
 			final RelatedMapsData data = MapRelationUtils.getRelatedMapsByName(slots, name, prevCount, prevLocked, world);
 			if(data.slots().size() < 2 != prevWas1x1) continue;
-			if(bestScore < 4){bestScore = 4; bestSlot = i;} // It's a named map with matching 1x1 status
+			if(bestScore < 4){bestScore = 4; bestSlot = i;}  // It's a named map with matching 1x1 status
 			final String posStr = getPosStrFromName(name, data);
-			if(bestPosStr == null || posStr.compareTo(bestPosStr) < 0){bestPosStr = posStr; bestScore=5; bestSlot = i;} // In a map group, possible starter
+			if(bestPosStr == null || posStr.compareTo(bestPosStr) < 0){bestPosStr = posStr; bestScore=5; bestSlot = i;}  // In a map group, possible starter
 		}
 		if(bestScore == 5) Main.LOGGER.info("MapRestock: findAny() found same count/locked/hasName/is1x1, potential TL map");
 		if(bestScore == 4) Main.LOGGER.info("MapRestock: findAny() found same count/locked/hasName/is1x1");
@@ -437,7 +437,7 @@ public final class MapHangListener{
 			int topBundleSlot = Configs.Generic.BUNDLES_ARE_REVERSED.getBooleanValue() ? contents.size()-1 : 0;
 			ItemStack stack = bundleItem(contents, topBundleSlot);
 			if(stack.getItem() != Items.FILLED_MAP) continue;
-			if(slots.stream().anyMatch(s -> ItemStack.isSameItemSameComponents(s, stack))) continue; // If map is also present unbundled in inv
+			if(slots.stream().anyMatch(s -> ItemStack.isSameItemSameComponents(s, stack))) continue;  // If map is also present unbundled in inv
 			if(stack.getCount() == 1 && isInNearbyItemFrame(stack, player, 20)) continue;
 
 			final String name = getCustomNameOrNull(stack);
@@ -512,8 +512,8 @@ public final class MapHangListener{
 //						clicks.add(new ClickEvent(restockFromSlotFinal, 0, SlotActionType.PICKUP)); // Pickup bundle
 //						clicks.add(new ClickEvent(36+player.getInventory().selectedSlot, 1, SlotActionType.PICKUP)); // Place in active hb slot
 //						clicks.add(new ClickEvent(restockFromSlotFinal, 0, SlotActionType.PICKUP)); // Putback bundle
-						clicks.add(new InvAction(restockFromSlotFinal, 1, ActionType.CLICK)); // Take last from bundle
-						clicks.add(new InvAction(36+player.getInventory().getSelectedSlot(), 0, ActionType.CLICK)); // Place in active hb slot
+						clicks.add(new InvAction(restockFromSlotFinal, 1, ActionType.CLICK));  // Take last from bundle
+						clicks.add(new InvAction(36+player.getInventory().getSelectedSlot(), 0, ActionType.CLICK));  // Place in active hb slot
 						ClickUtils.executeClicks(/*canProceed=*/_->true, ()->Main.LOGGER.info("HandRestockFromBundle: DONE"), clicks);
 						Main.LOGGER.info("MapRestock: Extracted from bundle: s="+restockFromSlotFinal+" -> hb="+player.getInventory().getSelectedSlot());
 					}

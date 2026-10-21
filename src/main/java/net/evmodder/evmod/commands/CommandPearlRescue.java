@@ -168,7 +168,7 @@ public final class CommandPearlRescue{
 		if(!added && !listed) return;
 		for(var entry : packet.entries()){
 			if((added || entry.listed()) && watch.uuid.equals(entry.profileId())){
-				armed = null; // Consume before interaction: duplicate packets must never click twice.
+				armed = null;  // Consume before interaction: duplicate packets must never click twice.
 				final Minecraft client = Minecraft.getInstance();
 				String problem = readiness(client);
 				if(problem == null && (client.getConnection() != connection || client.level != watch.level)) problem = "World/connection changed";

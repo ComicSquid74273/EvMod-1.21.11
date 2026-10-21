@@ -111,8 +111,8 @@ public class MapStateCacher{
 	private static final Object getInMemCacheSpecific(String server, String cache){
 		HashMap<UUID, List<MapStateSerializable>> subCache;
 		switch(cache){
-			case BY_ID: return byId == null ? null : byId.get(server); // Same as getInMemCacheServer()
-			case BY_NAME: return byName == null ? null : byName.get(server); // Same as getInMemCacheServer()
+			case BY_ID: return byId == null ? null : byId.get(server);  // Same as getInMemCacheServer()
+			case BY_NAME: return byName == null ? null : byName.get(server);  // Same as getInMemCacheServer()
 			case BY_PLAYER_INV:
 				return bySlot == null ? null : (subCache=bySlot.get(server)) == null ? null : subCache.get(getIdForPlayer(true));
 			case BY_PLAYER_EC:
@@ -184,7 +184,7 @@ public class MapStateCacher{
 		HashMap<UUID, List<MapStateSerializable>> bySlotPerServer = (HashMap<UUID, List<MapStateSerializable>>)getInMemCachePerServer(server, cache);
 		final List<MapStateSerializable> oldCache = (List<MapStateSerializable>)getInMemCacheSpecific(server, cache);
 		if(oldCache == null){
-			if(deleteCache) return false; // Already deleted
+			if(deleteCache) return false;  // Already deleted
 			if(bySlotPerServer == null){
 				if(bySlot == null) bySlot = new HashMap<>();
 				if(Configs.Generic.MAP_CACHE.getOptionListValue() == OptionMapStateCache.MEMORY_AND_DISK){
@@ -193,7 +193,7 @@ public class MapStateCacher{
 				else bySlot.put(server, bySlotPerServer=new HashMap<>());
 			}
 		}
-		else if(oldCache.equals(serialStates)) return false; // No cache update
+		else if(oldCache.equals(serialStates)) return false;  // No cache update
 //		else if(keepOldCache(oldCache, mapStates)) return false; // No cache update needed
 		final UUID key;
 		switch(cache){
@@ -252,7 +252,7 @@ public class MapStateCacher{
 	public static final boolean loadMapStatesByPos(List<ItemStack> items, String type){
 		List<ItemStack> mapItems = InvUtils.getAllNestedItems(items.stream()).filter(s -> s.getItem() == Items.FILLED_MAP).toList();
 		ClientLevel world = Minecraft.getInstance().level;
-		if(mapItems.stream().allMatch(s -> MapItem.getSavedData(s, world) != null)) return false; // All states already loaded
+		if(mapItems.stream().allMatch(s -> MapItem.getSavedData(s, world) != null)) return false;  // All states already loaded
 
 		@SuppressWarnings("unchecked")
 		List<MapStateSerializable> loadedCache = (List<MapStateSerializable>) commonCacheLoad(type);
@@ -264,11 +264,11 @@ public class MapStateCacher{
 //		Main.LOGGER.info("MapStateCacher: "+type.name()+" loading cached map states (size="+mapItems.size()+")");
 		int statesLoaded = 0, statesCached = 0;
 		for(int i=0; i<mapItems.size(); ++i){
-			if(loadedCache.get(i) == null) continue; // Loaded state wasn't cached
+			if(loadedCache.get(i) == null) continue;  // Loaded state wasn't cached
 			++statesCached;
 			MapId mapIdComponent = mapItems.get(i).get(DataComponents.MAP_ID);
 			assert mapIdComponent != null : "Unable to load from cache when even the mapId is missing!";
-			if(world.getMapData(mapIdComponent) != null) continue; // Already loaded
+			if(world.getMapData(mapIdComponent) != null) continue;  // Already loaded
 //			world.putMapState(mapIdComponent, cachedMapStates.get(i));
 			world.overrideMapData(mapIdComponent, loadedCache.get(i).toMapState());
 //			getMapRenderer().update(mapIdComponent, cachedMapStates.get(i), null);
@@ -284,7 +284,7 @@ public class MapStateCacher{
 		if(!state.locked && !Configs.Generic.MAP_CACHE_UNLOCKED.getBooleanValue()) return false;
 		@SuppressWarnings("unchecked")
 		HashMap<Integer, MapStateSerializable> cache = (HashMap<Integer, MapStateSerializable>) commonCacheLoad(BY_ID);
-		assert cache != null; // commonCacheLoad creates a server-level cache if one does not already exist
+		assert cache != null;  // commonCacheLoad creates a server-level cache if one does not already exist
 //		if(cache == null){
 //			if(byId == null) byId = new HashMap<>();
 //			final String server = getServerIp(MinecraftClient.getInstance());
@@ -292,7 +292,7 @@ public class MapStateCacher{
 //		}
 		MapStateSerializable mss = MapStateSerializable.fromMapState(state);
 		MapStateSerializable oldMss = cache.put(id, mss);
-		if(mss.equals(oldMss)) return false; // No update
+		if(mss.equals(oldMss)) return false;  // No update
 		if(oldMss != null && oldMss.locked && !MapColorUtils.sameMapExceptForMissingPixels(mss.colors, oldMss.colors)){
 			Main.LOGGER.error("MapStateCacher: Different MapStates found for same ID! Unable to use cache-by-id on current server, disabling it");
 			Configs.Generic.MAP_CACHE_BY_ID.setBooleanValue(false);
@@ -315,7 +315,7 @@ public class MapStateCacher{
 		if(!idCacheUpdated) return false;
 		assert Configs.Generic.MAP_CACHE.getOptionListValue() == OptionMapStateCache.MEMORY_AND_DISK;
 		final String server = MiscUtils.getServerAddress();
-		boolean ret = saveCacheFile(server, BY_ID); // All of the above checks are already handled by saveCacheFile()
+		boolean ret = saveCacheFile(server, BY_ID);  // All of the above checks are already handled by saveCacheFile()
 		if(!ret) return false;
 		Main.LOGGER.info("MapStateCacher: type="+BY_ID+",stored="+getInMemCachePerServer(server, BY_ID).size());
 		return true;
@@ -336,14 +336,14 @@ public class MapStateCacher{
 
 		@SuppressWarnings("unchecked")
 		HashMap<String, MapStateSerializable> cache = (HashMap<String, MapStateSerializable>) commonCacheLoad(BY_NAME);
-		assert cache != null; // commonCacheLoad creates a server-level cache if one does not already exist
+		assert cache != null;  // commonCacheLoad creates a server-level cache if one does not already exist
 //		if(cache == null){
 //			if(byName == null) byName = new HashMap<>();
 //			if(!byName.containsKey(server)) byName.put(server, cache=new HashMap<>());
 //		}
 		MapStateSerializable mss = MapStateSerializable.fromMapState(state);
 		MapStateSerializable oldMss = cache.put(name, mss);
-		if(mss.equals(oldMss)) return false; // No update
+		if(mss.equals(oldMss)) return false;  // No update
 		namesCacheUpdated = true;
 		if(oldMss != null && oldMss.locked){
 			Main.LOGGER.warn("MapStateCacher: Different MapStates found for same name! Unable to use cache-by-name for name: "+name);
@@ -351,13 +351,13 @@ public class MapStateCacher{
 			if(unusableNames == null) unusableNames = new HashMap<>();
 			if(unusable == null) unusableNames.put(server, unusable=new HashSet<>());
 			unusable.add(name);
-			return false; // Maybe should return true, since technically removal is a cache update?
+			return false;  // Maybe should return true, since technically removal is a cache update?
 		}
 		return true;
 	}
 	public static final boolean loadMapStateByName(ItemStack stack, ClientLevel world){
 		assert stack != null && stack.getItem() == Items.FILLED_MAP;
-		assert world.getMapData(stack.get(DataComponents.MAP_ID)) == null; // Already loaded
+		assert world.getMapData(stack.get(DataComponents.MAP_ID)) == null;  // Already loaded
 		assert stack.getCustomName() != null;
 
 		final String name = stack.getCustomName().getString();

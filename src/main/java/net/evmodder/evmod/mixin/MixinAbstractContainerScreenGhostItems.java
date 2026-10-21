@@ -45,11 +45,11 @@ abstract class MixinAbstractContainerScreenGhostItems<T extends AbstractContaine
 //		if(MiscUtils.getCurrentServerAddressHashCode() != MiscUtils.HASHCODE_2B2T) return;
 		if(!Configs.Generic.DISABLE_DRAG_CLICK_ON_MAPS_AND_BUNDLES.getBooleanValue()) return;
 
-		if(minecraft.player == null || minecraft.player.isCreative()) return; // Breaks creative middle-click drag (on other servers)
+		if(minecraft.player == null || minecraft.player.isCreative()) return;  // Breaks creative middle-click drag (on other servers)
 		final ItemStack cursorStack = menu.getCarried();
 		if(cursorStack == null || cursorStack.isEmpty()) return;
-		if(!cursorStack.isStackable() || cursorStack.getItem() instanceof BannerItem) cir.setReturnValue(true); // Prevent initiating a drag
+		if(!cursorStack.isStackable() || cursorStack.getItem() instanceof BannerItem) cir.setReturnValue(true);  // Prevent initiating a drag
 		final MapItemSavedData state = MapItem.getSavedData(cursorStack, minecraft.level);
-		if(state != null && !MapColorUtils.isMonoColor(state.colors)) cir.setReturnValue(true); // Prevent initiating a drag
+		if(state != null && !MapColorUtils.isMonoColor(state.colors)) cir.setReturnValue(true);  // Prevent initiating a drag
 	}
 }

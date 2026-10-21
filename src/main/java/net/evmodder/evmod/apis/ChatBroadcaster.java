@@ -38,11 +38,11 @@ public final class ChatBroadcaster{
 			@Override public void run(){
 				final Calendar cal = Calendar.getInstance();
 				final int hr = cal.get(Calendar.HOUR_OF_DAY);
-				if(cal.get(Calendar.MINUTE) % 30 == 0) return; // Advertise once per 1/2 hour
-				if(hr > evt_hr || evt_hr - hr > 5) return; // Advertise in the 5 hrs leading up the event, on preceeding days
+				if(cal.get(Calendar.MINUTE) % 30 == 0) return;  // Advertise once per 1/2 hour
+				if(hr > evt_hr || evt_hr - hr > 5) return;  // Advertise in the 5 hrs leading up the event, on preceeding days
 
 				final long ts = System.currentTimeMillis();
-				if(ts > evt_ts) return; // Event has passed
+				if(ts > evt_ts) return;  // Event has passed
 
 				final ClientPacketListener handler = Minecraft.getInstance().getConnection();
 				if(handler == null){
@@ -66,6 +66,6 @@ public final class ChatBroadcaster{
 				Main.LOGGER.info("sending msg: "+msg);
 				handler.sendChat(msg);
 			}
-		}, 1L, 15_000L); // Runs every 15s
+		}, 1L, 15_000L);  // Runs every 15s
 	}
 }

@@ -64,11 +64,11 @@ const makeIHDR = () => {
   const d = new Uint8Array(13);
   d.set(u32be(128), 0);
   d.set(u32be(128), 4);
-  d[8] = 8; // bit depth
-  d[9] = 3; // indexed color
-  d[10] = 0; // compression
-  d[11] = 0; // filter
-  d[12] = 0; // no interlace
+  d[8] = 8;  // bit depth
+  d[9] = 3;  // indexed color
+  d[10] = 0;  // compression
+  d[11] = 0;  // filter
+  d[12] = 0;  // no interlace
   return chunk(CHUNK_IHDR, d);
 };
 const IHDR_CHUNK = makeIHDR();
@@ -80,7 +80,7 @@ function encodeMapDataToPng({ colors }: MapData): Blob {
   const indexed = new Uint8Array((128 + 1) * 128);
   for (let y = 0; y < 128; ++y) {
     const row = y * 129;
-    indexed[row] = 0; // no PNG row filter
+    indexed[row] = 0;  // no PNG row filter
     indexed.set(colors.subarray(y * 128, y * 128 + 128), row + 1);
   }
   const idat = chunk(CHUNK_IDAT, deflate(indexed, { level: 1 }));

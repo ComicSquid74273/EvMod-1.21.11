@@ -66,7 +66,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 	private int attemptIdx, lastAttemptIdx;
 	private int ticksSinceInvAction, ticksWaitingForManualClick;
 	private boolean hasWarnedMissingIfe;
-	private final Function<ItemStack, ItemStack> handRestockFallback; // lastPlacedStack -> restockedStack (or null)
+	private final Function<ItemStack, ItemStack> handRestockFallback;  // lastPlacedStack -> restockedStack (or null)
 	private ItemStack lastHandRestockFallbackStack;
 	private boolean calledRecalcLayout, handRestockFailed, warnedNoValidPos;
 
@@ -162,7 +162,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 
 		final String posA1 = posA.substring(0, cutA), posA2 = posA.substring(cutA+cutSpaceA);
 		final String posB1 = posB.substring(0, cutB), posB2 = posB.substring(cutB+cutSpaceB);
-		if(Stream.of(posA1, posA2, posB1, posB2).anyMatch(p -> !p.matches("[A-Z]+|-?[0-9]+"))) return null; // TODO: this should be safe to remove, eventually
+		if(Stream.of(posA1, posA2, posB1, posB2).anyMatch(p -> !p.matches("[A-Z]+|-?[0-9]+"))) return null;  // TODO: this should be safe to remove, eventually
 
 //		Main.LOGGER.info("posA:"+posA+",posB:"+posB+",posA1:"+posA1+",posA2:"+posA2+",posB1:"+posB1+",posB2:"+posB2);
 		return new Pos2DPair(intFromPos(posA1), intFromPos(posA2), intFromPos(posB1), intFromPos(posB2));
@@ -197,7 +197,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 		final int hashCode = ItemStack.hashItemAndComponents(stack);
 		if(stacksHashesForCurrentData.contains(hashCode)) return true;
 		final RelatedMapsData data = MapRelationUtils.getRelatedMapsByName0(List.of(lastStack, stack), world);
-		if(data.slots().size() != 2 || data.prefixLen() == -1) return false; // Not part of the map being autoplaced
+		if(data.slots().size() != 2 || data.prefixLen() == -1) return false;  // Not part of the map being autoplaced
 		Main.LOGGER.info("AutoPlaceMapArt: Added map itemstack to currentData, name="+stack.getHoverName().getString());
 		stacksHashesForCurrentData.add(hashCode);
 		return true;
@@ -242,7 +242,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 	private final boolean calcWidthUsingAdjIFrames(Player player, AxisData currAxisData, int a, int b){
 		assert axisMatch != null;
 //		final Boolean rowOffsetNeg = axisMatch ? varAxis1Neg : varAxis2Neg;
-		assert (axisMatch ? varAxis1Neg : varAxis2Neg) != null;//rowOffsetNeg != null;
+		assert (axisMatch ? varAxis1Neg : varAxis2Neg) != null; //rowOffsetNeg != null;
 //		final Boolean colOffsetNeg = axisMatch ? varAxis2Neg : varAxis1Neg;
 		Main.LOGGER.info("AutoPlaceMapArt: recurRecalcUsingAdjIFrames, axisMatch="+axisMatch+", varAxis1Neg="+varAxis1Neg+", varAxis2Neg="+varAxis2Neg);
 
@@ -292,7 +292,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 		final boolean emptyColNeg = ifeColNeg != null && ifeColNeg.getItem().isEmpty();
 		final boolean emptyColPos = ifeColPos != null && ifeColPos.getItem().isEmpty();
 		if(!emptyColNeg && !emptyColPos) return false;
-		if(emptyColNeg != emptyColPos && isTopOrBottomRow != null){//implies colOffsetNeg == null
+		if(emptyColNeg != emptyColPos && isTopOrBottomRow != null){  //implies colOffsetNeg == null
 			final boolean colIsNeg = emptyColNeg ^ !isTopOrBottomRow;
 			Main.LOGGER.info("AutoPlaceMapArt: determined col isNeg="+colIsNeg+" from available ifes");
 			if(axisMatch) varAxis2Neg = colIsNeg; else varAxis1Neg = colIsNeg;
@@ -405,7 +405,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 			}
 			getReachableItemFrames(player, Configs.Generic.MAPART_AUTOPLACE_REACH.getDoubleValue()+2)
 					.stream().map(ItemFrame::getItem).filter(s -> s.getItem() == Items.FILLED_MAP).forEach(allMapItems::add);
-			currentData = MapRelationUtils.getRelatedMapsByName0(allMapItems, player.level()); // More accurate prefix/suffix/etc data
+			currentData = MapRelationUtils.getRelatedMapsByName0(allMapItems, player.level());  // More accurate prefix/suffix/etc data
 
 //			Main.LOGGER.info("AutoPlaceMapArt: related maps in inv: "+(currentData.slots().size()-2));
 			final String nameWoArtist = MapRelationUtils.removeByArtist(currName);
@@ -449,9 +449,9 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 			Main.LOGGER.info("AutoPlaceMapArt: for X/SIZE, size="+ofSize+", curr(a)="+a+", last(b)="+b+", ifeOffset1="+ifeOffset1+", ifeOffset2="+ifeOffset2);
 			final int posOffset = a-b;
 			if(ifeOffset1 == 0 || ifeOffset2 == 0){
-				final int ifeOffset = ifeOffset1 + ifeOffset2; // one of them is 0
+				final int ifeOffset = ifeOffset1 + ifeOffset2;  // one of them is 0
 				final int ifeOffsetAbs = Math.abs(ifeOffset);
-				final int posOffsetAbs = Math.abs(posOffset); // "a/SIZE", "b/SIZE" => a-b
+				final int posOffsetAbs = Math.abs(posOffset);  // "a/SIZE", "b/SIZE" => a-b
 				final boolean onSameRow = posOffsetAbs == ifeOffsetAbs;
 				final boolean isAxisMatch = (ifeOffset1 != 0) == onSameRow;
 				if(axisMatch == null){
@@ -462,7 +462,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 					Main.LOGGER.warn("AutoPlaceMapArt: (1d pos) user appears to have placed mapart in invalid spot! axisMatch");
 					disableAndReset(); return false;
 				}
-				final boolean isNeg = (ifeOffset > 0 != posOffset > 0); // Equivalent: LHS == a-b < 0
+				final boolean isNeg = (ifeOffset > 0 != posOffset > 0);  // Equivalent: LHS == a-b < 0
 				if(ifeOffset1 != 0){
 					if(varAxis1Neg == null) varAxis1Neg = isNeg;
 					else if(varAxis1Neg != isNeg){
@@ -484,7 +484,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 //				Main.LOGGER.info("AutoPlaceMapArt: rowOffset="+rowOffset+", colOffset="+colOffset);
 				if(colOffset == 0){
 //					assert Math.abs(a-b) == Math.abs(rowOffset);
-					if(Math.abs(a-b) != Math.abs(rowOffset)){ // Unreachable, I think?
+					if(Math.abs(a-b) != Math.abs(rowOffset)){  // Unreachable, I think?
 						Main.LOGGER.error("AutoPlaceMapArt: rowOffset != posOffset (when colOffset == 0), unreachable?!");
 						disableAndReset(); return false;
 					}
@@ -496,7 +496,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 							assert rowWidth != null && rowWidth != 0;
 							Main.LOGGER.info("AutoPlaceMapArt: determined rowWidth="+rowWidth+" from calcWidthUsingAdjIFrames()");
 						}
-						if(dir == null) return false; // If the sub-call triggered disableAndReset()
+						if(dir == null) return false;  // If the sub-call triggered disableAndReset()
 					}
 					// A little hack to maximize future rowOffset; might not be necessary anymore, but used to help the logic above
 					if(rowWidth == null) updateLastIfe = false;
@@ -552,7 +552,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 					Main.LOGGER.warn("AutoPlaceMapArt: (1d pos) invalid width "+rowWidth+"! needs to be a divisor of SIZE");
 					disableAndReset(); return false;
 				}
-			}//axisMatch != null
+			}  //axisMatch != null
 		}
 		final Pos2DPair pos2dPair = getRelativePosPair(currPosStr, lastPosStr);
 		if(pos2dPair == null){
@@ -645,7 +645,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 			}
 		}
 
-		if(!stacksHashesForCurrentData.isEmpty()) return true; // Already ongoing, and hashlist has ahready been defined
+		if(!stacksHashesForCurrentData.isEmpty()) return true;  // Already ongoing, and hashlist has ahready been defined
 
 		assert !allMapItems.isEmpty();
 		assert stacksHashesForCurrentData.isEmpty();
@@ -712,7 +712,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 		recentPlaceAttempts[attemptIdx] = ife.getId();
 		lastAttemptIdx = attemptIdx;
 
-		lastStackAuto = player.getMainHandItem(); // TODO: is .copy() necessary here?
+		lastStackAuto = player.getMainHandItem();  // TODO: is .copy() necessary here?
 		lastIfeAuto = ife;
 
 		final Vec3 interactionPos = ife.position().add(0, 0.0625, 0);
@@ -778,7 +778,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 			if(!ALLOW_MAP_IN_HAND && i-36 == player.getInventory().getSelectedSlot()) continue;
 //			ItemStack mapItem = slots.get(i);
 			BundleContents contents = slots.get(i).get(DataComponents.BUNDLE_CONTENTS);
-			if(bundleSlot == -1 && contents != null) continue; // Prefer to avoid bundles when we have an alterantive itemstack
+			if(bundleSlot == -1 && contents != null) continue;  // Prefer to avoid bundles when we have an alterantive itemstack
 			final int bundleSz = contents != null ? contents.size() : 0;
 //			if(contents != null && !contents.isEmpty()) mapItem = contents.get(contents.size()-1);
 
@@ -800,11 +800,11 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 				final Vec3 ifeEyePos;
 				if(ife == null){
 					if(!CAN_PLACE_IFRAMES){
-						if(ofSize == null || rowWidth != null) // Don't show this warning for uncertain ife positions
-							Main.LOGGER.warn("AutoPlaceMapArt: Missing iFrame at pos! ");//+ifeBp.toShortString());
+						if(ofSize == null || rowWidth != null)  // Don't show this warning for uncertain ife positions
+							Main.LOGGER.warn("AutoPlaceMapArt: Missing iFrame at pos! "); //+ifeBp.toShortString());
 						continue;
 					}
-					if(nearestIfe != null) continue; // found an iFrame to place into - so don't bother placing iFrames
+					if(nearestIfe != null) continue;  // found an iFrame to place into - so don't bother placing iFrames
 					ifeEyePos = getPlaceAgainstSurface(ifeBp);
 				}
 				else{
@@ -813,7 +813,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 //							Main.LOGGER.warn("AutoPlaceMapArt: iFrame already contains item at pos! ");//+ifeBp.toShortString());
 						continue;
 					}
-					ifeEyePos = ife.getEyePosition(); // Consider: should I use ife.getNearestCornerToPlayer?
+					ifeEyePos = ife.getEyePosition();  // Consider: should I use ife.getNearestCornerToPlayer?
 				}
 				final double distSq = ifeEyePos.distanceToSqr(player.getEyePosition());
 				if(distSq > MAX_REACH_SQ) continue;
@@ -855,12 +855,12 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 	}
 
 
-	private boolean test2=true; // TODO: Pause while player is moving... keep or nah?
+	private boolean test2=true;  // TODO: Pause while player is moving... keep or nah?
 	private final boolean isMovingTooFast(Vec3 velocity){
 		return !test2 && (velocity.x*velocity.x + velocity.z*velocity.z) > 0.0001 || Math.abs(velocity.y) > 0.08;
 	}
 
-	private final boolean test=true;// TODO: Test to confirm, but changing hotbar slots shouldn't count as an inv action
+	private final boolean test=true;  // TODO: Test to confirm, but changing hotbar slots shouldn't count as an inv action
 
 	private final void getMapIntoMainHand(LocalPlayer player, int slot, int bundleSlot){
 		assert slot != player.getInventory().getSelectedSlot()+36 || bundleSlot != -1;
@@ -899,7 +899,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 				Main.LOGGER.info("AutoPlaceMapArt: Swapped nextMap to inv.selectedSlot: s="+slot+"->hb="+(selectedSlot));
 			}
 		}
-		else{ // bundleSlot != -1
+		else{  // bundleSlot != -1
 			if(slot == selectedSlot+36 || !player.getMainHandItem().isEmpty()){
 				Main.LOGGER.info("AutoPlaceMapArt: Main hand is not empty! Unable to extract from bundle");
 //				disableAndReset(); return;
@@ -923,16 +923,16 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 			assert contents != null && contents.size() > bundleSlot;
 			ArrayDeque<InvAction> clicks = new ArrayDeque<>();
 			if(Configs.Generic.USE_BUNDLE_PACKET.getBooleanValue()){
-				player.inventoryMenu.setSelectedBundleItemIndex(slot, bundleSlot); // Match vanilla client-side prediction
+				player.inventoryMenu.setSelectedBundleItemIndex(slot, bundleSlot);  // Match vanilla client-side prediction
 				final boolean reversed = Configs.Generic.BUNDLES_ARE_REVERSED.getBooleanValue();
 				final int topBundleSlot = reversed ? contents.size()-1 : 0;
 				if(bundleSlot != topBundleSlot){
 					int bundleSlotUsed = reversed ? contents.size()-(bundleSlot+1) : bundleSlot;
-					clicks.add(new InvAction(slot, bundleSlotUsed, ActionType.BUNDLE_SELECT)); // Select bundle slot
+					clicks.add(new InvAction(slot, bundleSlotUsed, ActionType.BUNDLE_SELECT));  // Select bundle slot
 				}
 			}
-			clicks.add(new InvAction(slot, 1, ActionType.CLICK)); // Take from bundle
-			clicks.add(new InvAction(player.getInventory().getSelectedSlot()+36, 0, ActionType.CLICK)); // Place in hand (intentionally using inv.selectedSlot here)
+			clicks.add(new InvAction(slot, 1, ActionType.CLICK));  // Take from bundle
+			clicks.add(new InvAction(player.getInventory().getSelectedSlot()+36, 0, ActionType.CLICK));  // Place in hand (intentionally using inv.selectedSlot here)
 			ClickUtils.executeClicks(/*canProceed=*/_->true, onDone, clicks);
 			Main.LOGGER.info("AutoPlaceMapArt: Extracted map from bundle into mainhand");
 		}
@@ -1008,10 +1008,10 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 		final MapPlacementData data = getNearestMapPlacement(player, /*allowOutsideReach=*/false, /*allowMapInHand=*/true);
 		if(data == null){
 			if(lastIfeAuto != null && (axisMatch == null || varAxis1Neg == null || varAxis2Neg == null) && !calledRecalcLayout){
-				assert lastStackAuto != null; // in sync with lastIfeAuto
+				assert lastStackAuto != null;  // in sync with lastIfeAuto
 				Main.LOGGER.info("AutoPlaceMapArt: Unable to determine placement, calling recalcLayout");
 				recalcLayout(player, lastIfeAuto, lastStackAuto);
-				calledRecalcLayout = true; // Calling this regardless, since sometimes
+				calledRecalcLayout = true;  // Calling this regardless, since sometimes
 			}
 			else if(player.getMainHandItem().getItem() != Items.FILLED_MAP && handRestockFallback != null && !handRestockFailed){
 				Main.LOGGER.info("AutoPlaceMapArt: Unable to determine placement, calling handRestockFallback");
@@ -1033,7 +1033,7 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickLi
 			disableAndReset(); return;
 		}
 
-		if(data.ife == null){ // Implies placing iFrame, not map item
+		if(data.ife == null){  // Implies placing iFrame, not map item
 			if(!hasWarnedMissingIfe) Main.LOGGER.warn("AutoPlaceMapArt: no ife found"
 //					+ " at "+data.bp.toShortString()
 					+ ", checking for iframes in inv");

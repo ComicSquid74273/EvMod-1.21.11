@@ -60,7 +60,7 @@ public final class KeybindMapMove{
 		final ItemStack[] slots = hs.getMenu().slots.stream().map(s -> s.getItem()).toArray(ItemStack[]::new);
 		int numInInv = 0, emptySlotsInv = 0, fillerInInv = 0;
 		TreeSet<Integer> countsInInv = new TreeSet<>();
-		HashMap<ItemStack, Integer> invCapacity = new HashMap<>();// id -> available space to merge into
+		HashMap<ItemStack, Integer> invCapacity = new HashMap<>();  // id -> available space to merge into
 		for(int i=0; i<36; ++i){
 			ItemStack stack = client.player.getInventory().getItem(i);
 			if(stack == null || stack.isEmpty()) ++emptySlotsInv;
@@ -152,12 +152,12 @@ public final class KeybindMapMove{
 			if(count == 1 || moveAll){
 				clicks.add(new InvAction(i, 0, ActionType.SHIFT_CLICK));
 			}
-			else{ // put 1 into shulk
+			else{  // put 1 into shulk
 				final int clicksAtStart = clicks.size();
 				final InvAction firstClick;
 				if(count == 2 && numInShulk == 0){
 					firstClick = InventoryTransferPlanner.pickupAmount(clicks, i, count, 1);
-					clicks.add(new InvAction(j, 0, ActionType.CLICK)); // place into next empty slot
+					clicks.add(new InvAction(j, 0, ActionType.CLICK));  // place into next empty slot
 				}
 				else firstClick = InventoryTransferPlanner.quickMoveAmount(clicks, i, count, 1);
 				final int clicksUsed = clicks.size()-clicksAtStart;
@@ -181,12 +181,12 @@ public final class KeybindMapMove{
 			if(count == 1 || moveAll){
 				clicks.add(new InvAction(i, 0, ActionType.SHIFT_CLICK));
 			}
-			else{ // take 1 from shulk
+			else{  // take 1 from shulk
 				final int clicksAtStart = clicks.size();
 				final InvAction firstClick;
 				if(count == 2 && numInInv == 0){
 					firstClick = InventoryTransferPlanner.pickupAmount(clicks, i, count, 1);
-					clicks.add(new InvAction(j, 0, ActionType.CLICK)); // place into next empty slot
+					clicks.add(new InvAction(j, 0, ActionType.CLICK));  // place into next empty slot
 				}
 				else firstClick = InventoryTransferPlanner.quickMoveAmount(clicks, i, count, 1);
 				final int clicksUsed = clicks.size()-clicksAtStart;
@@ -200,7 +200,7 @@ public final class KeybindMapMove{
 					// Don't start cursor-pickup move operation if we can't complete it in 1 go
 					final Integer clicksNeeded = reserveClicks.get(c);
 					if(clicksNeeded == null || clicksNeeded <= ClickUtils.calcAvailableClicks()) return true;
-					return false; // Wait for clicks
+					return false;  // Wait for clicks
 				}, ()->Main.LOGGER.info("MapMove: DONE!"),
 				clicks
 		);

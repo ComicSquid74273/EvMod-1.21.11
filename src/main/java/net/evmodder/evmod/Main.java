@@ -82,9 +82,9 @@ public class Main{
 	// inv-keybind-craft-latest-item, also for enchant table and grindstone (eg. spam enchanting axes) via spacebar, like vanilla
 
 	public static final String MOD_ID = InitUtils.getModId();
-	public static final String MOD_NAME; // Accessed by: KeyCallbacks
-	public static final String MOD_VERSION; // Accessed by: ConfigGui
-	public static final String CONFIG_DIR; // Accessed by: Configs
+	public static final String MOD_NAME;  // Accessed by: KeyCallbacks
+	public static final String MOD_VERSION;  // Accessed by: ConfigGui
+	public static final String CONFIG_DIR;  // Accessed by: Configs
 	public static final Logger LOGGER;
 	static{
 		FileIO.DIR = CONFIG_DIR = FabricLoader.getInstance().getConfigDir().toString()+"/"+MOD_ID+"/";
@@ -94,7 +94,7 @@ public class Main{
 		LOGGER = LoggerFactory.getLogger(MOD_ID);
 	}
 
-	static boolean mapArtFeaturesOnly = true; // TODO: eww hacky
+	static boolean mapArtFeaturesOnly = true;  // TODO: eww hacky
 
 	// Accessed by: MixinClientPacketListener, MixinEntityRendererPearl, MixinMultiPlayerGameMode
 	private static Main instance;
@@ -130,8 +130,8 @@ public class Main{
 		if(!settings.database) remoteSender = null;
 		else{
 			remoteSender = new RemoteServerSender(LOGGER, MiscUtils::getRemoteServerDescriptor);
-			InitUtils.refreshRemoteServerSender(remoteSender); // Potentially using DUMMY_CLIENT_ID
-			InitUtils.checkValidClientKeyAndRequestIfNot(remoteSender, configs); // Request a real clientId if needed
+			InitUtils.refreshRemoteServerSender(remoteSender);  // Potentially using DUMMY_CLIENT_ID
+			InitUtils.checkValidClientKeyAndRequestIfNot(remoteSender, configs);  // Request a real clientId if needed
 		}
 
 		epearlLookup = settings.epearlOwners ? new EpearlLookupFabric(remoteSender) : null;

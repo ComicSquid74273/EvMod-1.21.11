@@ -71,7 +71,7 @@ public final class ClickUtils{
 				return;
 			}
 			assert FOR_TICKS > 0;
-			if(FOR_TICKS > 72_000){//1hr irl
+			if(FOR_TICKS > 72_000){  //1hr irl
 				Main.LOGGER.error("InventoryUtils() initialized with insanely-large tick-limiter duration: "+FOR_TICKS+", ignoring and using 72k instead");
 				FOR_TICKS = 72_000;
 			}
@@ -146,7 +146,7 @@ public final class ClickUtils{
 			updateAvailableClicks();
 			final int availableNow = MAX_CLICKS - sumClicksInDuration;
 			if(availableNow >= clicksToExecute) return 0;
-			clicksToExecute -= Math.max(0, availableNow); // Only actual free capacity can be used now.
+			clicksToExecute -= Math.max(0, availableNow);  // Only actual free capacity can be used now.
 			final int fullWindows = (clicksToExecute-1)/MAX_CLICKS;
 			// Greedy refill repeats every window. Existing debt must expire before any refill.
 			int expirationsNeeded = (clicksToExecute-1)%MAX_CLICKS + 1 + Math.max(0, -availableNow);
@@ -173,11 +173,11 @@ public final class ClickUtils{
 		final double tps = Double.parseDouble(matcher.group(1));
 //		Main.LOGGER.info("ClickUtils: got TPS from playerListTab: "+tps);
 		final long msPerTick = (long)Math.ceil(1000d/tps);
-		return Math.max(50, msPerTick); // Even if TPS>20, let's play it safe since packet-limiters might use real-time
+		return Math.max(50, msPerTick);  // Even if TPS>20, let's play it safe since packet-limiters might use real-time
 	}
 
 	private static volatile boolean clickOpOngoing/*, waitedForClicks*/;
-	private static Runnable cancelClicks; // Client-thread owned, like the queue and completion callback.
+	private static Runnable cancelClicks;  // Client-thread owned, like the queue and completion callback.
 	static{
 		ClientPlayConnectionEvents.DISCONNECT.register((_, client)->client.executeIfPossible(()->{
 			// Disconnect can discard a pending client task before its scheduled flag is cleared.
@@ -222,7 +222,7 @@ public final class ClickUtils{
 			private Timer timer;
 			private AtomicBoolean scheduled;
 			private int estimatedMsLeft = Integer.MAX_VALUE;
-			private boolean stopped; // Accessed only on the client thread.
+			private boolean stopped;  // Accessed only on the client thread.
 			private final void stopTask(){
 				if(stopped) return;
 				stopped = true;
@@ -296,7 +296,7 @@ public final class ClickUtils{
 				if(timer == null){
 					scheduled = new AtomicBoolean();
 					timer = new Timer("EvMod-clicks", /*isDaemon=*/true);
-					timer.schedule(this, 23l, 23l); // Allocate a scheduler only when the first synchronous pass must wait.
+					timer.schedule(this, 23l, 23l);  // Allocate a scheduler only when the first synchronous pass must wait.
 				}
 			}
 			private void executeNow(){

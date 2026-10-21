@@ -70,34 +70,34 @@ public abstract class MapColorUtils{
 //				return false;
 //		}
 		return (color.id >= 15 && color.id <= 29)
-				|| color.id == 8 // Snow/white wool/carpet
-				|| color.id == 0 // Also include transparency hmm
+				|| color.id == 8  // Snow/white wool/carpet
+				|| color.id == 0  // Also include transparency hmm
 		;
 	}
 	private static final boolean isPistonClearableColor(MapColor color){
 		switch(color.id){
-			case 2: // BIRCH
-			case 3: // CANDLE
-			case 6: // IRON
-			case 7: // PLANT
-			case 8: // WHITE
-			case 10: // JUNGLE
-			case 11: // STONE
-			case 12: // WATER
-			case 13: // OAK
-			case 14: // PALE_OAK
+			case 2:  // BIRCH
+			case 3:  // CANDLE
+			case 6:  // IRON
+			case 7:  // PLANT
+			case 8:  // WHITE
+			case 10:  // JUNGLE
+			case 11:  // STONE
+			case 12:  // WATER
+			case 13:  // OAK
+			case 14:  // PALE_OAK
 			//15-29: // CARPET
-			case 30: // GOLD
-			case 34: // SPRUCE
-			case 35: // NETHER
-			case 36: // CHERRY
-			case 37: // RESIN
-			case 48: // DRIPSTONE
-			case 49: // CLOSED_EYEBLOSSOM
-			case 50: // DECORATED_POT
-			case 53: // CRIMSON_STEM
-			case 56: // WARPED_STEM
-			case 61: // GLOW_LICHEN
+			case 30:  // GOLD
+			case 34:  // SPRUCE
+			case 35:  // NETHER
+			case 36:  // CHERRY
+			case 37:  // RESIN
+			case 48:  // DRIPSTONE
+			case 49:  // CLOSED_EYEBLOSSOM
+			case 50:  // DECORATED_POT
+			case 53:  // CRIMSON_STEM
+			case 56:  // WARPED_STEM
+			case 61:  // GLOW_LICHEN
 				return true;
 			default:
 				return isCarpetColor(color);
@@ -128,12 +128,12 @@ public abstract class MapColorUtils{
 				pistonColors.add(color.getPackedId(Brightness.HIGH));
 				continue;
 			}
-			if(isCarpetColor(color)){ // Includes transparent colors
-				carpetColors.add(color.getPackedId(Brightness.LOW)); // Staircased carpet
+			if(isCarpetColor(color)){  // Includes transparent colors
+				carpetColors.add(color.getPackedId(Brightness.LOW));  // Staircased carpet
 				carpetColors.add(color.getPackedId(Brightness.NORMAL));
-				carpetColors.add(color.getPackedId(Brightness.HIGH)); // Staircased carpet (or noobline)
+				carpetColors.add(color.getPackedId(Brightness.HIGH));  // Staircased carpet (or noobline)
 			}
-			if(isPistonClearableColor(color)){ // Includes carpet and transparent colors
+			if(isPistonClearableColor(color)){  // Includes carpet and transparent colors
 				pistonColors.add(color.getPackedId(Brightness.NORMAL));
 				pistonNooblineColors.add(color.getPackedId(Brightness.HIGH));
 			}
@@ -226,7 +226,7 @@ public abstract class MapColorUtils{
 			final int x = j%128, y = j/128;
 			sendOverlay(Minecraft.getInstance().player, Component.literal("First staircased pixel: "+x+","+y+"  (id:"+(colors[j]&0xFF)/4+")"));
 			final double numShadedAtTop = Arrays.stream(staircasedPixels).filter(i -> i<128).count();
-			if(numShadedAtTop/numShaded > .8) noobline = true; // If 80%+ of the shading is only the top row, consider it a noobline
+			if(numShadedAtTop/numShaded > .8) noobline = true;  // If 80%+ of the shading is only the top row, consider it a noobline
 		}
 
 		// Note: Disgusting hack, adding 999 to mark as % vs px. Decoded in TooltipMapLoreMetadata

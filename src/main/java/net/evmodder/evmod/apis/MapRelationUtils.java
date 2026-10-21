@@ -47,7 +47,7 @@ public abstract class MapRelationUtils{
 		pos = Normalizer.normalize(pos, Normalizer.Form.NFKD).toUpperCase();
 		pos = normalizeCornerGlyphs(pos);
 		pos = pos.replaceAll("[^-\\p{IsAlphabetic}\\p{IsDigit}]+", " ").trim().replaceAll("\\s+", " ");
-		pos = pos.replaceAll("(?<=\\d)-(?=\\d)", " "); // e.g., "5-4" == "5,4" == "5 4"
+		pos = pos.replaceAll("(?<=\\d)-(?=\\d)", " ");  // e.g., "5-4" == "5,4" == "5 4"
 		pos = pos.replace("TOP", "T").replace("BOTTOM", "B").replace("LEFT", "L").replace("RIGHT", "R").replace("MIDDLE", "M");
 		pos = pos.replace("UP", "T").replace("DOWN", "B");
 		pos = pos.replace("FIRST", "0").replace("SECOND", "1").replace("ONE", "0").replace("TWO", "1");
@@ -92,7 +92,7 @@ public abstract class MapRelationUtils{
 			lastBrColor = br[i];
 			lastAcross = sameAcross; lastUp = sameUp; lastDown = sameDown;
 		}
-		return score; // Maximum score = 3*128 = 384
+		return score;  // Maximum score = 3*128 = 384
 	}
 
 	private static final String attribRegex = "(?:\\s*(?:by|-(?:\\s*by)?))";
@@ -188,11 +188,11 @@ public abstract class MapRelationUtils{
 			//if(item.equals(prevMap)) continue;
 			int a = commonPrefixLen(sourceName2, name2), b = commonSuffixLen(sourceName2, name2);
 			int o = a-(Math.min(name2.length(), sourceName2.length())-b);
-			if(o>0){a-=o; b-=o;}//Handle special case: "a 11/x"+"a 111/x", a=len(a 11)=4,b=len(11/x)=4,o=2 => a=len(a ),b=len(/x)
+			if(o>0){a-=o; b-=o;}  //Handle special case: "a 11/x"+"a 111/x", a=len(a 11)=4,b=len(11/x)=4,o=2 => a=len(a ),b=len(/x)
 			final int rawPrefixLen = a, rawSuffixLen = b;
 			//if(a == 0 && b == 0) continue; // No shared prefix/suffix
 //			Main.LOGGER.info("MapAdjUtil: map"+i+" prefixLen|suffixLen: "+a+"|"+b);
-			if(prefixLen == a && suffixLen == b) continue;// No change to prefix/suffix
+			if(prefixLen == a && suffixLen == b) continue;  // No change to prefix/suffix
 			//Main.LOGGER.info("MapAdjUtil: map"+i+" prefixLen|suffixLen: "+a+"|"+b);
 			final String posStr = simplifyPosStr(name2.substring(a, name2.length()-b));
 			final String sourcePosStr = simplifyPosStr(sourceName2.substring(a, sourceName2.length()-b));
@@ -211,7 +211,7 @@ public abstract class MapRelationUtils{
 				if(minValidSuffixLen == -1 || b < minValidSuffixLen) minValidSuffixLen = b;
 			}
 //			Main.LOGGER.info("slot: "+i+ ", posStr: "+posStr+", sourcePosStr: "+sourcePosStr+", bothValid: "+validMatchingPosStrs);
-			if(prefixLen == -1 && suffixLen == -1){ // Prefix/suffix not yet determined
+			if(prefixLen == -1 && suffixLen == -1){  // Prefix/suffix not yet determined
 				if(validMatchingPosStrs){prefixLen = rawPrefixLen; suffixLen = rawSuffixLen;}
 				else if(a != 0 || b != 0)
 					Main.LOGGER.debug("MapAdjUtil: found matching prefix/suffix ("+a+"/"+b+"), but invalid PosStr: "+name2.substring(a, name2.length()-b));
@@ -235,13 +235,13 @@ public abstract class MapRelationUtils{
 				if(oldContainsNew){
 					Main.LOGGER.info("MapAdjUtil: decreasing prefix/suffix from "+prefixLen+"/"+suffixLen+" to "+a+"/"+b
 							+" ("+name2.substring(a, name2.length()-b)+") for name: "+name2);
-					prefixLen = a; suffixLen = b; // Expand posStr
+					prefixLen = a; suffixLen = b;  // Expand posStr
 				}
 			}
 			if(a+b > prefixLen+suffixLen && !isValidPosStr(simplifyPosStr(name2.substring(Math.min(a, prefixLen), name2.length()-Math.min(b, suffixLen))))){
 				Main.LOGGER.info("MapAdjUtil: increasing prefix/suffix from "+prefixLen+"/"+suffixLen+" to "+a+"/"+b
 						+" ("+name2.substring(a, name2.length()-b)+") for name: "+name2);
-				prefixLen = a; suffixLen = b; // Shrink posStr
+				prefixLen = a; suffixLen = b;  // Shrink posStr
 			}
 		}
 		if(prefixLen == -1){

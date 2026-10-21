@@ -55,14 +55,14 @@ public class MojangProfileLookup{
 			String data = WebHook.getReadURL("https://api.mojang.com/users/profiles/minecraft/"+key);
 			if(data == null) return UUID_404;
 			final int uuidStart = data.indexOf("\"id\":\"")+6;
-			final int uuidEnd = data.indexOf("\"", uuidStart+2); // +2 instead of +1 because we assume name field is non-empty (has at least 1 char)
-			if(uuidStart == -1 || uuidEnd == -1) return UUID_404; // No account found for this UUI
+			final int uuidEnd = data.indexOf("\"", uuidStart+2);  // +2 instead of +1 because we assume name field is non-empty (has at least 1 char)
+			if(uuidStart == -1 || uuidEnd == -1) return UUID_404;  // No account found for this UUI
 			String uuidStr = data.substring(uuidStart, uuidEnd);
 			if(uuidStr.indexOf('-') == -1) uuidStr = uuidStr.replaceFirst(
 					"(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5");
 			final UUID uuid = UUID.fromString(uuidStr);
 			final int nameStart = data.indexOf("\"name\":\"")+8;
-			final int nameEnd = data.indexOf("\"", nameStart+2); // +2 instead of +1 because we assume name field is non-empty (has at least 1 char)
+			final int nameEnd = data.indexOf("\"", nameStart+2);  // +2 instead of +1 because we assume name field is non-empty (has at least 1 char)
 			if(nameStart == -1 || nameEnd == -1){Main.LOGGER.error("Unexpected API response (no 'name' field): "+data); return uuid;}
 			nameLookup.put(uuid, data.substring(nameStart, nameEnd));
 			return uuid;

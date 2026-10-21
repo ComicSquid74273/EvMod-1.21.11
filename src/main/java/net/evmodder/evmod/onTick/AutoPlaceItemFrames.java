@@ -73,13 +73,13 @@ public final class AutoPlaceItemFrames{
 		final BlockPos ifeBp = bp.relative(dir);
 		final BlockState ifeBs = world.getBlockState(ifeBp);
 		if(ifeBs.isCollisionShapeFullBlock(world, ifeBp)) return false;
-		if(ifeBs.isRedstoneConductor(world, ifeBp)) return false; // iFrame cannot be placed inside a solid block
+		if(ifeBs.isRedstoneConductor(world, ifeBp)) return false;  // iFrame cannot be placed inside a solid block
 //		Main.LOGGER.info("iFramePlacer: ife spot is non-solid");
 
-		if(existingIfes.stream().anyMatch(ife -> ife.blockPosition().equals(ifeBp))) return false; // Already iFrame here
+		if(existingIfes.stream().anyMatch(ife -> ife.blockPosition().equals(ifeBp))) return false;  // Already iFrame here
 //		Main.LOGGER.info("iFramePlacer: ife spot is available");
 		if(Configs.Generic.IFRAME_AUTO_PLACER_MUST_CONNECT.getBooleanValue()
-				&& existingIfes.stream().noneMatch(ife -> ife.blockPosition().distManhattan(ifeBp) == 1)) return false; // No iFrame neighbor
+				&& existingIfes.stream().noneMatch(ife -> ife.blockPosition().distManhattan(ifeBp) == 1)) return false;  // No iFrame neighbor
 //		Main.LOGGER.info("iFramePlacer: ife spot has neighboring iframe");
 		return true;
 	}
@@ -121,13 +121,13 @@ public final class AutoPlaceItemFrames{
 	public AutoPlaceItemFrames(){
 		recentPlaceAttempts = new BlockPos[20];
 		EndTick etl = (client) -> {
-			if(dir == null) return; // iFramePlacer is not currently active
+			if(dir == null) return;  // iFramePlacer is not currently active
 			if(!Configs.Generic.IFRAME_AUTO_PLACER.getBooleanValue()){
 				dir = null; iFrameItem = null; placeAgainstBlock = null;
 				return;
 			}
 
-			if(client.player == null || client.level == null){ // Player offline, cancel iFramePlacer
+			if(client.player == null || client.level == null){  // Player offline, cancel iFramePlacer
 				Main.LOGGER.info("iFramePlacer: Disabling due to player offline");
 				dir = null; iFrameItem = null; placeAgainstBlock = null;
 				return;
@@ -136,13 +136,13 @@ public final class AutoPlaceItemFrames{
 			if(++attemptIdx >= recentPlaceAttempts.length) attemptIdx = 0;
 			recentPlaceAttempts[attemptIdx] = null;
 
-			if(isMovingTooFast(client.player.getDeltaMovement())) return; // Pause while player is moving
+			if(isMovingTooFast(client.player.getDeltaMovement())) return;  // Pause while player is moving
 
 			final double MAX_REACH = Configs.Generic.IFRAME_AUTO_PLACER_REACH.getDoubleValue();
 			final int SCAN_DIST = (int)(MAX_REACH+2);
 
 			BlockPos clientBp = client.player.blockPosition();
-			if(distFromPlane(clientBp) > SCAN_DIST) return; // Player out of range of iFrame wall
+			if(distFromPlane(clientBp) > SCAN_DIST) return;  // Player out of range of iFrame wall
 
 			AABB box = client.player.getBoundingBox().inflate(SCAN_DIST, SCAN_DIST, SCAN_DIST);
 			Predicate<ItemFrame> filter = ife -> ife.getNearestViewDirection() == dir && distFromPlane(ife.blockPosition().relative(dir.getOpposite())) == 0;
@@ -159,7 +159,7 @@ public final class AutoPlaceItemFrames{
 				.filter(bp -> getPlaceAgainstSurface(bp).distanceToSqr(eyePos) <= MAX_REACH*MAX_REACH)
 				.filter(bp -> Arrays.stream(recentPlaceAttempts).noneMatch(attempt -> attempt != null && bp.equals(attempt)))
 				.findFirst();
-			if(closestValidPlacement.isEmpty()) return; // No valid spot in range to place an iFrame
+			if(closestValidPlacement.isEmpty()) return;  // No valid spot in range to place an iFrame
 
 			final InteractionHand hand;
 			if(client.player.getOffhandItem().getItem() == iFrameItem) hand = InteractionHand.OFF_HAND;
@@ -173,7 +173,7 @@ public final class AutoPlaceItemFrames{
 						return;
 					}
 					selectSlot(client.player.getInventory(), hbSlot);
-					/*if(!test)*/ return; // TODO: remove once test outcome is known (in AutoPlaceMapArt as well)
+					/*if(!test)*/ return;  // TODO: remove once test outcome is known (in AutoPlaceMapArt as well)
 				}
 			}
 

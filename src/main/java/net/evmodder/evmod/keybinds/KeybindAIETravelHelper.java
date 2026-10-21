@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 
 public final class KeybindAIETravelHelper{
 //	private boolean isEnabled;
-	private int unsafeDur = 20, kickDur = 5, unsafeYinEnd = 60, kickYinEnd = 40; // TODO: put all these in config
+	private int unsafeDur = 20, kickDur = 5, unsafeYinEnd = 60, kickYinEnd = 40;  // TODO: put all these in config
 	private final long SAFE_KICK_DELAY = 10_000l;
 	private long enabledTs, stoppedFlyingTs;
 	private final boolean waitForSafePitch = true, kickIfStopsFlying = true;
@@ -84,11 +84,11 @@ public final class KeybindAIETravelHelper{
 				if(tooLowDur){
 					for(int i=9; i<45; ++i) if(getElytraDur(client.player.getInventory().getItem(i%36)) > unsafeDur){
 						if(i < 36){
-							client.gameMode.handleContainerInput(0, i, 1, ContainerInput.PICKUP, client.player); // Pickup fresh elytra
-							client.gameMode.handleContainerInput(0, 6, 0, ContainerInput.PICKUP, client.player); // Put in armor slot
-							client.gameMode.handleContainerInput(0, i, 0, ContainerInput.PICKUP, client.player); // Put back used elytra
+							client.gameMode.handleContainerInput(0, i, 1, ContainerInput.PICKUP, client.player);  // Pickup fresh elytra
+							client.gameMode.handleContainerInput(0, 6, 0, ContainerInput.PICKUP, client.player);  // Put in armor slot
+							client.gameMode.handleContainerInput(0, i, 0, ContainerInput.PICKUP, client.player);  // Put back used elytra
 						}
-						else client.gameMode.handleContainerInput(0, 6, i-36, ContainerInput.SWAP, client.player); // Swap with hotbar
+						else client.gameMode.handleContainerInput(0, 6, i-36, ContainerInput.SWAP, client.player);  // Swap with hotbar
 						if(!atKickY){
 							sendOverlay(client.player, Component.literal("AIE Helper: Swapped to fresh elytra"));
 							return;

@@ -146,11 +146,11 @@ public class MapLayoutFinder{
 		}
 
 		RelatedMapsData data = MapRelationUtils.getRelatedMapsByName0(List.of(this.currStack=currStack, lastStack), world);
-		if(data.slots().size() != 2){ // t0d0: support maps w/o custom name (related by edge detection)
+		if(data.slots().size() != 2){  // t0d0: support maps w/o custom name (related by edge detection)
 			Main.LOGGER.info("AutoPlaceMapArt: currIfe and lastIfe are not related");
 			disableAndReset(); return false;
 		}
-		if(data.prefixLen() == -1){ // t0d0: support related maps without pos data (same name, no pos data)
+		if(data.prefixLen() == -1){  // t0d0: support related maps without pos data (same name, no pos data)
 			Main.LOGGER.info("AutoPlaceMapArt: currIfe and lastIfe are not facing the same dir");
 			disableAndReset(); return false;
 		}
@@ -170,7 +170,7 @@ public class MapLayoutFinder{
 		}
 		final String currPosStr = this.currPosStr=getPosStrFromName(currStack), lastPosStr = getPosStrFromName(lastStack);
 		final Pos2DPair pos2dPair = getRelativePosPair(currPosStr, lastPosStr);
-		if(pos2dPair == null){ // t0d0: Support non-standard pos data (e.g., TL,TR,BL,BR)
+		if(pos2dPair == null){  // t0d0: Support non-standard pos data (e.g., TL,TR,BL,BR)
 			Main.LOGGER.info("AutoPlaceMapArt: unable to parse pos2dPair from pos strs ("+currPosStr+","+lastPosStr+")");
 			disableAndReset(); return false;
 		}
@@ -240,7 +240,7 @@ public class MapLayoutFinder{
 			}
 		}
 
-		if(!stacksHashesForCurrentData.isEmpty()) return true; // Already ongoing and all values are defined
+		if(!stacksHashesForCurrentData.isEmpty()) return true;  // Already ongoing and all values are defined
 
 		if(varAxis1Neg == null || varAxis2Neg == null){
 			boolean foundAxis1 = varAxis1Neg != null;
@@ -268,7 +268,7 @@ public class MapLayoutFinder{
 		synchronized(allMapItems){
 		if(!stacksHashesForCurrentData.contains(ItemStack.hashCode(stack))){
 			RelatedMapsData data = MapRelationUtils.getRelatedMapsByName0(List.of(currStack, stack), world);
-			if(data.slots().size() != 2 || data.prefixLen() == -1) return null; // Not part of the map being autoplaced
+			if(data.slots().size() != 2 || data.prefixLen() == -1) return null;  // Not part of the map being autoplaced
 			Main.LOGGER.info("AutoPlaceMapArt: Added map itemstack to currentData, name="+stack.getName().getString());
 			stacksHashesForCurrentData.add(ItemStack.hashCode(stack));
 		}

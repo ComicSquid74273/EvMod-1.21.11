@@ -125,7 +125,7 @@ public final class PacketClient implements AutoCloseable{
 		}
 		final int requestId = PacketCodec.getUnsignedMedium(ByteBuffer.wrap(response, 0, 3));
 		final PendingRequest pending = pendingRequests.get(requestId);
-		if(pending == null) return; // Fire-and-forget acknowledgement, timeout, or duplicate UDP response.
+		if(pending == null) return;  // Fire-and-forget acknowledgement, timeout, or duplicate UDP response.
 		final int authenticatedLength = responseLength-PacketCodec.AUTH_TAG_SIZE;
 		if(!PacketCodec.verifyAuthenticationTag(response, authenticatedLength,
 				authenticationKey, pending.authenticationContext)){

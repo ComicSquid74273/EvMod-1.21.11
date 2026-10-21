@@ -36,9 +36,9 @@ public final class UpdateContainerContents implements TickListener{
 	// Accessed by: MixinAbstractContainerScreenGhostItems
 	@SuppressWarnings("unused") private static MutableComponent customTitle;
 
-	public static final int getMapsInContainerHash(){return mapsInContainerHash;} // Accessed by: TooltipMapNameColor, TooltipMapLoreMetadata
-	public static final boolean hasDuplicateInContainer(final UUID colorsId){return duplicatesInContainer.contains(colorsId);} // Accessed by: TooltipMapNameColor
-	public static final boolean isInInvAndContainer(final UUID colorsId){return inContainerAndInInv.contains(colorsId);} // Accessed by: TooltipMapNameColor
+	public static final int getMapsInContainerHash(){return mapsInContainerHash;}  // Accessed by: TooltipMapNameColor, TooltipMapLoreMetadata
+	public static final boolean hasDuplicateInContainer(final UUID colorsId){return duplicatesInContainer.contains(colorsId);}  // Accessed by: TooltipMapNameColor
+	public static final boolean isInInvAndContainer(final UUID colorsId){return inContainerAndInInv.contains(colorsId);}  // Accessed by: TooltipMapNameColor
 
 	// Constantly-recycled; defined here to avoid frequent calls to "new"
 	private final HashSet<UUID> uniqueMapIds = new HashSet<>();
@@ -58,8 +58,8 @@ public final class UpdateContainerContents implements TickListener{
 	@Override public final void onTickStart(final Minecraft client){
 		if(client.player == null || client.level == null || !client.player.isAlive() ||
 			screen(client) == null || !(screen(client) instanceof AbstractContainerScreen hs) ||
-			hs.getMenu().containerId == 0 || // InventoryScreen/CreativeScreen/RecipeBookScreen (NOT a container)
-			hs instanceof AnvilScreen || // These get false-flagged for "duplicate map in container" with i/o slots
+			hs.getMenu().containerId == 0 ||  // InventoryScreen/CreativeScreen/RecipeBookScreen (NOT a container)
+			hs instanceof AnvilScreen ||  // These get false-flagged for "duplicate map in container" with i/o slots
 			hs instanceof CraftingScreen ||
 			hs instanceof CartographyTableScreen)
 		{
@@ -127,7 +127,7 @@ public final class UpdateContainerContents implements TickListener{
 			if(!asterisks.isEmpty()){
 //				Main.LOGGER.info("ContainerHighlighter: colored title! asterisks.size()="+asterisks.size());
 				customTitle = hs.getTitle().copy();
-				asterisks.stream().distinct() // The "distinct" only exists in case of configurations where 2+ settings share 1 color
+				asterisks.stream().distinct()  // The "distinct" only exists in case of configurations where 2+ settings share 1 color
 					.forEach(color -> customTitle.append(Component.literal("*").withColor(color).withStyle(ChatFormatting.BOLD)));
 			}
 		}

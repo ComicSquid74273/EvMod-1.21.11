@@ -33,7 +33,7 @@ public class CommandSendAs{
 							message = message.substring(0, 200);
 						}
 						while(((name+message).getBytes(StandardCharsets.UTF_8).length&15) != 0) name += ' ';
-						message = name + message;//if name.length==16, there will be no space between name and msg, otherwise there will be.
+						message = name + message;  //if name.length==16, there will be no space between name and msg, otherwise there will be.
 						rms.sendBotMessage(Command.P2P_CHAT_AS, /*udp=*/false, 5000, message.getBytes(StandardCharsets.UTF_8), null);
 						return SINGLE_SUCCESS;
 					})

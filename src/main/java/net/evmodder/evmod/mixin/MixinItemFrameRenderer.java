@@ -48,13 +48,13 @@ abstract class MixinItemFrameRenderer<T extends ItemFrame>{
 		}
 	}
 
-	private static final boolean isLookingInGeneralDirection(final Entity entity){ // Accessed by: MixinItemFrameRenderer
+	private static final boolean isLookingInGeneralDirection(final Entity entity){  // Accessed by: MixinItemFrameRenderer
 //		Entity player = MinecraftClient.getInstance().player;
 //		Vec3d vec3d2 = new Vec3d(entity.getX() - player.getX(), entity.getEyeY() - player.getEyeY(), entity.getZ() - player.getZ());
 		// maybe use entity.getCenterPos() instead?
 		Vec3 vec3d2 = entity.getEyePosition().subtract(Minecraft.getInstance().player.getEyePosition());
-		double d = vec3d2.length(); // Calls Math.sqrt()
-		vec3d2 = new Vec3(vec3d2.x / d, vec3d2.y / d, vec3d2.z / d); // normalize
+		double d = vec3d2.length();  // Calls Math.sqrt()
+		vec3d2 = new Vec3(vec3d2.x / d, vec3d2.y / d, vec3d2.z / d);  // normalize
 		double e = AccessorUpdateItemFrameContents.clientRotationNormalized().dot(vec3d2);
 //		final double asdf = player.squaredDistanceTo(entity) > 5*5 ? 0.3d : 0.1d;
 		final double asdf = vec3d2.lengthSqr() > 5*5 ? 0.3d : 0.1d;
@@ -77,7 +77,7 @@ abstract class MixinItemFrameRenderer<T extends ItemFrame>{
 			T ignoredFrame, ItemFrameRenderState ifers, float ignoredPartialTick, CallbackInfo ignoredCallback){
 		ifers.isInvisible |= shouldBeInvis(ifers);
 	}
-	*///?}
+	*/  //?}
 	//? 1.21.4 {
 	/*@Inject(method="render", at=@At("HEAD"))
 	private final void disableItemFrameFrameRenderingWhenHoldingMaps(
@@ -89,7 +89,7 @@ abstract class MixinItemFrameRenderer<T extends ItemFrame>{
 
 	@Inject(method="shouldShowName", at=@At("HEAD"), cancellable=true)
 	private final void modifyHasLableBasedOnMapState(T itemFrameEntity, double squaredDistanceToCamera, CallbackInfoReturnable<Boolean> cir){
-		if(!Configs.Visuals.MAP_HIGHLIGHT_IFRAME.getBooleanValue()) return; // Feature is disabled
+		if(!Configs.Visuals.MAP_HIGHLIGHT_IFRAME.getBooleanValue()) return;  // Feature is disabled
 		if(isHudHidden(client)) return;
 
 		final ItemStack stack = itemFrameEntity.getItem();
@@ -105,7 +105,7 @@ abstract class MixinItemFrameRenderer<T extends ItemFrame>{
 		if(hl == Highlight.MULTI_HUNG && Configs.Generic.SKIP_MONO_COLOR_MAPS.getBooleanValue() && MapColorUtils.isMonoColor(state.colors)){
 			// no-op
 		}
-		else if(hl == Highlight.INV_OR_NESTED_INV){ // Show this label even if not looking in general direction
+		else if(hl == Highlight.INV_OR_NESTED_INV){  // Show this label even if not looking in general direction
 			cir.setReturnValue(true);
 		}
 		else if(!isLookingInGeneralDirection(itemFrameEntity)){
@@ -116,12 +116,12 @@ abstract class MixinItemFrameRenderer<T extends ItemFrame>{
 		else if((squaredDistanceToCamera=client.player.distanceToSqr(itemFrameEntity)) <= 16d/*4*4*/ && stack.getCustomName() != null){
 //			Main.LOGGER.info("right up in front: "+stack.getName().getString()+", squaredDistanceToCamera="+squaredDistanceToCamera);
 			// no-op
-			if(!state.locked) MapGroupUtils.getIdForMapState(state, /*evict*/true); // Evict cache for maps being directly looked at
+			if(!state.locked) MapGroupUtils.getIdForMapState(state, /*evict*/true);  // Evict cache for maps being directly looked at
 		}
-		else if(hl == Highlight.NOT_IN_CURR_GROUP){ // Show this label as long as dist >4
+		else if(hl == Highlight.NOT_IN_CURR_GROUP){  // Show this label as long as dist >4
 			cir.setReturnValue(true);
 		}
-		else if(squaredDistanceToCamera <= 400d/*20*20*/ && client.player.hasLineOfSight(itemFrameEntity)){ // Show other labels only if LOS and dist <= 20
+		else if(squaredDistanceToCamera <= 400d/*20*20*/ && client.player.hasLineOfSight(itemFrameEntity)){  // Show other labels only if LOS and dist <= 20
 			cir.setReturnValue(true);
 		}
 		AccessorUpdateItemFrameContents.hasLabelCache().put(itemFrameEntity.getId(), cir.getReturnValue());
@@ -131,7 +131,7 @@ abstract class MixinItemFrameRenderer<T extends ItemFrame>{
 
 	@Inject(method="getNameTag", at=@At("INVOKE"), cancellable = true)
 	public void getDisplayName_Mixin(T itemFrameEntity, CallbackInfoReturnable<Component> cir){
-		if(!Configs.Visuals.MAP_HIGHLIGHT_IFRAME.getBooleanValue()) return; // Feature is disabled
+		if(!Configs.Visuals.MAP_HIGHLIGHT_IFRAME.getBooleanValue()) return;  // Feature is disabled
 		final ItemStack stack = itemFrameEntity.getItem();
 		if(stack == null || stack.isEmpty());
 		final MapItemSavedData state = MapItem.getSavedData(stack, itemFrameEntity.level());

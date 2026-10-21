@@ -19,9 +19,9 @@ public class ServerJoinListener{
 	private long loadedAt/*, joinedAt*/;
 	private double loadedAtX, loadedAtZ;
 	private Timer joinMsgTimer, invLoadTimer;
-	private final boolean WAIT_FOR_MOVEMENT = true; // TODO: put these into config
+	private final boolean WAIT_FOR_MOVEMENT = true;  // TODO: put these into config
 
-	public static long lastJoinTs; // TODO: remove horrible public static eww
+	public static long lastJoinTs;  // TODO: remove horrible public static eww
 
 	private final void loadMapStateCaches(Minecraft client){
 		if(Configs.Generic.MAP_CACHE_BY_ID.getBooleanValue()) MapStateCacher.loadMapStatesById();
@@ -44,7 +44,7 @@ public class ServerJoinListener{
 			if(Configs.Generic.MAP_CACHE.getDefaultOptionListValue() != OptionMapStateCache.OFF){
 				if(invLoadTimer != null){invLoadTimer.cancel(); invLoadTimer = null;}
 				if(!client.player.getInventory().isEmpty()) loadMapStateCaches(client);
-				else{// Inventory not loaded (can also mean still in queue)
+				else{  // Inventory not loaded (can also mean still in queue)
 					invLoadTimer = new Timer();
 					invLoadTimer.schedule(new TimerTask(){@Override public void run(){
 						if(client.player == null){cancel(); invLoadTimer.cancel(); invLoadTimer = null;}
@@ -52,7 +52,7 @@ public class ServerJoinListener{
 							cancel(); invLoadTimer.cancel(); invLoadTimer = null;
 							loadMapStateCaches(client);
 						}
-					}}, 1l, 50l); // check 20 times per second
+					}}, 1l, 50l);  // check 20 times per second
 				}
 			}
 			if(Configs.Database.SHARE_JOIN_QUIT.getBooleanValue() && rms != null){
@@ -61,7 +61,7 @@ public class ServerJoinListener{
 
 //			if(currServerHashCode != Main.HASHCODE_2B2T) return;
 
-			if(joinMsgTimer != null) joinMsgTimer.cancel(); // Restart timer
+			if(joinMsgTimer != null) joinMsgTimer.cancel();  // Restart timer
 
 			//joinedAt = System.currentTimeMillis();
 			joinMsgTimer = new Timer();
@@ -81,8 +81,8 @@ public class ServerJoinListener{
 				//Main.LOGGER.info("Stuff seems loaded, waiting for player movement");
 				if(WAIT_FOR_MOVEMENT){
 					final double diffX = client.player.getX() - loadedAtX, diffZ = client.player.getZ() - loadedAtZ;
-					if(Math.abs(diffX) <= 1d && Math.abs(diffZ) <= 1d) return; // Didn't move (enough)
-					if(Math.abs(diffX) > 70d || Math.abs(diffZ) > 70d){loadedAtX += diffX; loadedAtZ += diffZ; return;} // Teleported
+					if(Math.abs(diffX) <= 1d && Math.abs(diffZ) <= 1d) return;  // Didn't move (enough)
+					if(Math.abs(diffX) > 70d || Math.abs(diffZ) > 70d){loadedAtX += diffX; loadedAtZ += diffZ; return;}  // Teleported
 					//client.player.sendMessage(Text.literal(
 					//	"Movement: "+loadedAtX+","+loadedAtZ+"->"+client.player.getX()+","+client.player.getZ()), false);
 				}

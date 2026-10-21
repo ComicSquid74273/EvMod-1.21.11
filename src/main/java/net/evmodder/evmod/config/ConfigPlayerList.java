@@ -16,7 +16,7 @@ import net.evmodder.evmod.apis.MojangProfileLookup;
 import net.evmodder.evmod.apis.MojangProfileLookupConstants;
 
 public class ConfigPlayerList extends ConfigStringList{
-	public static class NameAndUUID{ // Basically, a record but mutable :P
+	public static class NameAndUUID{  // Basically, a record but mutable :P
 		String name; UUID uuid;
 		public NameAndUUID(String n, UUID u){name=n; uuid=u;}
 	}
@@ -51,7 +51,7 @@ public class ConfigPlayerList extends ConfigStringList{
 			NameAndUUID player = new NameAndUUID(n, null);
 			UUID uuid = MojangProfileLookup.uuidLookup.get(n, u->{
 				if(u != MojangProfileLookupConstants.UUID_404) player.uuid=u;
-				else synchronized(players){ // Not a real player name
+				else synchronized(players){  // Not a real player name
 //					strings.remove(n);
 					players.removeIf(p -> p.name == n);
 //					onValueChanged();
@@ -86,7 +86,7 @@ public class ConfigPlayerList extends ConfigStringList{
 			strings.add(cachedName);
 			players.add(new NameAndUUID(cachedName, UUID.fromString(uuidStr)));
 //			MojangProfileLookup.nameLookup.get(uuids.get(i), null); // Fetch up-to-date username
-			MojangProfileLookup.nameLookup.putIfAbsent(players.get(i).uuid, cachedName); // Use cached name in the meantime
+			MojangProfileLookup.nameLookup.putIfAbsent(players.get(i).uuid, cachedName);  // Use cached name in the meantime
 		}
 	}
 

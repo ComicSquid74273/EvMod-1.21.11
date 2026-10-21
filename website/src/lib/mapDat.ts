@@ -45,8 +45,8 @@ export function encodeMapDataToDat(mapData: MapData, locked = true): Blob {
   if (colors.length !== 16384) throw new Error("DAT colors array must be exactly 16384 bytes");
 
   const out: number[] = [];
-  writeTagHeader(out, 10, ""); // root compound
-  writeTagHeader(out, 10, "data"); // data compound
+  writeTagHeader(out, 10, "");  // root compound
+  writeTagHeader(out, 10, "data");  // data compound
 
   writeTagHeader(out, 1, "scale"); out.push(0);
   writeTagHeader(out, 3, "xCenter"); writeI32(out, 0);
@@ -57,8 +57,8 @@ export function encodeMapDataToDat(mapData: MapData, locked = true): Blob {
   writeTagHeader(out, 1, "locked"); out.push(locked ? 1 : 0);
   writeTagHeader(out, 7, "colors"); writeI32(out, colors.length); for (const b of colors) out.push(b);
 
-  out.push(0); // end data compound
-  out.push(0); // end root compound
+  out.push(0);  // end data compound
+  out.push(0);  // end root compound
 
   return new Blob([gzip(new Uint8Array(out))], { type: "application/octet-stream" });
 }

@@ -36,7 +36,7 @@ public class CommandMapArtGroup{
 	private static final String DIR = "mapart_groups/";
 	private static final String FILE_EXT = ".group";
 	private static final String PREFIX = Main.MOD_ID+".command.mapartgroup.";
-	private final int ERROR_COLOR = 16733525/*&c*/, CREATE_COLOR = 5635925/*&a*/, DONE_COLOR = 16755200/*&6*/; // &2=43520
+	private final int ERROR_COLOR = 16733525/*&c*/, CREATE_COLOR = 5635925/*&a*/, DONE_COLOR = 16755200/*&6*/;  // &2=43520
 	private final String CONFIRM;
 	private HashSet<UUID> activeGroup;
 	private String activeGroupName;
@@ -50,7 +50,7 @@ public class CommandMapArtGroup{
 //			translation = Text.translatableWithFallback(PREFIX+"subcommand."+name, name).getString();
 //			translation = StringUtils.getTranslatedOrFallback(PREFIX+"subcommand."+name, name);
 			translation = StringUtils.getTranslatedOrFallback(PREFIX+"subcommand."+name,
-					name.equals("expand") ? "append" : name.equals("add") ? "insert" : name);//TODO: omg remove this hack
+					name.equals("expand") ? "append" : name.equals("add") ? "insert" : name);  //TODO: omg remove this hack
 		}
 	};
 
@@ -133,7 +133,7 @@ public class CommandMapArtGroup{
 		if(!in1Not2.isEmpty()){
 			final ByteBuffer bb1 = ByteBuffer.allocate(in1Not2.size()*16);
 			for(UUID uuid : in1Not2) bb1.putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits());
-			saveGroupFile("in_"+groupName1+"_NOT_IN_"+groupName2, bb1.array());//TODO: comment out this line unless arg for write-to-file
+			saveGroupFile("in_"+groupName1+"_NOT_IN_"+groupName2, bb1.array());  //TODO: comment out this line unless arg for write-to-file
 			if(in2Not1.isEmpty()){
 				colorIds1.removeIf(in1Not2::contains);
 				MapGroupUtils.setCurrentGroup(activeGroup = colorIds1);
@@ -146,7 +146,7 @@ public class CommandMapArtGroup{
 		if(!in2Not1.isEmpty()){
 			final ByteBuffer bb2 = ByteBuffer.allocate(in2Not1.size()*16);
 			for(UUID uuid : in2Not1) bb2.putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits());
-			saveGroupFile("in_"+groupName2+"_NOT_IN_"+groupName1, bb2.array());//TODO: comment out this line unless arg for write-to-file
+			saveGroupFile("in_"+groupName2+"_NOT_IN_"+groupName1, bb2.array());  //TODO: comment out this line unless arg for write-to-file
 //			if(in1Not2.isEmpty()){
 			int colorIds2OriginalSize = colorIds2.size();
 				colorIds2.removeIf(in2Not1::contains);
@@ -160,7 +160,7 @@ public class CommandMapArtGroup{
 //					source.sendFeedback(Text.literal("Created group '"+activeGroupName+"' and set as active (ids: "+colorIds2.size()+")").withColor(CREATE_COLOR));
 				}
 				else{
-					activeGroupName = "intersection_"+groupName1+"_and_"+groupName2; // Set intersection
+					activeGroupName = "intersection_"+groupName1+"_and_"+groupName2;  // Set intersection
 					source.sendError(Component.translatable(PREFIX+"compare.intersection",
 							colorIds1.size(), in1Not2.size(), colorIds2OriginalSize, in2Not1.size(), colorIds2.size()).withColor(CREATE_COLOR));
 //					source.sendFeedback(Text.literal("Using set-intersection as active group (ids: ("
@@ -258,7 +258,7 @@ public class CommandMapArtGroup{
 				return 1;
 			}
 		}
-		else if(cmd == Command.ADD){//&& groups2 == null (also already implied groups2 len==1)
+		else if(cmd == Command.ADD){ //&& groups2 == null (also already implied groups2 len==1)
 			source.sendError(Component.translatable(PREFIX+"add.invalidArg").withColor(ERROR_COLOR));
 //			source.sendError(Text.literal("Must provide a hashcode (UUID)").withColor(ERROR_COLOR));
 			return 1;
@@ -314,7 +314,7 @@ public class CommandMapArtGroup{
 //						+"' (ids: "+ (oldSize==0 ? "" : oldSize+"\u2192") + mapsInGroup.size()+")"
 //						+(newActiveGroup.equals(activeGroupName) ? "" : " and set as active.")
 //						).withColor(CREATE_COLOR));
-				if(cmd == Command.ADD) return 1; // Don't update current active group
+				if(cmd == Command.ADD) return 1;  // Don't update current active group
 			}
 		}
 		else if(newActiveGroup.equals(activeGroupName)){

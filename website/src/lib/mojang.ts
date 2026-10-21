@@ -7,7 +7,7 @@ import { parseDashedUuid, type DashedUuid } from "@/lib/uuid";
 const PROFILE_CACHE_KEY = "evmod_mojang_profile_cache";
 const LOOKUP_TIMEOUT_MS = 3000;
 const POSITIVE_TTL_MS = 24 * 60 * 60 * 1000;
-const CONTAINER_FLAG_NIBBLE_INDEX = 17; // Matches Java: (uuid.getMostSignificantBits() & ~1L) | bit
+const CONTAINER_FLAG_NIBBLE_INDEX = 17;  // Matches Java: (uuid.getMostSignificantBits() & ~1L) | bit
 
 interface CachedProfile {
   name: string | null;

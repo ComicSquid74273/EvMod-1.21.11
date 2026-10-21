@@ -122,7 +122,7 @@ abstract class MixinClientPacketListener{
 				saveMapsForServer(addr, seenForServer);
 				pendingFileSave = false;
 			}
-		}}, 5_000l); // 5s
+		}}, 5_000l);  // 5s
 	}
 
 	@Inject(method="handleMapItemData", at=@At("TAIL"))
@@ -147,7 +147,7 @@ abstract class MixinClientPacketListener{
 		final HashSet<UUID> seenForServer;
 		synchronized(mapsSaved){
 			seenForServer = mapsSaved.computeIfAbsent(filename, this::loadMapsForServer);
-			if(!seenForServer.add(colorsId)) return; // Already seen
+			if(!seenForServer.add(colorsId)) return;  // Already seen
 			if(oldColorsId != null && !oldColorsId.equals(colorsId)){
 //				Main.LOGGER.info("MapDB: MapUpdateS2CPacket packet changed state.colors for id"+id+", colordsId "+oldColorsId+" -> "+colorsId);
 				seenForServer.remove(oldColorsId);

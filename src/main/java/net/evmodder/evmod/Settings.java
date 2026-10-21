@@ -49,7 +49,7 @@ final class Settings{
 			final String key = line.substring(0, sep).trim();
 			final String value = line.substring(sep+1).trim();
 			if(key.isEmpty() || value.isEmpty()) continue;
-			config.put(key, value.equalsIgnoreCase("true")); // Prefer false when ambiguous
+			config.put(key, value.equalsIgnoreCase("true"));  // Prefer false when ambiguous
 		}
 		return config;
 	}
@@ -98,7 +98,7 @@ final class Settings{
 		cmdSendAs = database && extractConfigValue(settings, "command.sendas");
 		cmdTimeOnline = database && extractConfigValue(settings, "command.timeonline");
 
-		settings.remove("map_bot.loader"); // Retired feature; accept existing settings files.
+		settings.remove("map_bot.loader");  // Retired feature; accept existing settings files.
 		if(!settings.isEmpty()) Main.LOGGER.error("Unrecognized config setting(s)!: "+settings);
 
 		{//==================================================

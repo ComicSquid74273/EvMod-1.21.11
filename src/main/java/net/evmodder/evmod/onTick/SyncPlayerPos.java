@@ -96,7 +96,7 @@ public final class SyncPlayerPos implements TickListener{
 		}
 	}
 
-	private int NEXT_DUMMY_ID = -1000; // Custom ID for the client-side entity
+	private int NEXT_DUMMY_ID = -1000;  // Custom ID for the client-side entity
 	public SyncPlayerPos(){
 		ClientPlayConnectionEvents.DISCONNECT.register((ClientPacketListener _, Minecraft _) ->{
 			clearFakePlayers();
@@ -116,12 +116,12 @@ public final class SyncPlayerPos implements TickListener{
 					return;
 				}
 				final PlayerInfo entry = client.getConnection().getPlayerInfo(uuid);
-				if(entry == null){ // Not online!
+				if(entry == null){  // Not online!
 					if(removeFakePlayer(uuid)) Main.LOGGER.info("[EvMod] Removed dummy player (not online): "+uuid);
 					return;
 				}
 				final Player existingPlayer1 = world.getPlayerByUUID(uuid);
-				if(existingPlayer1 != null && existingPlayer1.getId() >= 0){ // Already loaded 1
+				if(existingPlayer1 != null && existingPlayer1.getId() >= 0){  // Already loaded 1
 					if(removeFakePlayer(uuid)) Main.LOGGER.info("[EvMod] Removed dummy player (real player loaded 1): "+existingPlayer1.getName().getString());
 					return;
 				}
@@ -157,7 +157,7 @@ public final class SyncPlayerPos implements TickListener{
 					/*d.moveTo(x, y, z, yaw, pitch);*/
 					//?}
 //					d.resetPosition(); // Sets prev X,Y,Z,yaw,pitch - already called by refreshPositionAndAngles()
-					world.addEntity(d); // Inject into world
+					world.addEntity(d);  // Inject into world
 					return new SyncedPlayer(d, now);
 				});
 				syncedPlayer.lastUpdateNs = now;

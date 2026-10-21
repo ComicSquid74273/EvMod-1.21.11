@@ -31,7 +31,7 @@ public final class ContainerOpenCloseListener implements TickListener{
 	private boolean waitingForEcToLoad, currentlyViewingEchest, currentlyViewingContainer;
 	private List<Slot> slots;
 
-	public static boolean echestCacheLoaded; // TODO: remove horrible public static vars
+	public static boolean echestCacheLoaded;  // TODO: remove horrible public static vars
 	public static HashSet<UUID> containerCachesLoaded = new HashSet<>();
 
 	@Override public final void onTickEnd(final Minecraft client){

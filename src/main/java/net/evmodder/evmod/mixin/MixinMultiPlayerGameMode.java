@@ -46,11 +46,11 @@ abstract class MixinMultiPlayerGameMode{
 //		MinecraftClient.getInstance().player.sendMessage(Text.literal("clickSlot: syncId="+syncId+",slot="+slot+",button="+button+",action="+action.name()), false);
 		if(player.isCreative()) return;
 //		if(action == SlotActionType.CLONE/* || action == SlotActionType.THROW || action == SlotActionType.QUICK_CRAFT*/) return;
-		if(syncId != player.containerMenu.containerId) return; // Vanilla sends no packet for a mismatched menu.
+		if(syncId != player.containerMenu.containerId) return;  // Vanilla sends no packet for a mismatched menu.
 		final boolean isBotted = ClickUtils.isThisClickBotted();
 		if(Configs.Generic.CLICK_FILTER_USER_INPUT.getBooleanValue() && !isBotted && ClickUtils.hasOngoingClicks()){
 			ci.cancel();
-			if(syncId == 0 && slot == 0 && button == 0 && action == ContainerInput.QUICK_MOVE) return; // QUICK_CRAFT sometimes sends duplicate fake QUICK_MOVE?
+			if(syncId == 0 && slot == 0 && button == 0 && action == ContainerInput.QUICK_MOVE) return;  // QUICK_CRAFT sometimes sends duplicate fake QUICK_MOVE?
 			sendSystem(Minecraft.getInstance().player, Component.literal("Discarding user click to protect an ongoing ClickOp").withColor(/*&c=*/16733525));
 //			MinecraftClient.getInstance().player.sendMessage(Text.literal("syncId="+syncId+",slot="+slot+",button="+button+",action="+action.name()), false);
 			return;
@@ -70,7 +70,7 @@ abstract class MixinMultiPlayerGameMode{
 			}
 			else if(!Configs.Generic.CLICK_LIMIT_USER_INPUT.getBooleanValue()) return;
 //			else if(syncId == 0 && slot == 0 && button == 0 && action == SlotActionType.QUICK_MOVE) return; // QUICK_CRAFT sends duplicate fake QUICK_MOVE?
-			else ci.cancel(); // Throw out clicks that exceed the limit!!
+			else ci.cancel();  // Throw out clicks that exceed the limit!!
 			Main.LOGGER.error("Discarded click in clickSlot() due to exceeding limit!"
 					+ " slot:"+slot+",button:"+button+",action:"+action.name());
 //			MinecraftClient.getInstance().player.sendMessage(Text.literal("syncId="+syncId+",slot="+slot+",button="+button+",action="+action.name()), false);

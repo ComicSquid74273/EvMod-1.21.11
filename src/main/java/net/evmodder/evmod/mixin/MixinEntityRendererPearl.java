@@ -46,7 +46,7 @@ abstract class MixinEntityRendererPearl{
 		if(isHudHidden(client)) return;
 		if(e instanceof ThrownEnderpearl == false) return;
 		final EpearlLookupFabric eplf = AccessorMain.getEpearlLookup();
-		if(eplf == null || eplf.isDisabled()) return; // Feature is disabled
+		if(eplf == null || eplf.isDisabled()) return;  // Feature is disabled
 
 		String name = eplf.getOwnerName((ThrownEnderpearl)e);
 		if(name == null) return;
@@ -54,13 +54,13 @@ abstract class MixinEntityRendererPearl{
 		XYZ xyz = new XYZ(e.getBlockX(), e.getBlockY()/4, e.getBlockZ());
 		HashMap<String, HashSet<Integer>> pearls = pearlsAtXYZ.get(xyz);
 		if(pearls == null){
-			xyz = new XYZ(xyz.x(), xyz.y()+1, xyz.z());//try one block above
+			xyz = new XYZ(xyz.x(), xyz.y()+1, xyz.z());  //try one block above
 			pearls = pearlsAtXYZ.get(xyz);
 			if(pearls == null){
-				xyz = new XYZ(xyz.x(), xyz.y()-2, xyz.z());//try one block below
+				xyz = new XYZ(xyz.x(), xyz.y()-2, xyz.z());  //try one block below
 				pearls = pearlsAtXYZ.get(xyz);
 				if(pearls == null){
-					xyz = new XYZ(xyz.x(), xyz.y()+1, xyz.z());//restore to original Y and add pearl
+					xyz = new XYZ(xyz.x(), xyz.y()+1, xyz.z());  //restore to original Y and add pearl
 					pearls = new HashMap<>(1);
 					if(pearlsAtXYZ.isEmpty()){
 						new Timer().scheduleAtFixedRate(new TimerTask(){@Override public void run(){

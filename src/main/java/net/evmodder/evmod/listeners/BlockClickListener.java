@@ -14,7 +14,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 public final class BlockClickListener{
 //	public static BlockPos lastClickedBlock;
-	public static UUID lastClickedBlockHash; // TODO: Ewwww public static :(
+	public static UUID lastClickedBlockHash;  // TODO: Ewwww public static :(
 	private final ByteBuffer posData;
 
 	private final UUID getIdForBlockPos(final Level world, final BlockPos pos){
@@ -24,7 +24,7 @@ public final class BlockClickListener{
 		return UUID.nameUUIDFromBytes(posData.array());
 	}
 
-	public BlockClickListener(){ // TODO: currently called by ContainerOpenCloseListener
+	public BlockClickListener(){  // TODO: currently called by ContainerOpenCloseListener
 		posData = ByteBuffer.allocate(13);
 		// TODO: add later phase, after ActionResult is determined to be PASS
 		UseBlockCallback.EVENT.register((Player _, Level world, InteractionHand _, BlockHitResult hitResult) -> {

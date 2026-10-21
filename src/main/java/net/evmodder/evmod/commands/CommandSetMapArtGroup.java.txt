@@ -20,7 +20,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 
 public class CommandSetMapArtGroup{
-	private final int MAX_MAPS_IN_INV_AND_ECHEST = 64*27*(36+27); // 108864
+	private final int MAX_MAPS_IN_INV_AND_ECHEST = 64*27*(36+27);  // 108864
 
 //	private int countMapIds(ItemStack stack, ClientWorld world){
 //		if(stack.isEmpty()) return 0;
@@ -136,7 +136,7 @@ public class CommandSetMapArtGroup{
 							}
 							catch(IOException e){e.printStackTrace(); return null;}
 							// Lock the suggestions after we've modified them.
-							return builder.buildFuture();// why not .build() ?
+							return builder.buildFuture();  // why not .build() ?
 					})
 					.executes(this::runCommandWithGroupName)
 					.then(

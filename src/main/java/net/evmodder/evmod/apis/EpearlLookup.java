@@ -46,8 +46,8 @@ public abstract class EpearlLookup{
 
 	private final Logger LOGGER;
 	private final Path cacheDirectory;
-	private static final Object clientFileLock = new Object(); // Also serialize multiple lookup instances in one JVM.
-	private final HashSet<String> worldFiles = new HashSet<>(); // Files whose row format has been checked this session.
+	private static final Object clientFileLock = new Object();  // Also serialize multiple lookup instances in one JVM.
+	private final HashSet<String> worldFiles = new HashSet<>();  // Files whose row format has been checked this session.
 
 	private static final PearlDataClient PDC_404 = new PearlDataClient(UUID_404, 0, 0, 0);
 	private static final PearlDataClient PDC_LOADING = new PearlDataClient(UUID_LOADING, 0, 0, 0);
@@ -65,7 +65,7 @@ public abstract class EpearlLookup{
 	private record Anchor(double x, double z, int y, long expires){}
 	private final HashMap<UUID, Anchor> anchors = new HashMap<>();
 	private volatile RemoteServerSender.ServerDescriptor server;
-	private static final long FILE_HEADER = 0x4556504541524c31L; // EVPEARL1: 60-byte rows, including world identity.
+	private static final long FILE_HEADER = 0x4556504541524c31L;  // EVPEARL1: 60-byte rows, including world identity.
 
 	private static UUID scopeHash(String value){
 		try{
@@ -94,7 +94,7 @@ public abstract class EpearlLookup{
 		Anchor anchor = anchors.get(pearl);
 		if(anchor == null || anchor.x() != x || anchor.z() != z || now >= anchor.expires()){
 			final int ay = PearlPositionKey.findAnchor(x, y, z, blocks);
-			if(ay == PearlPositionKey.PENDING_Y) return null; // Never turn unloaded geometry or piston motion into an unknown-key write.
+			if(ay == PearlPositionKey.PENDING_Y) return null;  // Never turn unloaded geometry or piston motion into an unknown-key write.
 			anchors.put(pearl, anchor = new Anchor(x, z, ay, now+500));
 		}
 		return PearlPositionKey.encode(dimensionId, x, anchor.y(), z);
@@ -332,17 +332,17 @@ public abstract class EpearlLookup{
 						final HashMap<UUID, PearlDataClient> entries = decodeClientFile(bytes);
 						for(UUID key : diskEntries.keySet()) if(!entries.containsKey(key)){
 							remove(key);
-							remoteNeedsStore.remove(key); // Reobserving an uncached owner will submit it again.
+							remoteNeedsStore.remove(key);  // Reobserving an uncached owner will submit it again.
 						}
 						entries.forEach((key, value)->{
 							if(!value.equals(diskEntries.get(key))){
-								put(key, value); // Also replaces a session-cached miss.
+								put(key, value);  // Also replaces a session-cached miss.
 								storeRetryAfter.remove(key, STORE_CONFLICT);
 							}
 						});
 						diskEntries = entries;
 						diskStamp = stamp;
-						missingSince.clear(); // Conservatively restart absence after any concurrent disk write.
+						missingSince.clear();  // Conservatively restart absence after any concurrent disk write.
 					}
 				}
 				catch(IOException e){missingSince.clear(); LOGGER.error("[EPL] Unable to refresh shared cache "+DB_FILENAME, e);}
@@ -360,7 +360,7 @@ public abstract class EpearlLookup{
 		}
 		@Override protected PearlDataClient load(UUID key){
 			LOGGER.debug("[EpearlLookup] Fetch ownerUUID called for pearlUUID: "+key+" at "+positions.get(key));
-			final LookupPosition xyz = positions.get(key); // The caller captured both world and server before starting the loader thread.
+			final LookupPosition xyz = positions.get(key);  // The caller captured both world and server before starting the loader thread.
 			if(xyz == null || xyz.server() == null || xyz.server().singleplayer()){
 				LOGGER.info("[EpearlLookup] Database server is disabled (A). Returning "+NAME_U_404);
 				return PDC_404;
@@ -426,7 +426,7 @@ public abstract class EpearlLookup{
 		if(cache == null) return;
 		cache.refreshDisk();
 		synchronized(cache){
-			int budget = 16; // Bound network bursts and local disk rewrites per scan, per key type.
+			int budget = 16;  // Bound network bursts and local disk rewrites per scan, per key type.
 			for(Entry<UUID, PearlDataClient> entry : cache.getCache().entrySet()){
 				final UUID key = entry.getKey();
 				final PearlDataClient value = entry.getValue();
@@ -527,7 +527,7 @@ public abstract class EpearlLookup{
 		assert key != UUID_404 && key != UUID_LOADING;
 		assert pdc.owner != null && pdc.owner != UUID_404 && pdc.owner != UUID_LOADING;
 		final RSLoadingCache cache = cacheFor(keyIsUUID);
-		if(cache == null) return; // No world is active yet.
+		if(cache == null) return;  // No world is active yet.
 		synchronized(cache){
 			cache.missingSince.remove(key);
 			final PearlDataClient oldPdc = cache.getCached(key);
@@ -542,7 +542,7 @@ public abstract class EpearlLookup{
 				if(!oldPdc.equals(pdc)){
 					if(remoteSender != null && cache.USE_REMOTE_DB.get() && !Objects.equals(oldPdc.world(), pdc.world())) cache.remoteNeedsStore.add(key);
 					if(oldPdc.x() != pdc.x() || oldPdc.z() != pdc.z() || !Objects.equals(oldPdc.world(), pdc.world())) appendToClientFile(cache.DB_FILENAME, key, pdc);
-					cache.put(key, pdc); // Y bobbing does not append every movement.
+					cache.put(key, pdc);  // Y bobbing does not append every movement.
 				}
 				if(!cache.remoteNeedsStore.contains(key)) return;
 			}

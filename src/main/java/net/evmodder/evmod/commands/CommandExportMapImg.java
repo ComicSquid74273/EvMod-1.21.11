@@ -173,14 +173,14 @@ public final class CommandExportMapImg{
 			final String containerName = nameText != null ? nameText.getString() : name+"-slot"+i+":"+itemStack(stack).getItemName().getString();
 			if(container != null){
 				var subItems = nonEmptyItemViews(container).toList();
-				boolean subCombine = subItems.stream().noneMatch(s -> MapItem.getSavedData(s.get(DataComponents.MAP_ID), source.getLevel()) != null); // TODO: ?
+				boolean subCombine = subItems.stream().noneMatch(s -> MapItem.getSavedData(s.get(DataComponents.MAP_ID), source.getLevel()) != null);  // TODO: ?
 				int w = subCombine ? (int)Math.ceil(Math.sqrt(subItems.size())) : 9;
 				numExports += genImgForMapsInInv(source, subItems, containerName, w, subCombine);
 			}
 			else/*if(contents != null) already implied*/{
 				var subItems = bundleItems(contents).toList();
-				int w = (int)Math.ceil(Math.sqrt(subItems.size())); // Should max out at 8
-				numExports += genImgForMapsInInv(source, subItems, containerName, w, /*combine=*/true); // Combine nested bundles
+				int w = (int)Math.ceil(Math.sqrt(subItems.size()));  // Should max out at 8
+				numExports += genImgForMapsInInv(source, subItems, containerName, w, /*combine=*/true);  // Combine nested bundles
 			}
 		}
 		return numExports;
@@ -399,7 +399,7 @@ public final class CommandExportMapImg{
 			if(!player.hasLineOfSight(ife)) continue;
 			Vec3 vec3d2 = new Vec3(ife.getX()-player.getX(), ife.getEyeY()-player.getEyeY(), ife.getZ()-player.getZ());
 			final double d = vec3d2.length();
-			vec3d2 = new Vec3(vec3d2.x / d, vec3d2.y / d, vec3d2.z / d); // normalize
+			vec3d2 = new Vec3(vec3d2.x / d, vec3d2.y / d, vec3d2.z / d);  // normalize
 			final double e = vec3d.dot(vec3d2);
 			//e > 1.0d - 0.025d / d
 			final double uh = (1.0d - 0.1d/d) - e;
@@ -432,7 +432,7 @@ public final class CommandExportMapImg{
 	private final int runCommandForAllWalls(final CommandContext<FabricClientCommandSource> ctx){
 		final Pair<Integer, Integer> shape = getShapeArgOrNull(ctx);
 		final Map<MapWall, List<ItemFrame>> mapWalls = getItemFramesWithMaps(ctx.getSource().getPlayer()).stream().collect(Collectors.groupingBy(
-				ife -> new MapWall(ife.getNearestViewDirection(), ife.blockPosition().get(ife.getNearestViewDirection().getAxis())) // Group by MapWall
+				ife -> new MapWall(ife.getNearestViewDirection(), ife.blockPosition().get(ife.getNearestViewDirection().getAxis()))  // Group by MapWall
 		));
 		Main.LOGGER.info("CmdImgExport: runCommandWithAllMapWalls() num mapwalls: "+mapWalls.size());
 		int numMapsSaved = 0;
@@ -440,10 +440,10 @@ public final class CommandExportMapImg{
 		for(List<ItemFrame> mapWall : mapWalls.values()){
 //			Main.LOGGER.info("CmdImgExport: mapWall size A: "+mapWall.size());
 			final Map<Vec3i, ItemFrame> ifeLookup = mapWall.stream().collect(Collectors.toMap(
-					ItemFrame::blockPosition, // Key
-					Function.identity(), // Value
-					pickFirst, // Merge function (for key collisions)
-					HashMap::new // Map supplier
+					ItemFrame::blockPosition,  // Key
+					Function.identity(),  // Value
+					pickFirst,  // Merge function (for key collisions)
+					HashMap::new  // Map supplier
 				));
 //			Main.LOGGER.info("CmdImgExport: mapWall size B: "+ifeLookup.size());
 			while(!ifeLookup.isEmpty()){
@@ -467,26 +467,26 @@ public final class CommandExportMapImg{
 	private final int runCommandForAllNames(final CommandContext<FabricClientCommandSource> ctx){
 		final HashSet<String> seen = new HashSet<>();
 		final Map<MapWall, List<ItemFrame>> mapWalls = getItemFramesWithMaps(ctx.getSource().getPlayer()).stream()
-				.filter(ife -> ife.getItem().getCustomName() != null) // Only consider named maps
-				.filter(ife -> seen.add(ife.getItem().getCustomName().getString())) // Remove duplicate names
+				.filter(ife -> ife.getItem().getCustomName() != null)  // Only consider named maps
+				.filter(ife -> seen.add(ife.getItem().getCustomName().getString()))  // Remove duplicate names
 				.collect(Collectors.groupingBy(
-						ife -> new MapWall(ife.getNearestViewDirection(), ife.blockPosition().get(ife.getNearestViewDirection().getAxis())) // Group by MapWall
+						ife -> new MapWall(ife.getNearestViewDirection(), ife.blockPosition().get(ife.getNearestViewDirection().getAxis()))  // Group by MapWall
 		));
 		int numMapsSaved = 0;
 		for(List<ItemFrame> mapWall : mapWalls.values()){
 			final Map<Vec3i, ItemFrame> ifeLookup = mapWall.stream().collect(Collectors.toMap(
-					ItemFrame::blockPosition, // Key
-					Function.identity(), // Value
-					pickFirst, // Merge function (for key collisions)
-					HashMap::new // Map supplier
+					ItemFrame::blockPosition,  // Key
+					Function.identity(),  // Value
+					pickFirst,  // Merge function (for key collisions)
+					HashMap::new  // Map supplier
 				));
 			while(!ifeLookup.isEmpty()){
 				List<ItemFrame> ifes = getConnectedFrames(ifeLookup, ifeLookup.values().iterator().next());
 				IdentityHashMap<ItemStack, ItemFrame> stackToIfe = ifes.stream().collect(Collectors.toMap(
-						ItemFrame::getItem, // Key: ItemStack (address)
-						Function.identity(), // Equivalent to `ife -> ife`
-						pickFirst, // Merge function for duplicates (will never be called for this case)
-						IdentityHashMap::new // Map supplier
+						ItemFrame::getItem,  // Key: ItemStack (address)
+						Function.identity(),  // Equivalent to `ife -> ife`
+						pickFirst,  // Merge function for duplicates (will never be called for this case)
+						IdentityHashMap::new  // Map supplier
 				));
 				List<ItemStack> mapItems = new LinkedList<>(stackToIfe.keySet());
 				while(!mapItems.isEmpty()){
@@ -530,10 +530,10 @@ public final class CommandExportMapImg{
 		Main.LOGGER.info("Using lookup name: "+mapName0);
 //		assert !mapName.isBlank();
 		IdentityHashMap<ItemStack, ItemFrame> stackToIfe = getItemFramesWithMaps(ctx.getSource().getPlayer()).stream().collect(Collectors.toMap(
-				ItemFrame::getItem, // Key: ItemStack (address)
-				Function.identity(), // Equivalent to `ife -> ife`
-				pickFirst, // Merge function for duplicates (will never be called for this case)
-				IdentityHashMap::new // Map supplier
+				ItemFrame::getItem,  // Key: ItemStack (address)
+				Function.identity(),  // Equivalent to `ife -> ife`
+				pickFirst,  // Merge function for duplicates (will never be called for this case)
+				IdentityHashMap::new  // Map supplier
 		));
 				//.collect(Collectors.toMap(ItemFrameEntity::getHeldItemStack, ife -> ife));
 //		assert stackToIfe.size() == iFrames.size();
@@ -558,7 +558,7 @@ public final class CommandExportMapImg{
 	}
 	private final int runCommandForPos1AndPos2(final CommandContext<FabricClientCommandSource> ctx){
 		final Vec3i pos1 = ClientBlockPosArgumentType.getBlockPos(ctx, "pos1");
-		final Vec3i pos2 = ctx.getArgument("pos2", BlockPos.class); // Equivalent to above
+		final Vec3i pos2 = ctx.getArgument("pos2", BlockPos.class);  // Equivalent to above
 		if(pos1.getX() != pos2.getX() && pos1.getY() != pos2.getY() && pos1.getZ() != pos2.getZ()){
 			ctx.getSource().sendError(Component.literal("iFrame selection area must be 2D (flat surface)"));
 			return -1;
@@ -589,11 +589,11 @@ public final class CommandExportMapImg{
 
 		final HashSet<String> seen = new HashSet<>();
 		Stream<ItemFrame> ifeStream = getItemFramesWithMaps(player).stream()
-				.filter(ife -> ife.getItem().getCustomName() != null); // Only consider named maps
+				.filter(ife -> ife.getItem().getCustomName() != null);  // Only consider named maps
 		if(SHOW_ONLY_IF_HAS_AZ) ifeStream = ifeStream.filter(ife -> ife.getItem().getCustomName().getString().matches(".*[a-zA-Z].*"));
-		ifeStream = ifeStream.filter(ife -> seen.add(ife.getItem().getCustomName().getString())); // Remove duplicate names
+		ifeStream = ifeStream.filter(ife -> seen.add(ife.getItem().getCustomName().getString()));  // Remove duplicate names
 		final Map<MapWall, List<ItemFrame>> mapWalls = ifeStream.collect(Collectors.groupingBy(
-				ife -> new MapWall(ife.getNearestViewDirection(), ife.blockPosition().get(ife.getNearestViewDirection().getAxis())) // Group by MapWall
+				ife -> new MapWall(ife.getNearestViewDirection(), ife.blockPosition().get(ife.getNearestViewDirection().getAxis()))  // Group by MapWall
 		));
 		for(List<ItemFrame> mapWall : mapWalls.values()){
 			List<ItemStack> mapItems = mapWall.stream().map(ife -> ife.getItem()).collect(Collectors.toCollection(LinkedList::new));

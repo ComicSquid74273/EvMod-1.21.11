@@ -81,7 +81,7 @@ public final class KeybindMapLoad{
 		return IntStream.range(0, 9).filter(hb -> isUsable(client.player.getInventory().getItem(hb))).toArray();
 	}
 
-	private final long WAIT_FOR_STATE_UPDATE = 101, STATE_LOAD_TIMEOUT = 5*1000; // 50 = 1 tick
+	private final long WAIT_FOR_STATE_UPDATE = 101, STATE_LOAD_TIMEOUT = 5*1000;  // 50 = 1 tick
 	private long stateUpdateWaitStart, stateLoadWaitStart, textureUpdateRequestClickIndex;
 	private final void loadMapArtFromBundles(){
 		final Minecraft client = Minecraft.getInstance();
@@ -115,7 +115,7 @@ public final class KeybindMapLoad{
 			if(contents.isEmpty()) continue;
 //			if(contents.stream().anyMatch(s -> s.getItem() != Items.FILLED_MAP)) continue; // Skip bundles with non-mapart contents
 			final int numToLoad = (int)bundleItems(contents).filter(s -> isUnloadedMapArt(client.level, s)).count();
-			if(numToLoad == 0) continue; // Skip bundles with already-loaded mapart
+			if(numToLoad == 0) continue;  // Skip bundles with already-loaded mapart
 //			Main.LOGGER.info("MapLoadBundle: found bundle with "+contents.size()+" maps");
 
 			final int depthToLoad;
@@ -131,19 +131,19 @@ public final class KeybindMapLoad{
 			final ArrayList<InvAction> subClicks = new ArrayList<>();
 			if(depthToLoad <= emptySlots.length){
 //				Main.LOGGER.info("MapLoadBundle: More empty slots than maps to load, able to use simple method");
-				subClicks.add(new InvAction(i, 0, ActionType.CLICK)); // Pick up bundle
+				subClicks.add(new InvAction(i, 0, ActionType.CLICK));  // Pick up bundle
 				int j;
 				for(j=0; j<depthToLoad; ++j){
 //					subClicks.add(takeFromBundle);
 //					subClicks.add(new InvAction(emptySlots[emptySlots.length-1-j], 0, ActionType.CLICK)); // Place map in empty slot
-					subClicks.add(new InvAction(emptySlots[emptySlots.length-1-j], 1, ActionType.CLICK)); // Place map in empty slot
+					subClicks.add(new InvAction(emptySlots[emptySlots.length-1-j], 1, ActionType.CLICK));  // Place map in empty slot
 				}
 				for(--j; j>=0; --j){
-					subClicks.add(new InvAction(emptySlots[emptySlots.length-1-j], 0, ActionType.CLICK)); // Take map from empty slot
-					if(j+1 == depthToLoad) waitForMapLoadClicks.put(subClicks.getLast(), null); // Wait for map states to load
+					subClicks.add(new InvAction(emptySlots[emptySlots.length-1-j], 0, ActionType.CLICK));  // Take map from empty slot
+					if(j+1 == depthToLoad) waitForMapLoadClicks.put(subClicks.getLast(), null);  // Wait for map states to load
 //					subClicks.add(stowIntoBundle); // Place map back into bundle
 				}
-				subClicks.add(new InvAction(i, 0, ActionType.CLICK)); // Put back bundle
+				subClicks.add(new InvAction(i, 0, ActionType.CLICK));  // Put back bundle
 			}
 			else if(emptyBundleSlot == -1){
 				int j=0;
@@ -155,14 +155,14 @@ public final class KeybindMapLoad{
 //						final int skipBundleSlots = contents.size()-depthToLoad;
 //						final int bundleSlotJ = BUNDLES_ARE_REVERSED ? contents.size()-k-1-skipBundleSlots : skipBundleSlots;
 //						subClicks.add(new InvAction(i, bundleSlotJ, ActionType.BUNDLE_SELECT)); // Select map in source bundle
-						subClicks.add(new InvAction(i, BUNDLES_ARE_REVERSED ? magic-k : magic, ActionType.BUNDLE_SELECT)); // Select map in source bundle
-						subClicks.add(takeFromBundle); // Take first map from bundle
-						subClicks.add(new InvAction(emptySlots[k], 0, ActionType.CLICK)); // Place map in next empty slot
+						subClicks.add(new InvAction(i, BUNDLES_ARE_REVERSED ? magic-k : magic, ActionType.BUNDLE_SELECT));  // Select map in source bundle
+						subClicks.add(takeFromBundle);  // Take first map from bundle
+						subClicks.add(new InvAction(emptySlots[k], 0, ActionType.CLICK));  // Place map in next empty slot
 					}
 					for(int h=0; h<k; ++h){
-						subClicks.add(new InvAction(emptySlots[h], 0, ActionType.CLICK)); // Take map from empty slot
-						if(h==0) waitForMapLoadClicks.put(subClicks.getLast(), null); // Wait for map states to load
-						subClicks.add(stowIntoBundle); // Place map back into source bundle
+						subClicks.add(new InvAction(emptySlots[h], 0, ActionType.CLICK));  // Take map from empty slot
+						if(h==0) waitForMapLoadClicks.put(subClicks.getLast(), null);  // Wait for map states to load
+						subClicks.add(stowIntoBundle);  // Place map back into source bundle
 					}
 				}
 			}
@@ -173,13 +173,13 @@ public final class KeybindMapLoad{
 				while(j<depthToLoad){
 					int k;
 					for(k=0; k<emptySlots.length && j<depthToLoad; ++k, ++j){
-						subClicks.add(takeFromBundle); // Take last map from bundle
-						subClicks.add(new InvAction(emptySlots[emptySlots.length-1-k], 0, ActionType.CLICK)); // Place map in next empty slot
+						subClicks.add(takeFromBundle);  // Take last map from bundle
+						subClicks.add(new InvAction(emptySlots[emptySlots.length-1-k], 0, ActionType.CLICK));  // Place map in next empty slot
 					}
 					for(int h=0; h<k; ++h){
-						subClicks.add(new InvAction(emptySlots[emptySlots.length-1-h], 0, ActionType.CLICK)); // Take map from empty slot
-						if(h==0) waitForMapLoadClicks.put(subClicks.getLast(), null); // Wait for map states to load
-						subClicks.add(stowIntoTempBundle); // Place map back into temp bundle
+						subClicks.add(new InvAction(emptySlots[emptySlots.length-1-h], 0, ActionType.CLICK));  // Take map from empty slot
+						if(h==0) waitForMapLoadClicks.put(subClicks.getLast(), null);  // Wait for map states to load
+						subClicks.add(stowIntoTempBundle);  // Place map back into temp bundle
 					}
 				}
 				for(j=0; j<depthToLoad; ++j){
@@ -193,7 +193,7 @@ public final class KeybindMapLoad{
 		}
 		if(clicks.isEmpty()){
 			Main.LOGGER.warn("MapLoadBundle: No bundles containing unloaded mapart in inventory");
-			return; // No bundles with maps
+			return;  // No bundles with maps
 		}
 
 		Main.LOGGER.info("MapLoadBundle: STARTED");
@@ -292,7 +292,7 @@ public final class KeybindMapLoad{
 				Arrays.stream(hbButtons).mapToObj(i -> client.player.getInventory().getNonEquipmentItems().get(27+i)).forEach(s -> requestTextureUpdate(client, s));
 			}
 
-			if(ClickUtils.calcAvailableClicks() < CLICK_BATCH_SIZE) return false; // Wait for clicks
+			if(ClickUtils.calcAvailableClicks() < CLICK_BATCH_SIZE) return false;  // Wait for clicks
 
 //			if(isUnloadedMapArt(client.world, client.player.getInventory().main.get(27+hbButtons[clickIndex % hbButtons.length]))) return false;
 			if(Arrays.stream(hbButtons).anyMatch(i -> isUnloadedMapArt(client.level, client.player.getInventory().getNonEquipmentItems().get(27+i)))){

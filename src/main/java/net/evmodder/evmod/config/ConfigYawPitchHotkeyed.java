@@ -17,8 +17,8 @@ import fi.dy.masa.malilib.util.StringUtils;
 public class ConfigYawPitchHotkeyed extends ConfigBase<ConfigYawPitchHotkeyed> implements IHotkey, IConfigSlider{
 	final IKeybind keybind;
 	final float defaultYaw, defaultPitch;
-	float yaw; // -180 to +180
-	float pitch; // -90 to +90
+	float yaw;  // -180 to +180
+	float pitch;  // -90 to +90
 	private boolean useSlider;
 
 	public ConfigYawPitchHotkeyed(String name, int defaultYaw, int defaultPitch, String defaultHotkey){
