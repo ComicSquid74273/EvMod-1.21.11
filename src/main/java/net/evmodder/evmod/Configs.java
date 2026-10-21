@@ -83,6 +83,10 @@ public final class Configs implements IConfigHandler{
 		public static final ConfigInteger MAPART_AUTOREMOVE_AFTER = new ConfigInteger("mapArtAutoRemoveThreshold", 2, 1, 20, /*useSlider=*/true).apply(GENERIC_KEY);
 		public static final ConfigDouble MAPART_AUTOREMOVE_REACH = new ConfigDouble("mapArtAutoRemoveReach", 3.9d).apply(GENERIC_KEY);
 
+		public static final ConfigBoolean SKIP_NULL_MAPS = new ConfigBoolean("ignoreNullMapsInHighlightsAndKeybinds", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean SKIP_VOID_MAPS = new ConfigBoolean("ignoreTransparentMapsInHighlightsAndKeybinds", true).apply(GENERIC_KEY);
+		public static final ConfigBoolean SKIP_MONO_COLOR_MAPS = new ConfigBoolean("ignoreMonoColorMapsInHightlights", false).apply(GENERIC_KEY);
+
 		public static final ConfigString WHISPER_PLAY_SOUND = new ConfigString("whisperPlaySound",
 				Main.mapArtFeaturesOnly ? "" : "{sound:block.note_block.bass, category:PLAYERS, volume:.7, pitch:2}").apply(GENERIC_KEY);
 		public static final ConfigString WHISPER_PLAY_SOUND_UNFOCUSED = new ConfigString("whisperPlaySoundUnfocused",
@@ -94,10 +98,6 @@ public final class Configs implements IConfigHandler{
 
 //		public static final ConfigBoolean MAPART_GROUP_INCLUDE_UNLOCKED = new ConfigBoolean("mapArtGroupIncludeUnlocked", true).apply(GENERIC_KEY);
 //		public static final ConfigBoolean MAPART_GROUP_ENFORCE_LOCKEDNESS_MATCH = new ConfigBoolean("mapArtGroupTreatUnlockedAsUnique", false).apply(GENERIC_KEY);
-
-		public static final ConfigBoolean SKIP_NULL_MAPS = new ConfigBoolean("ignoreNullMapsInHighlightsAndKeybinds", false).apply(GENERIC_KEY);
-		public static final ConfigBoolean SKIP_VOID_MAPS = new ConfigBoolean("ignoreTransparentMapsInHighlightsAndKeybinds", true).apply(GENERIC_KEY);
-		public static final ConfigBoolean SKIP_MONO_COLOR_MAPS = new ConfigBoolean("ignoreMonoColorMapsInHightlights", false).apply(GENERIC_KEY);
 
 		public static final ConfigStringList SCROLL_ORDER = new ConfigStringList("hotbarSlotItemTypeScrollOrder", ImmutableList.of(
 				"white, light_gray, gray, black, brown, red, orange, yellow, lime, green, cyan, light_blue, blue, purple, magenta, pink",
@@ -198,15 +198,15 @@ public final class Configs implements IConfigHandler{
 		public static final ConfigInteger STATIC_ENTITY_RENDER_LIMIT = new ConfigInteger("staticEntityRenderLimit", 16_000, 0, 1_000_000).apply(VISUALS_KEY);
 
 		public static final ConfigBoolean MAP_HIGHLIGHT_IFRAME = new ConfigBoolean("mapHighlightInIFrame", true).apply(VISUALS_KEY);
+		public static final ConfigBoolean MAP_HIGHLIGHT_CONTAINER_NAME = new ConfigBoolean("mapHighlightInContainerName", true).apply(VISUALS_KEY);
 		public static final ConfigBoolean MAP_HIGHLIGHT_TOOLTIP = new ConfigBoolean("mapHighlightInTooltip", true).apply(VISUALS_KEY);
 		public static final ConfigBoolean MAP_HIGHLIGHT_HOTBAR_HUD = new ConfigBoolean("mapHighlightInHotbarHUD", true).apply(VISUALS_KEY);
-		public static final ConfigBoolean MAP_HIGHLIGHT_CONTAINER_NAME = new ConfigBoolean("mapHighlightInContainerName", true).apply(VISUALS_KEY);
 
-		public static final ConfigColor MAP_COLOR_UNLOADED = new ConfigColor("highlightColorUnloaded", "#FFC8AAD2").apply(VISUALS_KEY);  // 13150930 Peach
-		public static final ConfigColor MAP_COLOR_UNLOCKED = new ConfigColor("highlightColorUnlocked", "#FFE03165").apply(VISUALS_KEY);  // 14692709 Redish
-		public static final ConfigColor MAP_COLOR_UNNAMED = new ConfigColor("highlightColorUnnamed", "#FFEED7D7").apply(VISUALS_KEY);  // 15652823 Pink
-		public static final ConfigColor MAP_COLOR_NOT_IN_GROUP = new ConfigColor("highlightColorNotInGroup", "#FF0AC864").apply(VISUALS_KEY);  // 706660 Green
 		public static final ConfigColor MAP_COLOR_IN_INV = new ConfigColor("highlightColorInInv", "#FFB4FFFF").apply(VISUALS_KEY);  // 11862015 Aqua
+		public static final ConfigColor MAP_COLOR_NOT_IN_GROUP = new ConfigColor("highlightColorNotInGroup", "#FF0AC864").apply(VISUALS_KEY);  // 706660 Green
+		public static final ConfigColor MAP_COLOR_UNLOCKED = new ConfigColor("highlightColorUnlocked", "#FFE03165").apply(VISUALS_KEY);  // 14692709 Redish
+		public static final ConfigColor MAP_COLOR_UNLOADED = new ConfigColor("highlightColorUnloaded", "#FFC8AAD2").apply(VISUALS_KEY);  // 13150930 Peach
+		public static final ConfigColor MAP_COLOR_UNNAMED = new ConfigColor("highlightColorUnnamed", "#FFEED7D7").apply(VISUALS_KEY);  // 15652823 Pink
 		public static final ConfigColor MAP_COLOR_IN_IFRAME = new ConfigColor("highlightColorInIFrame", "#FF55AAE6").apply(VISUALS_KEY);  // 5614310 Blue
 		public static final ConfigColor MAP_COLOR_MULTI_IFRAME = new ConfigColor("highlightColorMultiIFrame", "#FFB450E6").apply(VISUALS_KEY);  // 11817190 Purple
 		public static final ConfigColor MAP_COLOR_MULTI_CONTAINER = new ConfigColor("highlightColorMultiContainer", "#FFB450E6").apply(VISUALS_KEY);  // 11817190 Purple
@@ -300,13 +300,12 @@ public final class Configs implements IConfigHandler{
 		public static final ConfigHotkey MAP_COPY = new ConfigHotkey("mapCopy", "T", KeybindSettings.GUI).apply(HOTKEYS_KEY);
 		public static final ConfigHotkey MAP_LOAD = new ConfigHotkey("mapLoad", "E", KeybindSettings.GUI).apply(HOTKEYS_KEY);
 		public static final ConfigHotkey MAP_MOVE = new ConfigHotkey("mapMove", "T", GUI_ALLOW_EXTRA_KEYS).apply(HOTKEYS_KEY);
-		public static final ConfigHotkey MAP_MOVE_ALL_MODIFIER = new ConfigHotkey("mapMoveAllModifier", "LEFT_SHIFT", KeybindSettings.MODIFIER_GUI).apply(HOTKEYS_KEY);
-		public static final ConfigBoolean MAP_MOVE_IGNORE_AIR_POCKETS = new ConfigBoolean("mapMoveIgnoreAirPockets", false).apply(HOTKEYS_KEY);
-
 		public static final ConfigHotkey MAP_MOVE_NEIGHBORS = new ConfigHotkey("mapMoveNeighbors", "LEFT_ALT", KeybindSettings.MODIFIER_GUI).apply(HOTKEYS_KEY);
 
 		public static final ConfigHotkey MAP_MOVE_BUNDLE = new ConfigHotkey("mapMoveBundle", "D", KeybindSettings.GUI).apply(HOTKEYS_KEY);
 		public static final ConfigHotkey MAP_MOVE_BUNDLE_REVERSE = new ConfigHotkey("mapMoveBundleReverse", "", KeybindSettings.GUI).apply(HOTKEYS_KEY);
+		public static final ConfigHotkey MAP_MOVE_ALL_MODIFIER = new ConfigHotkey("mapMoveAllModifier", "LEFT_SHIFT", KeybindSettings.MODIFIER_GUI).apply(HOTKEYS_KEY);
+		public static final ConfigBoolean MAP_MOVE_IGNORE_AIR_POCKETS = new ConfigBoolean("mapMoveIgnoreAirPockets", false).apply(HOTKEYS_KEY);
 		public static final ConfigBoolean MAP_MOVE_BUNDLE_PREFER_STOW = new ConfigBoolean("mapMoveBundlePreferStow", true).apply(HOTKEYS_KEY);
 		public static final ConfigBoolean MAP_MOVE_BUNDLE_STOW_NON_SINGLE_MAPS = new ConfigBoolean("mapMoveBundleStowNonSingleMaps", true).apply(HOTKEYS_KEY);
 		public static final ConfigInteger MAP_MOVE_BUNDLE_TAKE_MAX = new ConfigInteger("mapMoveBundleTakeMax", 64, 1, 64).apply(HOTKEYS_KEY);
@@ -328,6 +327,8 @@ public final class Configs implements IConfigHandler{
 				Main.mapArtFeaturesOnly ? "" : "SEMICOLON", KeybindSettings.NOCANCEL).apply(HOTKEYS_KEY);
 		public static final ConfigBooleanHotkeyed EBOUNCE_TRAVEL_HELPER = new ConfigBooleanHotkeyed("eBounceTravelHelper", false,
 				Main.mapArtFeaturesOnly ? "" : "A", KeybindSettings.PRESS_ALLOWEXTRA).apply(HOTKEYS_KEY);
+		public static final ConfigYawPitchHotkeyed SNAP_ANGLE_1 = new ConfigYawPitchHotkeyed("snapAngle1", 148, -73, "").apply(HOTKEYS_KEY);
+		public static final ConfigYawPitchHotkeyed SNAP_ANGLE_2 = new ConfigYawPitchHotkeyed("snapAngle2", -159, -51, "").apply(HOTKEYS_KEY);
 		public static final ConfigHotkey EJECT_JUNK_ITEMS = new ConfigHotkey("ejectJunkItems",
 				Main.mapArtFeaturesOnly ? "" : "R", GUI_OR_INGAME_SETTINGS).apply(HOTKEYS_KEY);
 		public static final ConfigHotkey CRAFT_RESTOCK = new ConfigHotkey("craftingRestock", "TAB", GUI_ALLOW_EXTRA_KEYS).apply(HOTKEYS_KEY);
@@ -424,8 +425,6 @@ public final class Configs implements IConfigHandler{
 		public static final ConfigString PP_TOKEN_1 = new ConfigString("pearlPlusToken1", "").apply(HOTKEYS_KEY);
 		public static final ConfigHotkey PP_HOTKEY_1 = new ConfigHotkey("pearlPlusHotkey1", "").apply(HOTKEYS_KEY);
 
-		public static final ConfigYawPitchHotkeyed SNAP_ANGLE_1 = new ConfigYawPitchHotkeyed("snapAngle1", 148, -73, "").apply(HOTKEYS_KEY);
-		public static final ConfigYawPitchHotkeyed SNAP_ANGLE_2 = new ConfigYawPitchHotkeyed("snapAngle2", -159, -51, "").apply(HOTKEYS_KEY);
 
 		private static List<IConfigBase> configs;
 		private static final List<IConfigBase> getConfigs(Settings settings){
@@ -471,17 +470,10 @@ public final class Configs implements IConfigHandler{
 	//====================================================================================================
 	private static final String DATABASE_KEY = Main.MOD_ID+".config.database";
 	public static class Database{
-//		public static final ConfigOptionList PLACEMENT_WARN = new ConfigOptionList("placementWarn", MessageOutputType.ACTIONBAR).apply(DATABASE_KEY);
-		public static final ConfigInteger CLIENT_ID = new ConfigInteger("clientId", InitUtils.DUMMY_CLIENT_ID, 0, Integer.MAX_VALUE).apply(DATABASE_KEY);
-		public static final ConfigString CLIENT_KEY = new ConfigString("clientKey", "").apply(DATABASE_KEY);
-		public static final ConfigString ADDRESS = new ConfigString("address", Main.mapArtFeaturesOnly ? "" : "db.evmodder.net").apply(DATABASE_KEY);
 		public static final ConfigBoolean SAVE_MAPART = new ConfigBoolean("saveSeenMapArt", !Main.mapArtFeaturesOnly).apply(DATABASE_KEY);
-		public static final ConfigBoolean SHARE_MAPART = new ConfigBoolean("shareSeenMapArt", !Main.mapArtFeaturesOnly).apply(DATABASE_KEY);
 		public static final ConfigBoolean EPEARL_OWNERS_BY_UUID = new ConfigBoolean("saveEpearlOwnersByUUID", !Main.mapArtFeaturesOnly).apply(DATABASE_KEY);
 		public static final ConfigBoolean EPEARL_OWNERS_BY_XZ = new ConfigBoolean("saveEpearlOwnersByXZ", false).apply(DATABASE_KEY);
-		public static final ConfigBoolean SHARE_EPEARL_OWNERS = new ConfigBoolean("shareEpearlOwners", !Main.mapArtFeaturesOnly).apply(DATABASE_KEY);
 		public static final ConfigBoolean SAVE_IGNORES = new ConfigBoolean("saveIgnoreList", !Main.mapArtFeaturesOnly).apply(DATABASE_KEY);
-		public static final ConfigBoolean SHARE_IGNORES = new ConfigBoolean("shareIgnoreList", false).apply(DATABASE_KEY);
 		// Requires SAVE_IGNORES=true
 		public static final ConfigPlayerList BORROW_IGNORES = (ConfigPlayerList)new ConfigPlayerList("borrowIgnoreLists", 
 			List.of(
@@ -489,6 +481,14 @@ public final class Configs implements IConfigHandler{
 				new NameAndUUID("EvModder", UUID.fromString("0e314b60-29c7-4e35-bef3-3c652c8fb467"))
 			)
 		).apply(DATABASE_KEY);
+
+//		public static final ConfigOptionList PLACEMENT_WARN = new ConfigOptionList("placementWarn", MessageOutputType.ACTIONBAR).apply(DATABASE_KEY);
+		public static final ConfigInteger CLIENT_ID = new ConfigInteger("clientId", InitUtils.DUMMY_CLIENT_ID, 0, Integer.MAX_VALUE).apply(DATABASE_KEY);
+		public static final ConfigString CLIENT_KEY = new ConfigString("clientKey", "").apply(DATABASE_KEY);
+		public static final ConfigString ADDRESS = new ConfigString("address", Main.mapArtFeaturesOnly ? "" : "db.evmodder.net").apply(DATABASE_KEY);
+		public static final ConfigBoolean SHARE_MAPART = new ConfigBoolean("shareSeenMapArt", !Main.mapArtFeaturesOnly).apply(DATABASE_KEY);
+		public static final ConfigBoolean SHARE_EPEARL_OWNERS = new ConfigBoolean("shareEpearlOwners", !Main.mapArtFeaturesOnly).apply(DATABASE_KEY);
+		public static final ConfigBoolean SHARE_IGNORES = new ConfigBoolean("shareIgnoreList", false).apply(DATABASE_KEY);
 		// Note: I decided to disable this by default, and hide it, because running a single proxy/bot is much better suited for collecting this data
 		public static final ConfigBoolean SHARE_JOIN_QUIT = new ConfigBoolean("shareJoinQuit", false).apply(DATABASE_KEY);
 
