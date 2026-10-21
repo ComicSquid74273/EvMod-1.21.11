@@ -1,6 +1,8 @@
 package net.evmodder.evmod;
 
+import java.util.ArrayList;
 import java.util.List;
+import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -56,16 +58,29 @@ public class ConfigGui extends GuiConfigsBase{
 
 	@Override protected boolean useKeybindSearch(){return configs.guiTab == ConfigGuiTab.HOTKEYS.ordinal();}
 
+	private String remoteDatabaseSeparator(){
+		final String label = StringUtils.translate(Main.MOD_ID+".gui.label.remoteDatabase");
+		final int length = Math.max(0, (getBrowserWidth()-14-getStringWidth(" "+label+" ")) / (2*getStringWidth(" ")));
+		final String rule = "\u00a78\u00a7m"+" ".repeat(length)+"\u00a7r";
+		return rule+" \u00a77"+label+" "+rule;
+	}
+
 	@Override public List<ConfigOptionWrapper> getConfigs(){
-		return ConfigOptionWrapper.createFor(
-			switch(ConfigGuiTab.values()[configs.guiTab]){
-				case ALL -> configs.getAllConfigs();
-				case GENERIC -> configs.getGenericConfigs();
-				case VISUALS -> configs.getVisualsConfigs();
-				case HOTKEYS -> configs.getHotkeysConfigs();
-				case DATABASE -> configs.getDatabaseConfigs();
-//				case RENDER_LAYERS -> Collections.emptyList();
+		final List<IConfigBase> options = switch(ConfigGuiTab.values()[configs.guiTab]){
+			case ALL -> configs.getAllConfigs();
+			case GENERIC -> configs.getGenericConfigs();
+			case VISUALS -> configs.getVisualsConfigs();
+			case HOTKEYS -> configs.getHotkeysConfigs();
+			case DATABASE -> configs.getDatabaseConfigs();
+//			case RENDER_LAYERS -> Collections.emptyList();
+		};
+		final List<ConfigOptionWrapper> wrappers = new ArrayList<>();
+		for(IConfigBase option : options){
+			if(option == Configs.Database.CLIENT_ID && !wrappers.isEmpty()){
+				wrappers.add(new ConfigOptionWrapper(remoteDatabaseSeparator()));
 			}
-		);
+			wrappers.add(new ConfigOptionWrapper(option));
+		}
+		return wrappers;
 	}
 }

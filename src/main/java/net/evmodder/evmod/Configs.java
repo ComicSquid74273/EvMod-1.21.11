@@ -496,16 +496,15 @@ public final class Configs implements IConfigHandler{
 		private static final List<IConfigBase> getConfigs(Settings settings){
 			if(configs != null || !settings.database) return configs;
 			configs = new ArrayList<>();
-			if(settings.database) configs.addAll(List.of(CLIENT_ID, CLIENT_KEY, ADDRESS));
 			configs.add(SAVE_MAPART);
-			if(settings.database) configs.add(SHARE_MAPART);
-			if(settings.epearlOwners){
-				configs.addAll(List.of(EPEARL_OWNERS_BY_UUID, EPEARL_OWNERS_BY_XZ));
-				if(settings.database) configs.add(SHARE_EPEARL_OWNERS);
-			}
+			if(settings.epearlOwners) configs.addAll(List.of(EPEARL_OWNERS_BY_UUID, EPEARL_OWNERS_BY_XZ));
 			if(settings.gameMessageListener || settings.gameMessageFilter) configs.add(SAVE_IGNORES);
-			if(settings.database && settings.gameMessageListener) configs.add(SHARE_IGNORES);
 			if(settings.gameMessageFilter) configs.add(BORROW_IGNORES);
+
+			if(settings.database) configs.addAll(List.of(CLIENT_ID, CLIENT_KEY, ADDRESS));
+			if(settings.database) configs.add(SHARE_MAPART);
+			if(settings.epearlOwners && settings.database) configs.add(SHARE_EPEARL_OWNERS);
+			if(settings.database && settings.gameMessageListener) configs.add(SHARE_IGNORES);
 			if(settings.database && (settings.serverJoinListener || settings.serverQuitListener) && settings.showNicheConfigs) configs.add(SHARE_JOIN_QUIT);
 			return configs;
 		}
