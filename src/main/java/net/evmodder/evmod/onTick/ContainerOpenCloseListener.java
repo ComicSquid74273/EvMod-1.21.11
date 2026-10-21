@@ -12,6 +12,7 @@ import net.evmodder.evmod.apis.TickListener;
 import net.evmodder.evmod.config.OptionMapStateCache;
 import net.evmodder.evmod.keybinds.KeybindInventoryRestock;
 import net.evmodder.evmod.listeners.BlockClickListener;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -25,6 +26,11 @@ public final class ContainerOpenCloseListener implements TickListener{
 	public ContainerOpenCloseListener(final KeybindInventoryRestock kbInvRestock){
 		this.kbInvRestock = kbInvRestock;
 		new BlockClickListener();
+		ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> {
+			syncId = 0;
+			waitingForEcToLoad = currentlyViewingEchest = currentlyViewingContainer = false;
+			slots = null;
+		});
 	}
 
 	private int syncId;
@@ -34,7 +40,7 @@ public final class ContainerOpenCloseListener implements TickListener{
 	public static boolean echestCacheLoaded;  // TODO: remove horrible public static vars
 	public static HashSet<UUID> containerCachesLoaded = new HashSet<>();
 
-	@Override public final void onTickEnd(final Minecraft client){
+	@Override public void onTickEnd(final Minecraft client){
 		if(client.player == null) return;
 		final AbstractContainerMenu sh = client.player.containerMenu;
 		final int newSyncId = sh == null ? 0 : sh.containerId;
@@ -59,9 +65,10 @@ public final class ContainerOpenCloseListener implements TickListener{
 			if(Configs.Generic.MAP_CACHE.getOptionListValue() != OptionMapStateCache.OFF){
 				waitingForEcToLoad = false;
 				currentlyViewingContainer = true;
+				slots = sh.slots;
 				// Don't reload from echest-cache unless player leaves and rejoins server
-				if(Configs.Generic.MAP_CACHE_BY_EC_POS.getBooleanValue() && (
-					currentlyViewingEchest=screen(client).getTitle().contains(Component.translatable("container.enderchest")))
+				if(currentlyViewingEchest=(Configs.Generic.MAP_CACHE_BY_EC_POS.getBooleanValue() &&
+					screen(client).getTitle().contains(Component.translatable("container.enderchest")))
 				){
 					waitingForEcToLoad = true;
 				}
