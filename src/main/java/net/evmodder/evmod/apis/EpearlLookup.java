@@ -198,6 +198,15 @@ public abstract class EpearlLookup{
 			catch(IOException e){LOGGER.error("[EPL] Unable to read cache "+filename, e); return null;}
 		}
 	}
+	private static void writeClientRow(ByteBuffer bb, UUID pearlUUID, PearlDataClient pdc){
+		bb.putLong(pearlUUID.getMostSignificantBits());
+		bb.putLong(pearlUUID.getLeastSignificantBits());
+		bb.putLong(pdc.owner().getMostSignificantBits());
+		bb.putLong(pdc.owner().getLeastSignificantBits());
+		bb.putInt(pdc.x()).putInt(pdc.y()).putInt(pdc.z());
+		bb.putLong(pdc.world() == null ? 0 : pdc.world().getMostSignificantBits());
+		bb.putLong(pdc.world() == null ? 0 : pdc.world().getLeastSignificantBits());
+	}
 	private final void appendToClientFile(String filename, UUID pearlUUID, PearlDataClient pdc){
 		synchronized(clientFileLock){
 			try(FileChannel _ = lockClientFile(filename)){
@@ -225,15 +234,6 @@ public abstract class EpearlLookup{
 	}
 	private static boolean validClientFile(byte[] data){
 		return data.length >= 8 && ByteBuffer.wrap(data).getLong() == FILE_HEADER && (data.length-8)%60 == 0;
-	}
-	private static void writeClientRow(ByteBuffer bb, UUID pearlUUID, PearlDataClient pdc){
-		bb.putLong(pearlUUID.getMostSignificantBits());
-		bb.putLong(pearlUUID.getLeastSignificantBits());
-		bb.putLong(pdc.owner().getMostSignificantBits());
-		bb.putLong(pdc.owner().getLeastSignificantBits());
-		bb.putInt(pdc.x()).putInt(pdc.y()).putInt(pdc.z());
-		bb.putLong(pdc.world() == null ? 0 : pdc.world().getMostSignificantBits());
-		bb.putLong(pdc.world() == null ? 0 : pdc.world().getLeastSignificantBits());
 	}
 
 	private final HashMap<UUID, PearlDataClient> loadFromClientFile(String filename){
@@ -422,15 +422,6 @@ public abstract class EpearlLookup{
 			if(cache != null) synchronized(cache){cache.missingSince.clear();}
 		}
 	}
-	/** Caller checks loaded chunks and nearby tracking; absence must then remain continuous for another minute. */
-	protected final void cleanupPearls(Set<UUID> seenUUID, Set<UUID> seenXZ, Predicate<PearlDataClient> observable, long now){
-		anchors.keySet().retainAll(seenUUID);
-		if(cacheByXZ != null) cacheByXZ.updateKeyXZ.keySet().retainAll(seenUUID);
-		if(enableKeyUUID()) cleanupPearls(cacheByUUID, seenUUID, observable, now);
-		else if(cacheByUUID != null) synchronized(cacheByUUID){cacheByUUID.missingSince.clear();}
-		if(enableKeyXZ()) cleanupPearls(cacheByXZ, seenXZ, observable, now);
-		else if(cacheByXZ != null) synchronized(cacheByXZ){cacheByXZ.missingSince.clear();}
-	}
 	private void cleanupPearls(RSLoadingCache cache, Set<UUID> seen, Predicate<PearlDataClient> observable, long now){
 		if(cache == null) return;
 		cache.refreshDisk();
@@ -491,6 +482,15 @@ public abstract class EpearlLookup{
 						Command.DB_PEARL_STORE_BY_UUID, true, STORE_TIMEOUT, PacketCodec.toByteArray(key), done);
 			}
 		}
+	}
+	/** Caller checks loaded chunks and nearby tracking; absence must then remain continuous for another minute. */
+	protected final void cleanupPearls(Set<UUID> seenUUID, Set<UUID> seenXZ, Predicate<PearlDataClient> observable, long now){
+		anchors.keySet().retainAll(seenUUID);
+		if(cacheByXZ != null) cacheByXZ.updateKeyXZ.keySet().retainAll(seenUUID);
+		if(enableKeyUUID()) cleanupPearls(cacheByUUID, seenUUID, observable, now);
+		else if(cacheByUUID != null) synchronized(cacheByUUID){cacheByUUID.missingSince.clear();}
+		if(enableKeyXZ()) cleanupPearls(cacheByXZ, seenXZ, observable, now);
+		else if(cacheByXZ != null) synchronized(cacheByXZ){cacheByXZ.missingSince.clear();}
 	}
 
 	public final synchronized void loadEpearlCacheUUID(){

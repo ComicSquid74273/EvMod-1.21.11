@@ -173,32 +173,6 @@ public final class PacketClient implements AutoCloseable{
 		}
 	}
 
-	public void sendPacket(final boolean udp, final long timeout, final int requestId,
-			final byte[] message, final Consumer<byte[]> callback){
-		if(timeout <= 0 || timeout > PacketCodec.MAX_REQUEST_TIMEOUT_MILLIS){
-			throw new IllegalArgumentException("Packet timeout must be 1-"
-					+PacketCodec.MAX_REQUEST_TIMEOUT_MILLIS+"ms: "+timeout);
-		}
-		if(message == null){
-			dispatchCallback(callback, null);
-			throw new IllegalArgumentException("message cannot be null");
-		}
-		if(requestId < 0 || requestId > PacketCodec.MAX_REQUEST_ID){
-			dispatchCallback(callback, null);
-			throw new IllegalArgumentException("Request id must be unsigned 24-bit: "+requestId);
-		}
-		if(udp && message.length > MAX_UDP_PACKET_SIZE){
-			dispatchCallback(callback, null);
-			throw new IllegalArgumentException("UDP packet is too large: "+message.length);
-		}
-		if(!udp && message.length > MAX_TCP_FRAME_SIZE){
-			dispatchCallback(callback, null);
-			throw new IllegalArgumentException("TCP frame is too large: "+message.length);
-		}
-		final long deadlineNanos = System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(timeout);
-		SEND_EXECUTOR.execute(()->sendPacketNow(udp, deadlineNanos, requestId, message, callback));
-	}
-
 	private long remainingTimeoutMillis(final long deadlineNanos){
 		final long remainingNanos = deadlineNanos-System.nanoTime();
 		return remainingNanos <= 0 ? 0 : Math.max(1, TimeUnit.NANOSECONDS.toMillis(remainingNanos));
@@ -253,6 +227,32 @@ public final class PacketClient implements AutoCloseable{
 				LOGGER.warning("TCP send failed: "+ex);
 			}
 		}
+	}
+
+	public void sendPacket(final boolean udp, final long timeout, final int requestId,
+			final byte[] message, final Consumer<byte[]> callback){
+		if(timeout <= 0 || timeout > PacketCodec.MAX_REQUEST_TIMEOUT_MILLIS){
+			throw new IllegalArgumentException("Packet timeout must be 1-"
+					+PacketCodec.MAX_REQUEST_TIMEOUT_MILLIS+"ms: "+timeout);
+		}
+		if(message == null){
+			dispatchCallback(callback, null);
+			throw new IllegalArgumentException("message cannot be null");
+		}
+		if(requestId < 0 || requestId > PacketCodec.MAX_REQUEST_ID){
+			dispatchCallback(callback, null);
+			throw new IllegalArgumentException("Request id must be unsigned 24-bit: "+requestId);
+		}
+		if(udp && message.length > MAX_UDP_PACKET_SIZE){
+			dispatchCallback(callback, null);
+			throw new IllegalArgumentException("UDP packet is too large: "+message.length);
+		}
+		if(!udp && message.length > MAX_TCP_FRAME_SIZE){
+			dispatchCallback(callback, null);
+			throw new IllegalArgumentException("TCP frame is too large: "+message.length);
+		}
+		final long deadlineNanos = System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(timeout);
+		SEND_EXECUTOR.execute(()->sendPacketNow(udp, deadlineNanos, requestId, message, callback));
 	}
 
 	private final class UDPChannel{

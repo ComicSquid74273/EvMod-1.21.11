@@ -142,17 +142,6 @@ public final class StaticEntityRenderCache{
 
 	private StaticEntityRenderCache(){}
 
-	public static final void init(){
-		if(initialized) return;
-		initialized = true;
-		updateConfiguredSettings();
-		Configs.Visuals.STATIC_ENTITY_RENDER_RANGE.setValueChangeCallback(_->updateConfiguredSettings());
-		Configs.Visuals.STATIC_ENTITY_RENDER_LIMIT.setValueChangeCallback(_->updateConfiguredSettings());
-		ClientEntityEvents.ENTITY_LOAD.register(StaticEntityRenderCache::onEntityLoad);
-		ClientEntityEvents.ENTITY_UNLOAD.register(StaticEntityRenderCache::onEntityUnload);
-		ClientTickEvents.END_CLIENT_TICK.register(StaticEntityRenderCache::onClientTick);
-	}
-
 	private static final boolean isCacheable(final Entity entity){return entity instanceof ItemFrame;}
 
 	private static final void updateConfiguredSettings(){
@@ -210,27 +199,30 @@ public final class StaticEntityRenderCache{
 						client.level, entity.getBlockX(), entity.getBlockZ(), cameraX, cameraZ);
 	}
 
-	// Accessed by: MixinClientLevel
-	public static final Iterable<Entity> includeCachedEntities(final ClientLevel clientLevel, final Iterable<Entity> loadedEntities){
-		if(!isActive()) return loadedEntities;
-		if(level != clientLevel) reset(clientLevel);
-		if(renderLimit > 0 && !loadedIndexInitialized) indexLoadedEntities(loadedEntities);
-		if(snapshotDirty){
-			final LocalPlayer player = Minecraft.getInstance().player;
-			if(player != null) rebuildRenderSnapshot(clientLevel, player, clientLevel.getGameTime());
-		}
-		if(limitApplied){
-			final Iterable<Entity> selectedLoaded = Iterables.filter(loadedEntities, entity->!isCacheable(entity) || selectedLoadedEntities.contains(entity));
-			return renderSnapshot.isEmpty() ? selectedLoaded : Iterables.concat(selectedLoaded, renderSnapshot);
-		}
-		return renderSnapshot.isEmpty() ? loadedEntities : Iterables.concat(loadedEntities, renderSnapshot);
-	}
-
 	private static final void onEntityLoad(final Entity entity, final ClientLevel clientLevel){
 		if(!isActive() || !isCacheable(entity)) return;
 		if(level != clientLevel) reset(clientLevel);
 		if(renderLimit > 0 && loadedIndexInitialized) loadedByUuid.put(entity.getUUID(), entity);
 		if(renderRange > 0) remove(entity.getUUID());
+		snapshotDirty = true;
+	}
+
+	private static final void remove(final UUID uuid){
+		final CachedEntity cached = cachedByUuid.remove(uuid);
+		if(cached == null) return;
+		cached.chunk.remove(cached);
+		if(cached.chunk.entities.isEmpty()) cachedByChunk.remove(cached.chunk.key);
+		snapshotDirty = true;
+	}
+
+	private static final long chunkKey(final int chunkX, final int chunkZ){return ((long)chunkX << 32) ^ (chunkZ&0xFFFFFFFFL);}
+
+	private static final void cache(final Entity entity){
+		remove(entity.getUUID());
+		final int chunkX = entity.getBlockX() >> 4, chunkZ = entity.getBlockZ() >> 4;
+		final long chunkKey = chunkKey(chunkX, chunkZ);
+		final CachedChunk chunk = cachedByChunk.computeIfAbsent(chunkKey, _->new CachedChunk(chunkKey, chunkX, chunkZ));
+		cachedByUuid.put(entity.getUUID(), new CachedEntity(entity, chunk));
 		snapshotDirty = true;
 	}
 
@@ -251,46 +243,6 @@ public final class StaticEntityRenderCache{
 		}
 
 		cache(entity);
-	}
-
-	private static final void onClientTick(final Minecraft client){
-		if(!isActive()) return;
-		final ClientLevel clientLevel = client.level;
-		final LocalPlayer player = client.player;
-		if(clientLevel == null || player == null){
-			if(level != null) reset(null);
-			return;
-		}
-		if(level != clientLevel) reset(clientLevel);
-		if(renderRange > 0 && !cachedByUuid.isEmpty()){
-			StaticEntityTerrainProviderRegistry.tick();
-			final long tick = clientLevel.getGameTime();
-			if(lastTerrainSweepTick == UNSET_TICK || tick < lastTerrainSweepTick || tick-lastTerrainSweepTick >= TERRAIN_SWEEP_INTERVAL_TICKS){
-				lastTerrainSweepTick = tick;
-				pruneMissingTerrain(clientLevel, player.getX(), player.getZ(), tick);
-			}
-			snapshotDirty = true;
-		}
-		if(limitApplied) snapshotDirty = true;
-	}
-
-	private static final void remove(final UUID uuid){
-		final CachedEntity cached = cachedByUuid.remove(uuid);
-		if(cached == null) return;
-		cached.chunk.remove(cached);
-		if(cached.chunk.entities.isEmpty()) cachedByChunk.remove(cached.chunk.key);
-		snapshotDirty = true;
-	}
-
-	private static final long chunkKey(final int chunkX, final int chunkZ){return ((long)chunkX << 32) ^ (chunkZ&0xFFFFFFFFL);}
-
-	private static final void cache(final Entity entity){
-		remove(entity.getUUID());
-		final int chunkX = entity.getBlockX() >> 4, chunkZ = entity.getBlockZ() >> 4;
-		final long chunkKey = chunkKey(chunkX, chunkZ);
-		final CachedChunk chunk = cachedByChunk.computeIfAbsent(chunkKey, _->new CachedChunk(chunkKey, chunkX, chunkZ));
-		cachedByUuid.put(entity.getUUID(), new CachedEntity(entity, chunk));
-		snapshotDirty = true;
 	}
 
 	private static final void reset(final ClientLevel clientLevel){
@@ -349,6 +301,38 @@ public final class StaticEntityRenderCache{
 		}
 	}
 
+	private static final void onClientTick(final Minecraft client){
+		if(!isActive()) return;
+		final ClientLevel clientLevel = client.level;
+		final LocalPlayer player = client.player;
+		if(clientLevel == null || player == null){
+			if(level != null) reset(null);
+			return;
+		}
+		if(level != clientLevel) reset(clientLevel);
+		if(renderRange > 0 && !cachedByUuid.isEmpty()){
+			StaticEntityTerrainProviderRegistry.tick();
+			final long tick = clientLevel.getGameTime();
+			if(lastTerrainSweepTick == UNSET_TICK || tick < lastTerrainSweepTick || tick-lastTerrainSweepTick >= TERRAIN_SWEEP_INTERVAL_TICKS){
+				lastTerrainSweepTick = tick;
+				pruneMissingTerrain(clientLevel, player.getX(), player.getZ(), tick);
+			}
+			snapshotDirty = true;
+		}
+		if(limitApplied) snapshotDirty = true;
+	}
+
+	public static final void init(){
+		if(initialized) return;
+		initialized = true;
+		updateConfiguredSettings();
+		Configs.Visuals.STATIC_ENTITY_RENDER_RANGE.setValueChangeCallback(_->updateConfiguredSettings());
+		Configs.Visuals.STATIC_ENTITY_RENDER_LIMIT.setValueChangeCallback(_->updateConfiguredSettings());
+		ClientEntityEvents.ENTITY_LOAD.register(StaticEntityRenderCache::onEntityLoad);
+		ClientEntityEvents.ENTITY_UNLOAD.register(StaticEntityRenderCache::onEntityUnload);
+		ClientTickEvents.END_CLIENT_TICK.register(StaticEntityRenderCache::onClientTick);
+	}
+
 	private static final boolean isChunkWithinRange(final CachedChunk chunk, final double playerX, final double playerZ){
 		final double minX = chunk.chunkX*16.0, minZ = chunk.chunkZ*16.0;
 		final double dx = playerX < minX ? minX-playerX : playerX > minX+16 ? playerX-minX-16 : 0;
@@ -404,5 +388,21 @@ public final class StaticEntityRenderCache{
 		}
 		if(nearest != null) nearest.appendTo(selectedLoadedEntities, renderSnapshot);
 		snapshotDirty = false;
+	}
+
+	// Accessed by: MixinClientLevel
+	public static final Iterable<Entity> includeCachedEntities(final ClientLevel clientLevel, final Iterable<Entity> loadedEntities){
+		if(!isActive()) return loadedEntities;
+		if(level != clientLevel) reset(clientLevel);
+		if(renderLimit > 0 && !loadedIndexInitialized) indexLoadedEntities(loadedEntities);
+		if(snapshotDirty){
+			final LocalPlayer player = Minecraft.getInstance().player;
+			if(player != null) rebuildRenderSnapshot(clientLevel, player, clientLevel.getGameTime());
+		}
+		if(limitApplied){
+			final Iterable<Entity> selectedLoaded = Iterables.filter(loadedEntities, entity->!isCacheable(entity) || selectedLoadedEntities.contains(entity));
+			return renderSnapshot.isEmpty() ? selectedLoaded : Iterables.concat(selectedLoaded, renderSnapshot);
+		}
+		return renderSnapshot.isEmpty() ? loadedEntities : Iterables.concat(loadedEntities, renderSnapshot);
 	}
 }

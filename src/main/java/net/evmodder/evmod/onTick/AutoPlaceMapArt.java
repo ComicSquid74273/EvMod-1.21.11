@@ -47,7 +47,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.evmodder.evmod.apis.MapRelationUtils;
 
-public final class AutoPlaceMapArt/* extends MapLayoutFinder*/{
+public final class AutoPlaceMapArt/* extends MapLayoutFinder*/ implements TickListener{
 	private final int MANUAL_CLICK_WAIT_TIMEOUT = 60;
 	private final Pattern pOfSize = Pattern.compile("^\\s*(?:of|/)\\s*(\\d+).*$");
 
@@ -72,16 +72,16 @@ public final class AutoPlaceMapArt/* extends MapLayoutFinder*/{
 
 	private boolean extraInfoLogs = false;
 
+	@Override public void onTickEnd(Minecraft client){
+		synchronized(stacksHashesForCurrentData){
+			placeNearestMap(client == null ? null : client.player);
+		}
+	}
+
 	public AutoPlaceMapArt(Function<ItemStack, ItemStack> moveNextMapToMainHand){
 		handRestockFallback = moveNextMapToMainHand;
 
-		TickListener.register(new TickListener(){
-			@Override public void onTickEnd(Minecraft client){
-				synchronized(stacksHashesForCurrentData){
-					placeNearestMap(client == null ? null : client.player);
-				}
-			}
-		});
+		TickListener.register(this);
 	}
 
 	private final record AxisData(int constAxis, int varAxis1, int varAxis2){}

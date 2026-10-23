@@ -270,6 +270,8 @@ public final class CommandExportMapImg{
 		source.sendFeedback(text);
 	}
 
+	private final String toString(final Pair<Integer, Integer> shape){return "shape_"+shape.a+"x"+shape.b+"_";}
+
 //	private boolean ongoingExport;
 	private final int genImgForMapsInItemFrames(final FabricClientCommandSource source, final List<ItemFrame> ifes, final Pair<Integer, Integer> shape,
 			final String namePrefix){
@@ -327,12 +329,11 @@ public final class CommandExportMapImg{
 			source.sendFeedback(Component.literal("Large image detected, may take a moment..."));
 //			if(ongoingExport) return false;
 //			ongoingExport = true;
-			new Thread(){@Override public void run(){buildMapImgFile(source, ifeLookup, mapWall, w, h, namePrefix);/* ongoingExport = false;*/}}.run();
+			new Thread(() -> {buildMapImgFile(source, ifeLookup, mapWall, w, h, namePrefix);/* ongoingExport = false;*/}).start();
 		}
 		else buildMapImgFile(source, ifeLookup, mapWall, w, h, namePrefix);
 		return 1;
 	}
-
 	//private void getConnectedFramesRecur(final Map<XYZD, ?> ifeLookup, final XYZD xyzd, final HashSet<XYZD> connected){
 	private final void getConnectedFramesRecur(final Map<Vec3i, ?> ifeLookup, final Axis axis, final Vec3i pos, final HashSet<Vec3i> connected){
 		connected.add(pos);
@@ -343,6 +344,7 @@ public final class CommandExportMapImg{
 			if(!connected.contains(u) && ifeLookup.containsKey(u)) getConnectedFramesRecur(ifeLookup, axis, u, connected);
 		}
 	}
+
 	//private List<ItemFrameEntity> getConnectedFrames(Map<XYZD, ItemFrameEntity> ifeLookup, ItemFrameEntity ife){
 	private final List<ItemFrame> getConnectedFrames(final Map<Vec3i, ItemFrame> ifeLookup, final ItemFrame ife){
 		final HashSet<Vec3i> connected = new HashSet<>();
@@ -351,13 +353,12 @@ public final class CommandExportMapImg{
 		return connected.stream().map(ifeLookup::get).toList();
 	}
 
+	private final Pattern pNxM = Pattern.compile("(?:as_)?([1-9][0-9]*)[x*]([1-9][0-9]*)");
 	static final List<ItemFrame> getItemFramesWithMaps(final LocalPlayer player){
 		return StreamSupport.stream(((ClientLevel)player.level()).entitiesForRendering().spliterator(), false)
 				.filter(ItemFrame.class::isInstance).map(ItemFrame.class::cast)
 				.filter(ife -> ife.getItem().getItem() == Items.FILLED_MAP).toList();
 	}
-
-	private final Pattern pNxM = Pattern.compile("(?:as_)?([1-9][0-9]*)[x*]([1-9][0-9]*)");
 	private final Pair<Integer, Integer> getShapeArgOrNull(final CommandContext<FabricClientCommandSource> ctx){
 		try{
 			final Matcher m = pNxM.matcher(ctx.getArgument("as_NxM", String.class));
@@ -366,7 +367,6 @@ public final class CommandExportMapImg{
 		catch(IllegalArgumentException ex){}
 		return null;
 	}
-	private final String toString(final Pair<Integer, Integer> shape){return "shape_"+shape.a+"x"+shape.b+"_";}
 
 	private final int runCommandInInventory(final CommandContext<FabricClientCommandSource> ctx){
 		// TODO: use getShapeArgOrNull()

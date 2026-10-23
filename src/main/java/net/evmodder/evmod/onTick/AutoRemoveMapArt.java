@@ -19,7 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.evmodder.evmod.apis.MapRelationUtils.RelatedMapsData;
 
-public final class AutoRemoveMapArt/* extends MapLayoutFinder*/{
+public final class AutoRemoveMapArt/* extends MapLayoutFinder*/ implements TickListener{
 	private Direction dir; // non-null implies autoremover is active
 	private Level world;
 	private int constAxis;
@@ -32,9 +32,7 @@ public final class AutoRemoveMapArt/* extends MapLayoutFinder*/{
 		recentRemoveAttempts = new int[20];
 //		ClientTickEvents.END_CLIENT_TICK.register(client->{synchronized(dir){removeNearestMap(client);}});
 //		ClientTickEvents.END_CLIENT_TICK.register(this::removeNearestMap);
-		TickListener.register(new TickListener(){
-			@Override public void onTickEnd(Minecraft client){removeNearestMap(client);}
-		});
+		TickListener.register(this);
 	}
 
 	public final void disableAndReset(){
@@ -42,10 +40,8 @@ public final class AutoRemoveMapArt/* extends MapLayoutFinder*/{
 		world = null;
 		constAxis = numMatchingRemoved = 0;
 	}
-	public final boolean isActivelyRemoving(){return dir != null;}
 
-	private ItemFrame lastIfe;
-	private ItemStack lastStack;
+	public final boolean isActivelyRemoving(){return dir != null;}
 	public final boolean mapRemoved(ItemFrame ife){
 //		synchronized(dir){
 		try{
@@ -104,6 +100,8 @@ public final class AutoRemoveMapArt/* extends MapLayoutFinder*/{
 //		}
 	}
 
+	private ItemFrame lastIfe;
+	private ItemStack lastStack;
 	private final double distFromPlane(BlockPos bp){
 		switch(dir){
 			case UP: case DOWN: return Math.abs(bp.getY() - constAxis);
@@ -120,6 +118,7 @@ public final class AutoRemoveMapArt/* extends MapLayoutFinder*/{
 		RelatedMapsData data = MapRelationUtils.getRelatedMapsByName0(List.of(lastStack, stack), world);
 		return data.slots().size() == 2;
 	}
+
 	private final ItemFrame getNearestMapToRemove(Player player){
 		final double MAX_REACH = Configs.Generic.MAPART_AUTOREMOVE_REACH.getDoubleValue();
 		final double SCAN_DIST = MAX_REACH+2;
@@ -149,7 +148,6 @@ public final class AutoRemoveMapArt/* extends MapLayoutFinder*/{
 		}
 		return null;
 	}
-
 	private final void removeNearestMap(Minecraft client){
 		if(dir == null) return;
 		if(client.player == null || client.level == null){
@@ -194,4 +192,6 @@ public final class AutoRemoveMapArt/* extends MapLayoutFinder*/{
 		recentRemoveAttempts[attemptIdx] = ife.getId();
 		client.gameMode.attack(client.player, ife);
 	}
+
+	@Override public void onTickEnd(Minecraft client){removeNearestMap(client);}
 }

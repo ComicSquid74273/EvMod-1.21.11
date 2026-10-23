@@ -29,22 +29,6 @@ public class ClientBlockPosArgumentType implements ArgumentType<BlockPos>{
 		return context.getArgument(name, BlockPos.class);
 	}
 
-	@Override public BlockPos parse(StringReader reader) throws CommandSyntaxException{
-		var i = reader.getCursor();
-		if(reader.canRead()){
-			int x = parseCoordinate(reader, 0);
-			if(reader.canRead()){
-				int y = parseCoordinate(reader, 1);
-				if(reader.canRead()){
-					int z = parseCoordinate(reader, 2);
-					return new BlockPos(x, y, z);
-				}
-			}
-		}
-		reader.setCursor(i);
-		throw Vec3Argument.ERROR_NOT_COMPLETE.createWithContext(reader);
-	}
-
 	@Override public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder){
 		var remaining = builder.getRemaining();
 		var reader = new StringReader(remaining);
@@ -138,6 +122,22 @@ public class ClientBlockPosArgumentType implements ArgumentType<BlockPos>{
 		}
 		reader.setCursor(i);
 		throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().create(reader.getRemaining());
+	}
+
+	@Override public BlockPos parse(StringReader reader) throws CommandSyntaxException{
+		var i = reader.getCursor();
+		if(reader.canRead()){
+			int x = parseCoordinate(reader, 0);
+			if(reader.canRead()){
+				int y = parseCoordinate(reader, 1);
+				if(reader.canRead()){
+					int z = parseCoordinate(reader, 2);
+					return new BlockPos(x, y, z);
+				}
+			}
+		}
+		reader.setCursor(i);
+		throw Vec3Argument.ERROR_NOT_COMPLETE.createWithContext(reader);
 	}
 
 	public static boolean isAllowedInteger(final char c){

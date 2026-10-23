@@ -39,28 +39,6 @@ public final class CommandPearlRescue{
 	private static long nextAntiAfkNanos;
 	private static String status = "Disarmed";
 
-	public CommandPearlRescue(){
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> dispatcher.register(
-				ClientCommands.literal("pearlrescue")
-				.then(ClientCommands.literal("arm").then(ClientCommands.argument("name", StringArgumentType.word())
-						.executes(ctx -> arm(StringArgumentType.getString(ctx, "name")))))
-				.then(ClientCommands.literal("disarm").executes(_ -> {
-					armed = null;
-					armRequest = null;
-					antiAfkConnection = null;
-					message("Disarmed");
-					return 1;
-				}))
-				.then(ClientCommands.literal("status").executes(_ -> {message(status); return 1;}))));
-		ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> {
-			armed = null;
-			armRequest = null;
-			antiAfkConnection = null;
-			status = "Disarmed on disconnect";
-		});
-		ClientTickEvents.END_CLIENT_TICK.register(CommandPearlRescue::keepActive);
-	}
-
 	private static void keepActive(final Minecraft client){
 		if(antiAfkConnection == null || client.getConnection() != antiAfkConnection
 				|| client.player == null || !client.player.isAlive() || client.player.isSpectator()) return;
@@ -104,6 +82,26 @@ public final class CommandPearlRescue{
 		return state.is(Blocks.NOTE_BLOCK) || (state.is(BlockTags.TRAPDOORS) && !state.is(Blocks.IRON_TRAPDOOR));
 	}
 
+	private static int armResolved(final String name, final UUID uuid){
+		final Minecraft client = Minecraft.getInstance();
+		final String problem = readiness(client);
+		if(problem != null){message("Not armed: "+problem); return 0;}
+		if(client.getConnection().getPlayerInfo(uuid) != null){
+			message("Not armed: "+name+" is already in the player list. No click sent.");
+			return 0;
+		}
+		final BlockHitResult hit = aimedBlock(client);
+		if(hit == null || !isTrigger(client.level.getBlockState(hit.getBlockPos()))){
+			message("Not armed: aim at a stasis noteblock or hand-openable trapdoor within normal interaction reach");
+			return 0;
+		}
+		armed = new Armed(name, uuid, client.getConnection(), client.level, hit);
+		antiAfkConnection = client.getConnection();
+		nextAntiAfkNanos = System.nanoTime();
+		message("ARMED for "+name+". Stay aimed here; will right-click on arrival.");
+		return 1;
+	}
+
 	private static int arm(final String name){
 		if(armed != null && armed.name.equalsIgnoreCase(name)){
 			message("Already armed for "+armed.name+". Stay aimed here; will right-click on arrival.");
@@ -139,24 +137,26 @@ public final class CommandPearlRescue{
 		return 1;
 	}
 
-	private static int armResolved(final String name, final UUID uuid){
-		final Minecraft client = Minecraft.getInstance();
-		final String problem = readiness(client);
-		if(problem != null){message("Not armed: "+problem); return 0;}
-		if(client.getConnection().getPlayerInfo(uuid) != null){
-			message("Not armed: "+name+" is already in the player list. No click sent.");
-			return 0;
-		}
-		final BlockHitResult hit = aimedBlock(client);
-		if(hit == null || !isTrigger(client.level.getBlockState(hit.getBlockPos()))){
-			message("Not armed: aim at a stasis noteblock or hand-openable trapdoor within normal interaction reach");
-			return 0;
-		}
-		armed = new Armed(name, uuid, client.getConnection(), client.level, hit);
-		antiAfkConnection = client.getConnection();
-		nextAntiAfkNanos = System.nanoTime();
-		message("ARMED for "+name+". Stay aimed here; will right-click on arrival.");
-		return 1;
+	public CommandPearlRescue(){
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> dispatcher.register(
+				ClientCommands.literal("pearlrescue")
+				.then(ClientCommands.literal("arm").then(ClientCommands.argument("name", StringArgumentType.word())
+						.executes(ctx -> arm(StringArgumentType.getString(ctx, "name")))))
+				.then(ClientCommands.literal("disarm").executes(_ -> {
+					armed = null;
+					armRequest = null;
+					antiAfkConnection = null;
+					message("Disarmed");
+					return 1;
+				}))
+				.then(ClientCommands.literal("status").executes(_ -> {message(status); return 1;}))));
+		ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> {
+			armed = null;
+			armRequest = null;
+			antiAfkConnection = null;
+			status = "Disarmed on disconnect";
+		});
+		ClientTickEvents.END_CLIENT_TICK.register(CommandPearlRescue::keepActive);
 	}
 
 	// Accessed by: MixinClientPacketListener

@@ -28,22 +28,6 @@ public final class PearlPositionKey{
 				&& a.getLeastSignificantBits()>>>40 == b.getLeastSignificantBits()>>>40;
 	}
 
-	/** Inspect the pearl's 0.25-block-wide footprint, not neighboring chambers through walls. */
-	public static int findAnchor(double x, double y, double z, Blocks blocks){
-		checkXZ(x, z);
-		if(!Double.isFinite(y) || y <= Short.MIN_VALUE || y > Short.MAX_VALUE) return UNKNOWN_Y;
-		int anchor = UNKNOWN_Y;
-		for(int bx=(int)Math.floor(x-.125); bx<=(int)Math.floor(x+.125-1e-7); ++bx){
-			for(int bz=(int)Math.floor(z-.125); bz<=(int)Math.floor(z+.125-1e-7); ++bz){
-				final int candidate = findColumn(bx, (int)Math.floor(y), bz, blocks);
-				if(candidate == PENDING_Y) return PENDING_Y;
-				if(candidate == UNKNOWN_Y) continue;
-				if(anchor != UNKNOWN_Y && anchor != candidate) return UNKNOWN_Y;
-				anchor = candidate;
-			}
-		}
-		return anchor;
-	}
 	private static int findColumn(int x, int y, int z, Blocks blocks){
 		for(int by=y; by>=y-SEARCH_HEIGHT && by>Short.MIN_VALUE; --by){
 			final Block block = blocks.get(x, by, z);
@@ -69,5 +53,21 @@ public final class PearlPositionKey{
 			if(block != Block.PASSABLE) return UNKNOWN_Y;
 		}
 		return UNKNOWN_Y;
+	}
+	/** Inspect the pearl's 0.25-block-wide footprint, not neighboring chambers through walls. */
+	public static int findAnchor(double x, double y, double z, Blocks blocks){
+		checkXZ(x, z);
+		if(!Double.isFinite(y) || y <= Short.MIN_VALUE || y > Short.MAX_VALUE) return UNKNOWN_Y;
+		int anchor = UNKNOWN_Y;
+		for(int bx=(int)Math.floor(x-.125); bx<=(int)Math.floor(x+.125-1e-7); ++bx){
+			for(int bz=(int)Math.floor(z-.125); bz<=(int)Math.floor(z+.125-1e-7); ++bz){
+				final int candidate = findColumn(bx, (int)Math.floor(y), bz, blocks);
+				if(candidate == PENDING_Y) return PENDING_Y;
+				if(candidate == UNKNOWN_Y) continue;
+				if(anchor != UNKNOWN_Y && anchor != candidate) return UNKNOWN_Y;
+				anchor = candidate;
+			}
+		}
+		return anchor;
 	}
 }

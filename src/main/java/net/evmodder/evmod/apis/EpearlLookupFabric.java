@@ -44,9 +44,6 @@ public final class EpearlLookupFabric extends EpearlLookup{
 	@Override protected boolean enableRemoteDbXZ(){return enableKeyXZ() && Configs.Database.SHARE_EPEARL_OWNERS.getBooleanValue() && !Configs.Database.ADDRESS.getStringValue().isBlank();}
 	public final boolean isDisabled(){return !enableKeyUUID() && !enableKeyXZ();} // Accessed by: MixinEntityRendererPearl
 
-	private final UUID toKeyXZ(final Entity epearl){
-		return toKeyXZ(epearl.getUUID(), epearl.getX(), epearl.getY(), epearl.getZ(), this::anchorBlock);
-	}
 	private PearlPositionKey.Block anchorBlock(int x, int y, int z){
 		final var pos = new BlockPos(x, y, z);
 		if(world.isOutsideBuildHeight(pos)) return PearlPositionKey.Block.SOLID;
@@ -62,6 +59,9 @@ public final class EpearlLookupFabric extends EpearlLookup{
 			return state.is(Blocks.PISTON_HEAD) ? PearlPositionKey.Block.UP_HEAD : PearlPositionKey.Block.UP_PISTON;
 		}
 		return state.getCollisionShape(world, pos).isEmpty() ? PearlPositionKey.Block.PASSABLE : PearlPositionKey.Block.SOLID;
+	}
+	private final UUID toKeyXZ(final Entity epearl){
+		return toKeyXZ(epearl.getUUID(), epearl.getX(), epearl.getY(), epearl.getZ(), this::anchorBlock);
 	}
 	private final ChunkPos toChunkPos(final PearlDataClient pdc){
 		return new ChunkPos(pdc.x()>>4, pdc.z()>>4);
