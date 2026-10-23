@@ -4,7 +4,6 @@ import org.gradle.plugins.ide.eclipse.model.SourceFolder
 plugins {
 	// Selects remapping Loom for obfuscated Minecraft versions and native Loom for 26.1+.
 	id 'dev.kikugie.loom-back-compat'
-	id 'maven-publish'
 }
 
 def mavenGroup = property('mod.group')
@@ -62,6 +61,11 @@ loom {
 def isPrimaryEclipseVersion = sc.current.version == '26.3'
 
 eclipse {
+	classpath {
+		downloadSources = false
+		downloadJavadoc = false
+		file.beforeMerged { if (isPrimaryEclipseVersion) it.entries.clear() }
+	}
 	project {
 		if (isPrimaryEclipseVersion) {
 			name = rootProject.name
@@ -128,20 +132,16 @@ def finalizeEclipseFile = { File file ->
 	file.setText(text, 'UTF-8')
 }
 
-if (isPrimaryEclipseVersion) {
-	tasks.named('eclipseClasspath') {
-		inputFile = rootProject.file('.classpath')
-		outputFile = rootProject.file('.classpath')
-		doLast { finalizeEclipseFile(outputFile) }
+[eclipseClasspath: '.classpath', eclipseProject: '.project'].each { taskName, fileName ->
+	tasks.named(taskName) {
+		if (isPrimaryEclipseVersion) {
+			inputFile = rootProject.file(fileName)
+			outputFile = rootProject.file(fileName)
+			doLast { finalizeEclipseFile(outputFile) }
+		} else {
+			enabled = false
+		}
 	}
-	tasks.named('eclipseProject') {
-		inputFile = rootProject.file('.project')
-		outputFile = rootProject.file('.project')
-		doLast { finalizeEclipseFile(outputFile) }
-	}
-} else {
-	tasks.named('eclipseClasspath') { enabled = false }
-	tasks.named('eclipseProject') { enabled = false }
 }
 
 def disabledRunTasks = [
@@ -211,13 +211,4 @@ tasks.register('buildAndCollect', Copy) {
 
 	from loomx.modJar.flatMap { it.archiveFile }
 	into rootProject.layout.buildDirectory.dir(modVersion)
-}
-
-publishing {
-	publications {
-		create('mavenJava', MavenPublication) {
-			artifactId = base.archivesName.get()
-			from components.java
-		}
-	}
 }
