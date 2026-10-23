@@ -82,7 +82,7 @@ final class InitUtils{
 		rms.setConnectionDetails(addr, port, clientId, clientKey);
 		if(addr == null) return;
 
-		Main.LOGGER.info("RMS settings applied: "+addr+":"+port+", id="+clientId+", key="+clientKey.charAt(0)+"..."+clientKey.charAt(clientKey.length()-1));
+		Main.LOGGER.info("RMS settings applied: "+addr+":"+port+", id="+clientId);
 		if(clientId != DUMMY_CLIENT_ID && sendPingRequest){
 			sendPingRequest = false;
 			rms.sendBotMessage(Command.PING, /*udp=*/false, /*timeout=*/5000, /*msg=*/new byte[0],
@@ -116,7 +116,7 @@ final class InitUtils{
 			final String clientKey = new String(strBytes);
 
 //			MinecraftClient.getInstance().executeSync(()->{
-				Main.LOGGER.info("ClientAuth: Server granted credentials! id="+clientId+", key="+clientKey);
+				Main.LOGGER.info("ClientAuth: Server granted credentials! id="+clientId);
 				Configs.Database.CLIENT_ID.setIntegerValue(clientId);
 				Configs.Database.CLIENT_KEY.setValueFromString(clientKey);
 				configs.save();
