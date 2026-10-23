@@ -1,5 +1,7 @@
 package net.evmodder.evmod.mixin;
 
+import net.evmodder.evmod.commands.CommandPearlRescue;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.evmodder.EvLib.util.Command;
 import net.evmodder.evmod.Configs;
 import net.evmodder.evmod.Main;
@@ -36,6 +38,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
 abstract class MixinClientPlayNetworkHandler{
+	// First point after vanilla's thread handoff, before profiles/skins/tab entries are processed.
+	@Inject(method="handlePlayerInfoUpdate", at=@At(value="INVOKE",
+			target="Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket;newEntries()Ljava/util/List;"))
+	private final void pearlRescue(final ClientboundPlayerInfoUpdatePacket packet, final CallbackInfo _ci){
+		CommandPearlRescue.onPlayerInfo((ClientPacketListener)(Object)this, packet);
+	}
+
 	@Inject(method="handleSetTime", at=@At("TAIL"))
 	private final void pearlReadinessTime(final ClientboundSetTimePacket packet, final CallbackInfo ci){
 		// Vanilla has already moved this packet onto the client thread, behind earlier entity updates.

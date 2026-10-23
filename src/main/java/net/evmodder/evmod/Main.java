@@ -157,6 +157,7 @@ public class Main{
 		if(settings.placementHelperMapArt) new MapHangListener(settings.placementHelperMapArtAutoPlace, settings.placementHelperMapArtAutoRemove);
 
 		if(/*!mapArtFeaturesOnly && */settings.cmdAssignPearl) new CommandAssignPearl(epearlLookup);
+		if(settings.epearlOwners) new CommandPearlRescue();
 		if(settings.cmdDeletedMapsNearby) new CommandDeletedMapsNearby();
 		if(settings.cmdExportMapImg) new CommandExportMapImg();
 		if(settings.cmdExportMapNames) new CommandExportMapNames();

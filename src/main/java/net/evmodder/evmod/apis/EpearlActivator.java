@@ -8,8 +8,6 @@ import com.google.common.collect.Streams;
 import net.evmodder.evmod.Main;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
@@ -36,51 +34,41 @@ public final class EpearlActivator{
 
 	public EpearlActivator(EpearlLookupFabric epl){epearlLookup = epl;}
 
-	private final boolean hasLineOfSight(Minecraft client, Vec3 from, Vec3 to){
-		return client.level.clip(
-				new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, client.player))
-				.getType() == HitResult.Type.MISS;
+	private final BlockHitResult visibleHit(Minecraft client, BlockPos pos, Vec3 eyes, Vec3 point, double reach){
+		final Vec3 end = eyes.add(point.subtract(eyes).normalize().scale(reach));
+		final BlockHitResult hit = client.level.clip(
+				new ClipContext(eyes, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, client.player));
+		return hit.getType() == HitResult.Type.BLOCK && hit.getBlockPos().equals(pos) ? hit : null;
 	}
 
-	/**
-	 * Returns everything you need to break a block at the given position, such
-	 * as which side to face, the exact hit vector to face that side, the
-	 * squared distance to that hit vector, and whether or not there is line of
-	 * sight to that hit vector.
-	 */
+	/** Prefer visible interaction-shape hits; otherwise use the nearest surface within normal reach. */
 	private final BlockHitResult getHitResult(Minecraft client, BlockPos pos){
-		Vec3 eyes = client.player.getEyePosition();
-		Direction[] sides = Direction.values();
-
-		BlockState state = client.level.getBlockState(pos);
-		VoxelShape shape = state.getShape(client.level, pos);
+		final Vec3 eyes = client.player.getEyePosition();
+		final double reach = client.player.blockInteractionRange();
+		final VoxelShape shape = client.level.getBlockState(pos).getShape(client.level, pos);
 		if(shape.isEmpty()){Main.LOGGER.error("AutoPearlActivator: shape.isEmpty()!"); return null;}
-
-		AABB box = shape.bounds();
-		Vec3 halfSize = new Vec3(box.maxX - box.minX, box.maxY - box.minY, box.maxZ - box.minZ).scale(0.5);
-		Vec3 center = Vec3.atLowerCornerOf(pos).add(box.getCenter());
-
-		Vec3[] hitVecs = new Vec3[sides.length];
-		for(int i=0; i<sides.length; ++i){
-			Vec3i dirVec = sides[i].getUnitVec3i();
-			Vec3 relHitVec = new Vec3(halfSize.x * dirVec.getX(), halfSize.y * dirVec.getY(), halfSize.z * dirVec.getZ());
-			hitVecs[i] = center.add(relHitVec);
+		BlockHitResult fallback = null;
+		for(AABB box : shape.toAabbs()){
+			final Vec3 nearest = new Vec3(pos.getX()+Math.clamp(eyes.x-pos.getX(), box.minX+1e-4, box.maxX-1e-4),
+					pos.getY()+Math.clamp(eyes.y-pos.getY(), box.minY+1e-4, box.maxY-1e-4),
+					pos.getZ()+Math.clamp(eyes.z-pos.getZ(), box.minZ+1e-4, box.maxZ-1e-4));
+			// Raycast the actual shape, not its enclosing bounds (open trapdoors/buttons can be thin).
+			final BlockHitResult nearestHit = shape.clip(eyes, eyes.add(nearest.subtract(eyes).normalize().scale(reach)), pos);
+			if(nearestHit == null) continue;
+			if(fallback == null || eyes.distanceToSqr(nearestHit.getLocation()) < eyes.distanceToSqr(fallback.getLocation())) fallback = nearestHit;
+			final BlockHitResult visible = visibleHit(client, pos, eyes, nearest, reach);
+			if(visible != null) return visible;
+			// Sample faces and edges for partially exposed controls before allowing an obstructed click.
+			for(int x=0; x<=4; ++x) for(int y=0; y<=4; ++y) for(int z=0; z<=4; ++z){
+				if(x > 0 && x < 4 && y > 0 && y < 4 && z > 0 && z < 4) continue;
+				final Vec3 point = new Vec3(pos.getX()+box.minX+1e-4+(box.maxX-box.minX-2e-4)*x/4,
+						pos.getY()+box.minY+1e-4+(box.maxY-box.minY-2e-4)*y/4,
+						pos.getZ()+box.minZ+1e-4+(box.maxZ-box.minZ-2e-4)*z/4);
+				final BlockHitResult hit = visibleHit(client, pos, eyes, point, reach);
+				if(hit != null) return hit;
+			}
 		}
-
-		double distSqToCenter = eyes.distanceToSqr(center);
-
-		int bestSide = 0;
-		double bestDistSq = eyes.distanceToSqr(hitVecs[0]);
-		boolean bestHasLoS = bestDistSq < distSqToCenter && hasLineOfSight(client, eyes, hitVecs[0]);
-		for(int i=1; i<sides.length; ++i){
-			final double distSq = eyes.distanceToSqr(hitVecs[0]);
-			final boolean hasLoS = distSq < distSqToCenter && hasLineOfSight(client, eyes, hitVecs[0]);
-			if(!hasLoS && bestHasLoS) continue;
-			if(hasLoS && !bestHasLoS){bestSide = i; bestDistSq = distSq; bestHasLoS = true;} // Prefer LoS
-			else if(distSq < bestDistSq){bestSide = i; bestDistSq = distSq;} // Prefer closest side
-		}
-
-		return new BlockHitResult(hitVecs[bestSide], sides[bestSide], pos, /*insideBlock=*/false);
+		return fallback;
 	}
 
 	private final BlockPos findNearestPearlWithOwnerName(Minecraft client, String name){
@@ -161,9 +149,9 @@ public final class EpearlActivator{
 		}
 		Main.LOGGER.info("[AutoPearl]: found button at "+buttonPos.toShortString());
 
-//		assert hitResult != null;
-//		if(hitResult == null) return;
-		client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, getHitResult(client, buttonPos));
+		final BlockHitResult hitResult = getHitResult(client, buttonPos);
+		if(hitResult == null){sendFeedback(client, who, "[AutoPearl] Your pearl's trigger is out of reach"); return;}
+		client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, hitResult);
 //		Main.LOGGER.info("AutoPearlActivator: button pressed!");
 	}
 }

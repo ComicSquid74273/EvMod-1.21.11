@@ -88,7 +88,7 @@ public final class Configs implements IConfigHandler{
 		public static final ConfigString WHISPER_PLAY_SOUND_UNFOCUSED = new ConfigString("whisperPlaySoundUnfocused",
 				Main.mapArtFeaturesOnly ? "" : "{sound:block.note_block.bass, category:PLAYERS, volume:4, pitch:2}").apply(GENERIC_KEY);
 		public static final ConfigString WHISPER_PEARL_PULL = new ConfigString("whisperPearlPull",
-				Main.mapArtFeaturesOnly ? "" : "(load|go|14|tp|teleport|e?p|e?pearl|([iI]'?m ?)?r(ea)?dy)( me)?( pl(ea)?se?)?.?").apply(GENERIC_KEY);
+				Main.mapArtFeaturesOnly ? "" : "!?(load|go|14|tp|teleport|e?p|e?pearl|([iI]'?m ?)?r(ea)?dy)( me)?( pl(ea)?se?)?[.!?]?").apply(GENERIC_KEY);
 		public static final ConfigBoolean MUTE_MUSIC_ON_MENU_SCREEN = new ConfigBoolean("muteMusicOnMenuScreen", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean DONT_WASTE_FIREWORKS = new ConfigBoolean("dontWasteFireworks", !Main.mapArtFeaturesOnly).apply(GENERIC_KEY);
 
