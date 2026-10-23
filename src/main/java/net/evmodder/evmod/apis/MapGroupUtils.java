@@ -16,11 +16,11 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 public final class MapGroupUtils{
 	private static int mapsInGroupHash;
 	private static HashSet<UUID> currentMapGroup;
-	private static final HashSet<Integer> loadedMapIds = new HashSet<>(); // Accessor: MixinClientPlayNetworkHandler
-	public static final HashSet<Integer> nullMapIds = new HashSet<>(); // Accessors: MixinClientPlayNetworkHandler, UpdateContainerHighlights
+	private static final HashSet<Integer> loadedMapIds = new HashSet<>(); // Accessor: MixinClientPacketListener
+	public static final HashSet<Integer> nullMapIds = new HashSet<>(); // Accessors: MixinClientPacketListener, UpdateContainerHighlights
 
 	private static final HashMap<byte[], UUID> stateToIdCache = new HashMap<>(), unlockedStateToIdCache = new HashMap<>();
-	// Only external caller: MixinClientPlayNetworkHandler
+	// Only external caller: MixinClientPacketListener
 	public static final UUID getCachedIdForMapStateOrNull(MapItemSavedData state){return (state.locked ? stateToIdCache : unlockedStateToIdCache).get(state.colors);}
 //	private static final Random rand = new Random();
 	public static final UUID getIdForMapState(MapItemSavedData state, boolean evict){

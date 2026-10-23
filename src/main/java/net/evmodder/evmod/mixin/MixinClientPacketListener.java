@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
-abstract class MixinClientPlayNetworkHandler{
+abstract class MixinClientPacketListener{
 	// First point after vanilla's thread handoff, before profiles/skins/tab entries are processed.
 	@Inject(method="handlePlayerInfoUpdate", at=@At(value="INVOKE",
 			target="Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket;newEntries()Ljava/util/List;"))
@@ -133,7 +133,7 @@ abstract class MixinClientPlayNetworkHandler{
 		final int id = packet.mapId().id();
 		if(AccessorMapGroupUtils.loadedMapIds().add(id))
 			if(MapColorUtils.isFullyTransparent(state.colors))
-				Main.LOGGER.warn("MixinClientPlayNetworkHandler: fully transparent map state! id="+id);
+				Main.LOGGER.warn("MixinClientPacketListener: fully transparent map state! id="+id);
 		AccessorMapGroupUtils.nullMapIds().remove(id);
 		assert !MapStateCacher.hasCacheMarker(state);
 		if(Configs.Generic.MAP_CACHE_BY_ID.getBooleanValue()) MapStateCacher.addMapStateById(id, state);

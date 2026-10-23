@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Hud.class)
-abstract class MixinInGameHud{
+abstract class MixinHudMap{
 	@ModifyVariable(method="extractSelectedItemName", at=@At("STORE"), ordinal=0)
 	private final MutableComponent showRepairCostNextToItemName(MutableComponent originalText){
 		final boolean rcHUD = Configs.Visuals.REPAIR_COST_HOTBAR_HUD.getBooleanValue();

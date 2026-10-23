@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import net.evmodder.EvLib.util.TextUtils_New;
 import net.evmodder.evmod.Configs;
 import net.evmodder.evmod.Main;
-import net.evmodder.evmod.mixin.AccessorPlayerListHud;
+import net.evmodder.evmod.mixin.AccessorPlayerTabOverlay;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -49,10 +49,10 @@ public final class ClickUtils{
 	private static final int OUTTA_CLICKS_COLOR = 15777300, SYNC_ID_CHANGED_COLOR = 16733525;
 //	private static final double C_PER_T;
 	public static volatile long TICK_DURATION_NANOS = 50_100_000l;
-	private static boolean IS_NEW_TICK; // TODO: friend MixinClientPlayerInteractionManager?
+	private static boolean IS_NEW_TICK; // TODO: friend MixinMultiPlayerGameMode?
 
 	private static boolean thisClickIsBotted;
-	public static final boolean isThisClickBotted(/*MixinClientPlayerInteractionManager.Friend friend*/){return thisClickIsBotted;}
+	public static final boolean isThisClickBotted(/*MixinMultiPlayerGameMode.Friend friend*/){return thisClickIsBotted;}
 
 	public static final void refreshLimits(final int MAX_CLICKS, int FOR_TICKS){
 		synchronized(CLICK_LOCK){
@@ -111,7 +111,7 @@ public final class ClickUtils{
 		}
 	}
 	/** Count permitted user clicks even over budget, so automation waits for that debt. */
-	public static final boolean addClick(/*SlotActionType type, */final boolean allowOverLimit){ // friend MixinClientPlayerInteractionManager?
+	public static final boolean addClick(/*SlotActionType type, */final boolean allowOverLimit){ // friend MixinMultiPlayerGameMode?
 //		assert type != null; // unused
 
 		if(tickDurationArr == null) return true;
@@ -126,7 +126,7 @@ public final class ClickUtils{
 		}
 	}
 	public static final boolean addClick(/*SlotActionType type*/){return addClick(/*type, */false);}
-	public static final boolean isNewTick(){return IS_NEW_TICK;} // friend MixinClientPlayerInteractionManager?
+	public static final boolean isNewTick(){return IS_NEW_TICK;} // friend MixinMultiPlayerGameMode?
 
 	private static final void adjustTickRate(final long msPerTick){
 		synchronized(CLICK_LOCK){
@@ -160,7 +160,7 @@ public final class ClickUtils{
 	private static final long /*getTPS*/getMillisPerTick(Minecraft client){
 		// Alternative: client.getNetworkHandler().onPlayerListHeader(PlayerListHeaderS2CPacket plhp)
 
-		final AccessorPlayerListHud playerListHudAccessor = (AccessorPlayerListHud)tabList(client);
+		final AccessorPlayerTabOverlay playerListHudAccessor = (AccessorPlayerTabOverlay)tabList(client);
 		final Component footerText = playerListHudAccessor.getFooter();
 		if(footerText == null) return TICK_DURATION_NANOS/1_000_000l;
 		final MutableComponent text = Component.empty(); footerText.toFlatList().forEach(text::append);

@@ -26,7 +26,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 
 @Mixin(MultiPlayerGameMode.class)
-abstract class MixinClientPlayerInteractionManager{
+abstract class MixinMultiPlayerGameMode{
 
 //	public static final class Friend{private Friend(){}}
 //	private static final Friend friend = new Friend();

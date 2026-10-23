@@ -23,7 +23,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 
 @Mixin(EntityRenderer.class)
-abstract class MixinEntityRenderer{
+abstract class MixinEntityRendererPearl{
 	private final Minecraft client = Minecraft.getInstance();
 	private final HashMap<XYZ, HashMap<String, HashSet<Integer>>> pearlsAtXYZ = new HashMap<>();
 	private long renderedOnTick = 0;

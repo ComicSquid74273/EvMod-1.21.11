@@ -33,7 +33,7 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 public final class UpdateContainerContents implements TickListener{
 	private static final HashSet<UUID> duplicatesInContainer = new HashSet<>(), inContainerAndInInv = new HashSet<>();
 	private static int mapsInContainerHash;
-	public static MutableComponent customTitle; // Accessor: MixinHandledScreen
+	public static MutableComponent customTitle; // Accessor: MixinAbstractContainerScreenGhostItems
 
 	public static final int getMapsInContainerHash(){return mapsInContainerHash;} // Accessors: TooltipMapNameColor, TooltipMapLoreMetadata
 	public static final boolean hasDuplicateInContainer(final UUID colorsId){return duplicatesInContainer.contains(colorsId);} // Accessor: TooltipMapNameColor

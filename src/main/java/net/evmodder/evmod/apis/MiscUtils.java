@@ -10,7 +10,7 @@ import java.util.UUID;
 import net.evmodder.EvLib.util.PacketCodec;
 import net.evmodder.evmod.Main;
 import net.evmodder.evmod.apis.RemoteServerSender.ServerDescriptor;
-import net.evmodder.evmod.mixin.AccessorProjectileEntity;
+import net.evmodder.evmod.mixin.AccessorProjectile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.world.entity.Entity;
@@ -138,17 +138,17 @@ public class MiscUtils{
 
 	public static final UUID getPearlUUID(final ThrownEnderpearl epearl){
 		//? >=1.21.11 {
-		var ref = ((AccessorProjectileEntity)epearl).getOwnerReference();
+		var ref = ((AccessorProjectile)epearl).getOwnerReference();
 		return ref == null ? null : ref.getUUID();
 		//?} else {
-		/*return ((AccessorProjectileEntity)epearl).getOwnerUUID();*/
+		/*return ((AccessorProjectile)epearl).getOwnerUUID();*/
 		//?}
 	}
 	public static final void setPearlUUID(final ThrownEnderpearl epearl, final UUID owner){
 		//? >=1.21.11 {
-		((AccessorProjectileEntity)epearl).setOwnerReference(EntityReference.of(owner));
+		((AccessorProjectile)epearl).setOwnerReference(EntityReference.of(owner));
 		//?} else {
-		/*((AccessorProjectileEntity)epearl).setOwnerUUID(owner);*/
+		/*((AccessorProjectile)epearl).setOwnerUUID(owner);*/
 		//?}
 	}
 }

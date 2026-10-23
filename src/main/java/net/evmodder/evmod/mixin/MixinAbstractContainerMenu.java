@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractContainerMenu.class)
-abstract class MixinScreenHandler{
+abstract class MixinAbstractContainerMenu{
 	@Inject(method="doClick", at=@At("TAIL"))
 	private final void clickMoveNeighborTriggerDetector(int slotIndex, int button, ContainerInput actionType, Player player, CallbackInfo ci){
 //		if(!Configs.Hotkeys.MAP_CLICK_MOVE_NEIGHBORS.getKeybind().isValid()) return;

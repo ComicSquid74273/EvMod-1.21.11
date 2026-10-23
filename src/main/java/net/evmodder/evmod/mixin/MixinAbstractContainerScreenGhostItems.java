@@ -21,15 +21,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractContainerScreen.class)
-abstract class MixinHandledScreen<T extends AbstractContainerMenu> extends Screen{
+abstract class MixinAbstractContainerScreenGhostItems<T extends AbstractContainerMenu> extends Screen{
 	@Shadow @Final private final T menu;
 	@Shadow @Final private final int titleLabelX;
 	@Shadow @Final private final int titleLabelY;
 
 	// Java requires we provide a constructor because of the <T>, but it'll never be called
-	private MixinHandledScreen(Component title){
+	private MixinAbstractContainerScreenGhostItems(Component title){
 		super(title);
-		throw new RuntimeException("EvMod: unreachable (cnstr of MixinHandledScreen)");
+		throw new RuntimeException("EvMod: unreachable (cnstr of MixinAbstractContainerScreenGhostItems)");
 	}
 
 	@Inject(method="extractLabels", at=@At("TAIL"))

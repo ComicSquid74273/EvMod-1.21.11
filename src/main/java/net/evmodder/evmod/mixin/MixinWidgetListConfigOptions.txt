@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value=WidgetListConfigOptions.class, remap=false)
-abstract class WidgetListConfigOptionsMixin extends WidgetListConfigOptionsBase<GuiConfigsBase.ConfigOptionWrapper, WidgetConfigOption>{
+abstract class MixinWidgetListConfigOptions extends WidgetListConfigOptionsBase<GuiConfigsBase.ConfigOptionWrapper, WidgetConfigOption>{
 	@Shadow @Final protected final GuiConfigsBase parent;
 
-	public WidgetListConfigOptionsMixin(int x, int y, int width, int height, int configWidth){
+	public MixinWidgetListConfigOptions(int x, int y, int width, int height, int configWidth){
 		super(x, y, width, height, configWidth);
 		throw new RuntimeException();
 	}

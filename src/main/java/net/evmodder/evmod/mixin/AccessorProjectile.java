@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Projectile.class)
-public interface AccessorProjectileEntity{
+public interface AccessorProjectile{
 	//? >=1.21.11 {
 	@Accessor("owner") void setOwnerReference(EntityReference<Entity> owner);
 	@Accessor("owner") EntityReference<Entity> getOwnerReference();

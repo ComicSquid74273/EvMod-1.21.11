@@ -79,7 +79,7 @@ public final class SyncPlayerPos implements TickListener{
 		fakePlayers.clear();
 	}
 
-	public final boolean removeFakePlayer(final UUID uuid){ // Accessor: MixinClientPlayNetworkHandler
+	public final boolean removeFakePlayer(final UUID uuid){ // Accessor: MixinClientPacketListener
 		final SyncedPlayer dummy = fakePlayers.remove(uuid);
 		if(dummy != null) dummy.entity.discard();
 		return dummy != null;

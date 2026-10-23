@@ -23,7 +23,7 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 public abstract class MapClickMoveNeighbors{
 	private static boolean ongoingClickMove;
 
-	// Only called by MixinScreenHandler
+	// Only called by MixinAbstractContainerMenu
 	public static final void moveNeighbors(final Player player, final int destSlot, final ItemStack mapMoved){
 		if(mapMoved.getItem() != Items.FILLED_MAP) return;
 

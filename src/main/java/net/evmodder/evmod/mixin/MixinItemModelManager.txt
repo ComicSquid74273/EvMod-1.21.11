@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ItemModelManager.class)
-abstract class MixinItemRenderer{
+abstract class MixinItemModelManager{
 	private final MinecraftClient client = MinecraftClient.getInstance();
 
 	// Z = boolean, I = int, V = void, Lpath/to/Class; = Class;
