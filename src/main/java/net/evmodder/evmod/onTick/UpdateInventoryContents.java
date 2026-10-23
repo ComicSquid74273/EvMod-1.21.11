@@ -40,7 +40,7 @@ public final class UpdateInventoryContents implements TickListener{
 	public static final boolean isNestedInInventory(final UUID colorsUUID){return nestedInventoryMapGroup.contains(colorsUUID);}
 
 	public static final boolean hasCurrentlyBeingPlacedMapArt(){return currentlyBeingPlacedIntoItemFrame != null;}
-	public static final void setCurrentlyBeingPlacedMapArt(final ItemStack stack, final int slot){ // Accessor: MapHangListener
+	public static final void setCurrentlyBeingPlacedMapArt(final ItemStack stack, final int slot){ // Accessed by: MapHangListener
 		if(!ItemStack.matches(Minecraft.getInstance().player.getInventory().getItem(slot), stack)){
 			assert false;
 			return;
@@ -79,11 +79,11 @@ public final class UpdateInventoryContents implements TickListener{
 			}
 			final MapItemSavedData state = world.getMapData(mapId);
 			if(state != null){
-				MapGroupUtils.nullMapIds.remove(mapId.id());
+				MapGroupUtils.markMapAvailable(mapId.id());
 				return inventoryMapGroup.add(MapGroupUtils.getIdForMapState(state));
 			}
 			else{
-				MapGroupUtils.nullMapIds.add(mapId.id());
+				MapGroupUtils.markMapMissing(mapId.id());
 				return false;
 			}
 		}

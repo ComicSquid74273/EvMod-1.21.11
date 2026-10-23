@@ -2,7 +2,6 @@ package net.evmodder.evmod.mixin;
 
 import net.evmodder.evmod.Configs;
 import net.evmodder.evmod.apis.MapColorUtils;
-import net.evmodder.evmod.onTick.UpdateContainerContents;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -34,8 +33,8 @@ abstract class MixinAbstractContainerScreenGhostItems<T extends AbstractContaine
 
 	@Inject(method="extractLabels", at=@At("TAIL"))
 	private final void replaceScreenTitleForCurrentContainer(GuiGraphicsExtractor context, int _mouseX, int _mouseY, CallbackInfo _ci){
-		if(UpdateContainerContents.customTitle == null) return;
-		context.text(font, UpdateContainerContents.customTitle, titleLabelX, titleLabelY, 0xFF404040, false);
+		if(AccessorUpdateContainerContents.customTitle() == null) return;
+		context.text(font, AccessorUpdateContainerContents.customTitle(), titleLabelX, titleLabelY, 0xFF404040, false);
 	}
 
 	// Credit to Enderkill for the idea:

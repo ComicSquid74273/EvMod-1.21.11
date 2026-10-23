@@ -3,9 +3,15 @@
 	"package": "net.evmodder.evmod.mixin",
 	"compatibilityLevel": "${java_compatibility}",
 	"mixins": [
-		"AccessorMain", // Used by MixinClientPacketListener, MixinEntityRendererPearl, MixinMultiPlayerGameMode
-		"AccessorMapGroupUtils", // Used by MixinClientPacketListener
-		"AccessorUpdateItemFrameContents", // Used by MixinItemFrameRenderer
+		// EvMod access bridges:
+		"AccessorClickUtils", // Automated click accounting
+		"AccessorCommandPearlRescue", // Player-info packet callback
+		"AccessorEpearlLookup", // Server-time and connection lifecycle callbacks
+		"AccessorKeybindCraftingRestock", // Crafting action and inventory packet callbacks
+		"AccessorUpdateContainerContents", // Custom container title
+		"AccessorMain", // Feature instances owned by Main
+		"AccessorMapGroupUtils", // Loaded-map bookkeeping
+		"AccessorUpdateItemFrameContents", // Item-frame highlight and render caches
 
 		// Minecraft mixins:
 		"AccessorAnvilScreen",

@@ -1,6 +1,5 @@
 package net.evmodder.evmod.mixin;
 
-import net.evmodder.evmod.commands.CommandPearlRescue;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.evmodder.EvLib.util.Command;
 import net.evmodder.evmod.Configs;
@@ -9,9 +8,9 @@ import net.evmodder.evmod.apis.MapColorUtils;
 import net.evmodder.evmod.apis.MapGroupUtils;
 import net.evmodder.evmod.apis.MapStateCacher;
 import net.evmodder.evmod.apis.MiscUtils;
-import net.evmodder.evmod.commands.CommandMapArtGroup;
 import net.evmodder.evmod.config.OptionMapStateCache;
 import net.evmodder.evmod.config.OptionUnlockedMapHandling;
+import net.evmodder.evmod.commands.CommandMapArtGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -42,38 +41,38 @@ abstract class MixinClientPacketListener{
 	@Inject(method="handlePlayerInfoUpdate", at=@At(value="INVOKE",
 			target="Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket;newEntries()Ljava/util/List;"))
 	private final void pearlRescue(final ClientboundPlayerInfoUpdatePacket packet, final CallbackInfo _ci){
-		CommandPearlRescue.onPlayerInfo((ClientPacketListener)(Object)this, packet);
+		AccessorCommandPearlRescue.callOnPlayerInfo((ClientPacketListener)(Object)this, packet);
 	}
 
 	@Inject(method="handleSetTime", at=@At("TAIL"))
 	private final void pearlReadinessTime(final ClientboundSetTimePacket packet, final CallbackInfo ci){
 		// Vanilla has already moved this packet onto the client thread, behind earlier entity updates.
-		if(Minecraft.getInstance().getConnection() == (Object)this && AccessorMain.getInstance().epearlLookup != null)
-			AccessorMain.getInstance().epearlLookup.onServerTime(packet.gameTime());
+		if(Minecraft.getInstance().getConnection() == (Object)this && AccessorMain.getEpearlLookup() != null)
+			((AccessorEpearlLookup)(Object)AccessorMain.getEpearlLookup()).callOnServerTime(packet.gameTime());
 	}
 
 	@Inject(method="handleMovePlayer", at=@At("TAIL"))
 	private final void pearlReadinessCorrection(final ClientboundPlayerPositionPacket packet, final CallbackInfo ci){
-		if(Minecraft.getInstance().getConnection() == (Object)this && AccessorMain.getInstance().epearlLookup != null)
-			AccessorMain.getInstance().epearlLookup.resetConnectionReadiness();
+		if(Minecraft.getInstance().getConnection() == (Object)this && AccessorMain.getEpearlLookup() != null)
+			((AccessorEpearlLookup)(Object)AccessorMain.getEpearlLookup()).callResetConnectionReadiness();
 	}
 
 	@Inject(method="handleContainerSetSlot", at=@At("TAIL"))
 	private final void confirmCraftResult(final ClientboundContainerSetSlotPacket packet, final CallbackInfo _ci){
-		if(AccessorMain.getInstance().kbCraftRestock != null) AccessorMain.getInstance().kbCraftRestock
-				.onServerSlotUpdate(packet.getContainerId(), packet.getStateId(), packet.getSlot(), packet.getItem());
+		if(AccessorMain.getKbCraftRestock() != null) ((AccessorKeybindCraftingRestock)(Object)AccessorMain.getKbCraftRestock())
+				.callOnServerSlotUpdate(packet.getContainerId(), packet.getStateId(), packet.getSlot(), packet.getItem());
 	}
 
 	@Inject(method="handleContainerContent", at=@At("TAIL"))
 	private final void confirmCraftContents(final ClientboundContainerSetContentPacket packet, final CallbackInfo _ci){
-		if(AccessorMain.getInstance().kbCraftRestock != null) AccessorMain.getInstance().kbCraftRestock.onServerContainerContent();
+		if(AccessorMain.getKbCraftRestock() != null) ((AccessorKeybindCraftingRestock)(Object)AccessorMain.getKbCraftRestock()).callOnServerContainerContent();
 	}
 
 	@Inject(method="handleAddEntity", at=@At("HEAD"))
 	private final void onSpawn(final ClientboundAddEntityPacket packet, final CallbackInfo _ci){
 		// If the incoming entity is a player and matches your target's UUID
-		if(packet.getType() == EntityTypes.PLAYER && AccessorMain.getInstance().syncPlayerPos != null &&
-				AccessorMain.getInstance().syncPlayerPos.removeFakePlayer(packet.getUUID())){
+		if(packet.getType() == EntityTypes.PLAYER && AccessorMain.getSyncPlayerPos() != null &&
+				AccessorMain.getSyncPlayerPos().removeFakePlayer(packet.getUUID())){
 			Main.LOGGER.info("[EvMod] Removed dummy player (real player spawned): "+packet.getUUID());
 		}
 	}
@@ -131,10 +130,10 @@ abstract class MixinClientPacketListener{
 		final MapItemSavedData state = Minecraft.getInstance().level.getMapData(packet.mapId());
 		assert state != null && state.colors.length == 128*128;
 		final int id = packet.mapId().id();
-		if(AccessorMapGroupUtils.loadedMapIds().add(id))
+		if(AccessorMapGroupUtils.callMarkMapLoaded(id))
 			if(MapColorUtils.isFullyTransparent(state.colors))
 				Main.LOGGER.warn("MixinClientPacketListener: fully transparent map state! id="+id);
-		AccessorMapGroupUtils.nullMapIds().remove(id);
+		MapGroupUtils.markMapAvailable(id);
 		assert !MapStateCacher.hasCacheMarker(state);
 		if(Configs.Generic.MAP_CACHE_BY_ID.getBooleanValue()) MapStateCacher.addMapStateById(id, state);
 
@@ -157,7 +156,7 @@ abstract class MixinClientPacketListener{
 		scheduleSaveMapsForServer(filename, seenForServer);
 
 		if(!Configs.Database.SHARE_MAPART.getBooleanValue() || !state.locked) return;
-		AccessorMain.getInstance().remoteSender.sendBotMessage(Command.DB_MAPART_STORE, /*udp=*/false, /*timeout=*/15_000l, state.colors, reply->{
+		AccessorMain.getRemoteSender().sendBotMessage(Command.DB_MAPART_STORE, /*udp=*/false, /*timeout=*/15_000l, state.colors, reply->{
 			if(reply == null){
 				Main.LOGGER.info("MapDB: Null response from server");
 			}

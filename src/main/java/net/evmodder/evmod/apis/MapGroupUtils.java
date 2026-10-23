@@ -16,11 +16,19 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 public final class MapGroupUtils{
 	private static int mapsInGroupHash;
 	private static HashSet<UUID> currentMapGroup;
-	private static final HashSet<Integer> loadedMapIds = new HashSet<>(); // Accessor: MixinClientPacketListener
-	public static final HashSet<Integer> nullMapIds = new HashSet<>(); // Accessors: MixinClientPacketListener, UpdateContainerHighlights
+	// Accessed by: MixinClientPacketListener
+	private static final HashSet<Integer> loadedMapIds = new HashSet<>();
+	// Accessed by: MixinClientPacketListener
+	private static final HashSet<Integer> nullMapIds = new HashSet<>();
 
+	// Accessed by: MixinClientPacketListener
 	private static final HashMap<byte[], UUID> stateToIdCache = new HashMap<>(), unlockedStateToIdCache = new HashMap<>();
-	// Only external caller: MixinClientPacketListener
+	// Accessed by: MixinClientPacketListener
+	@SuppressWarnings("unused") private static boolean markMapLoaded(int id){return loadedMapIds.add(id);}
+	public static final void markMapMissing(int id){nullMapIds.add(id);}
+	public static final void markMapAvailable(int id){nullMapIds.remove(id);}
+
+	// Accessed by: MixinClientPacketListener
 	public static final UUID getCachedIdForMapStateOrNull(MapItemSavedData state){return (state.locked ? stateToIdCache : unlockedStateToIdCache).get(state.colors);}
 //	private static final Random rand = new Random();
 	public static final UUID getIdForMapState(MapItemSavedData state, boolean evict){
@@ -45,7 +53,7 @@ public final class MapGroupUtils{
 	public static final UUID getIdForMapState(MapItemSavedData state){return getIdForMapState(state, /*evict*/false);}
 
 	/*private static final int MAX_MAPS_IN_INV_AND_ECHEST = 64*27*(36+27); // 108864
-	public static final HashSet<UUID> getLegitLoadedMaps(final ClientWorld world){ // Only caller: CommandMapArtGroup
+	public static final HashSet<UUID> getLegitLoadedMaps(final ClientWorld world){ // Accessed by: CommandMapArtGroup
 		final HashSet<UUID> loadedMaps = new HashSet<UUID>();
 		MapState state;
 		final boolean INCLUDE_UNLOCKED = Configs.Generic.MAPART_GROUP_INCLUDE_UNLOCKED.getBooleanValue();
@@ -54,7 +62,7 @@ public final class MapGroupUtils{
 		}
 		return loadedMaps;
 	}*/
-	public static final Set<UUID> getLegitLoadedMaps(final Level world){ // Only caller: CommandMapArtGroup
+	public static final Set<UUID> getLegitLoadedMaps(final Level world){ // Accessed by: CommandMapArtGroup
 		Stream<MapItemSavedData> states = loadedMapIds.stream().map(i -> world.getMapData(new MapId(i)))
 				.filter(Objects::nonNull).filter(s -> !MapStateCacher.hasCacheMarker(s));
 		if(Configs.Generic.MAPART_GROUP_UNLOCKED_HANDLING.getOptionListValue() == OptionUnlockedMapHandling.SKIP) states = states.filter(s -> s.locked);

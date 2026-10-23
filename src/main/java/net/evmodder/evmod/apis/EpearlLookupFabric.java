@@ -8,6 +8,7 @@ import java.util.UUID;
 import net.evmodder.EvLib.util.TextUtils_New;
 import net.evmodder.evmod.Configs;
 import net.evmodder.evmod.Main;
+import net.evmodder.evmod.mixin.AccessorProjectile;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.minecraft.client.Minecraft;
 //? <1.21.11 {
@@ -17,6 +18,9 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
+//? >=1.21.11 {
+import net.minecraft.world.entity.EntityReference;
+//?}
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -38,7 +42,7 @@ public final class EpearlLookupFabric extends EpearlLookup{
 	@Override protected boolean enableKeyXZ(){return Configs.Database.EPEARL_OWNERS_BY_XZ.getBooleanValue();}
 	@Override protected boolean enableRemoteDbUUID(){return enableKeyUUID() && Configs.Database.SHARE_EPEARL_OWNERS.getBooleanValue() && !Configs.Database.ADDRESS.getStringValue().isBlank();}
 	@Override protected boolean enableRemoteDbXZ(){return enableKeyXZ() && Configs.Database.SHARE_EPEARL_OWNERS.getBooleanValue() && !Configs.Database.ADDRESS.getStringValue().isBlank();}
-	public final boolean isDisabled(){return !enableKeyUUID() && !enableKeyXZ();} // Only accessor: MixinEntityRendererPearl
+	public final boolean isDisabled(){return !enableKeyUUID() && !enableKeyXZ();} // Accessed by: MixinEntityRendererPearl
 
 	private final UUID toKeyXZ(final Entity epearl){
 		return toKeyXZ(epearl.getUUID(), epearl.getX(), epearl.getY(), epearl.getZ(), this::anchorBlock);
@@ -169,6 +173,14 @@ public final class EpearlLookupFabric extends EpearlLookup{
 		return vel.x != 0d || vel.z != 0d || vel.y > .1d;
 	}
 
+	private static void setPearlUUID(final ThrownEnderpearl epearl, final UUID owner){
+		//? >=1.21.11 {
+		((AccessorProjectile)epearl).setOwnerReference(EntityReference.of(owner));
+		//?} else {
+		/*((AccessorProjectile)epearl).setOwnerUUID(owner);*/
+		//?}
+	}
+
 	public final String getOwnerName(final ThrownEnderpearl epearl){
 		assert epearl != null;
 		if(world != Minecraft.getInstance().level) switchWorld(Minecraft.getInstance().level);
@@ -185,7 +197,7 @@ public final class EpearlLookupFabric extends EpearlLookup{
 				ownerUUID = getOwnerFromDb(epearl, /*byUUID=*/false);
 			}
 			assert ownerUUID != null : "Expected at least one of [enableKeyUUID() or enableKeyXZ()] to be enabled, and return one of [404, LOADING, <result>]";
-			if(ownerUUID != UUID_404 && ownerUUID != UUID_LOADING) MiscUtils.setPearlUUID(epearl, ownerUUID);
+			if(ownerUUID != UUID_404 && ownerUUID != UUID_LOADING) setPearlUUID(epearl, ownerUUID);
 		}
 		else{
 			assert ownerUUID != UUID_404 && ownerUUID != UUID_LOADING;
@@ -197,5 +209,11 @@ public final class EpearlLookupFabric extends EpearlLookup{
 			}
 		}
 		return getDynamicUsername(ownerUUID, lookupKey);
+	}
+
+	// Accessed by: CommandAssignPearl
+	public void assignPearlOwner(final ThrownEnderpearl epearl, final UUID owner){
+		setPearlUUID(epearl, owner);
+		getOwnerName(epearl); // Reuse normal owner observation and cache/database persistence.
 	}
 }

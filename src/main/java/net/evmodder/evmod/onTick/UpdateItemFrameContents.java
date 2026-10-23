@@ -25,16 +25,21 @@ import net.minecraft.world.phys.Vec3;
 public final class UpdateItemFrameContents implements TickListener{
 	private record XYZD(int x, int y, int z, int d, int w){}
 	private static final HashMap<XYZD, UUID> hangLocsReverse = new HashMap<>(); // XYZD -> colorsId
+	// Accessed by: MixinItemFrameRenderer
 	private static final HashMap<UUID, HashSet<XYZD>> iFrameMapGroup = new HashMap<>(); // colorsId -> {HangLocs}
 	private static int lastGroupInvHash, numLoadedIfes;
 
-	public enum Highlight{INV_OR_NESTED_INV, NOT_IN_CURR_GROUP, MULTI_HUNG, UNLOCKED_OR_UNNAMED}; // Accessor: MixinItemFrameRenderer
-	private static final HashMap<Integer, Highlight> highlightedIFrames = new HashMap<>(); // Accessor: MixinItemFrameRenderer
-	private static final HashMap<Integer, Boolean> hasLabelCache = new HashMap<>(); // Accessor: MixinItemFrameRenderer
-	private static final HashMap<Integer, Component> displayNameCache = new HashMap<>(); // Accessor: MixinItemFrameRenderer
+	public enum Highlight{INV_OR_NESTED_INV, NOT_IN_CURR_GROUP, MULTI_HUNG, UNLOCKED_OR_UNNAMED}; // Accessed by: MixinItemFrameRenderer
+	// Accessed by: MixinItemFrameRenderer
+	private static final HashMap<Integer, Highlight> highlightedIFrames = new HashMap<>();
+	// Accessed by: MixinItemFrameRenderer
+	private static final HashMap<Integer, Boolean> hasLabelCache = new HashMap<>();
+	// Accessed by: MixinItemFrameRenderer
+	private static final HashMap<Integer, Component> displayNameCache = new HashMap<>();
 
-	private static Vec3 clientRotationNormalized; // Accessor: MixinItemFrameRenderer (cached/calculated here for performance)
-	public static long lastIFrameMapGroupUpdateTs; // Only accessor: CommandExportMapImg::getNearbyMapNames
+	// Accessed by: MixinItemFrameRenderer
+	private static Vec3 clientRotationNormalized;
+	public static long lastIFrameMapGroupUpdateTs; // Accessed by: CommandExportMapImg::getNearbyMapNames
 
 	public UpdateItemFrameContents(){
 		ClientEntityEvents.ENTITY_UNLOAD.register((entity, _) -> {
@@ -45,6 +50,7 @@ public final class UpdateItemFrameContents implements TickListener{
 		});
 	}
 
+	// Accessed by: MixinItemFrameRenderer
 	public static final boolean isHungMultiplePlaces(final UUID colorsId){
 		final HashSet<XYZD> l = iFrameMapGroup.get(colorsId);
 //		if(l != null && Configs.Generic.MAX_IFRAME_TRACKING_DIST_SQ > 0){
@@ -80,8 +86,8 @@ public final class UpdateItemFrameContents implements TickListener{
 			if(mapId == null) state = null;
 			else{
 				state = ife.level().getMapData(mapId);
-				if(state == null) MapGroupUtils.nullMapIds.add(mapId.id());
-				else MapGroupUtils.nullMapIds.remove(mapId.id());
+				if(state == null) MapGroupUtils.markMapMissing(mapId.id());
+				else MapGroupUtils.markMapAvailable(mapId.id());
 			}
 			final UUID colorsId = state == null ? null : MapGroupUtils.getIdForMapState(state);
 			final XYZD xyzd = new XYZD(ife.getBlockX(), ife.getBlockY(), ife.getBlockZ(), ife.getNearestViewDirection().ordinal(), ife.level().hashCode());

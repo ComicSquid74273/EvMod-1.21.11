@@ -82,9 +82,9 @@ public class Main{
 	// inv-keybind-craft-latest-item, also for enchant table and grindstone (eg. spam enchanting axes) via spacebar, like vanilla
 
 	public static final String MOD_ID = InitUtils.getModId();
-	public static final String MOD_NAME; // Only accessor: KeyCallbacks
-	public static final String MOD_VERSION; // Only accessor: ConfigGui
-	public static final String CONFIG_DIR; // Only accessor: Configs
+	public static final String MOD_NAME; // Accessed by: KeyCallbacks
+	public static final String MOD_VERSION; // Accessed by: ConfigGui
+	public static final String CONFIG_DIR; // Accessed by: Configs
 	public static final Logger LOGGER;
 	static{
 		FileIO.DIR = CONFIG_DIR = FabricLoader.getInstance().getConfigDir().toString()+"/"+MOD_ID+"/";
@@ -96,11 +96,25 @@ public class Main{
 
 	static boolean mapArtFeaturesOnly = true; // TODO: eww hacky
 
-	@SuppressWarnings("unused") private static Main instance; // Mixin Accessors:
-	public final RemoteServerSender remoteSender; // MixinClientPacketListener
-	public final EpearlLookupFabric epearlLookup; // MixinEntityRendererPearl
-	public final KeybindCraftingRestock kbCraftRestock; // MixinMultiPlayerGameMode
-	public final SyncPlayerPos syncPlayerPos; // ClientPlayNetworkHandler
+	// Accessed by: MixinClientPacketListener, MixinEntityRendererPearl, MixinMultiPlayerGameMode
+	private static Main instance;
+	// Accessed by: MixinClientPacketListener
+	private final RemoteServerSender remoteSender;
+	// Accessed by: MixinClientPacketListener, MixinEntityRendererPearl
+	private final EpearlLookupFabric epearlLookup;
+	// Accessed by: MixinClientPacketListener, MixinMultiPlayerGameMode
+	private final KeybindCraftingRestock kbCraftRestock;
+	// Accessed by: MixinClientPacketListener
+	private final SyncPlayerPos syncPlayerPos;
+
+	// Accessed by: MixinClientPacketListener
+	@SuppressWarnings("unused") private static RemoteServerSender getRemoteSenderForMixin(){return instance.remoteSender;}
+	// Accessed by: MixinClientPacketListener, MixinEntityRendererPearl
+	@SuppressWarnings("unused") private static EpearlLookupFabric getEpearlLookupForMixin(){return instance.epearlLookup;}
+	// Accessed by: MixinClientPacketListener, MixinMultiPlayerGameMode
+	@SuppressWarnings("unused") private static KeybindCraftingRestock getKbCraftRestockForMixin(){return instance.kbCraftRestock;}
+	// Accessed by: MixinClientPacketListener
+	@SuppressWarnings("unused") private static SyncPlayerPos getSyncPlayerPosForMixin(){return instance.syncPlayerPos;}
 
 	Main(){
 		Main.LOGGER.info("Loading "+MOD_NAME+" "+MOD_VERSION);

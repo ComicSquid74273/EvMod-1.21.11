@@ -56,7 +56,7 @@ public final class MapHangListener{
 		return text == null ? null : text.getString();
 	}
 
-	//Friend: AutoPlaceMapArt
+	// Accessed by: AutoPlaceMapArt
 	private final record PosData2D(boolean isSideways, String minPos2, String maxPos2){}
 	private final record Pos2DPair(String posA1, String posA2, String posB1, String posB2){}
 	private final HashMap<String, PosData2D> posData2dForName = new HashMap<>(0);

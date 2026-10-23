@@ -48,7 +48,7 @@ abstract class MixinItemFrameRenderer<T extends ItemFrame>{
 		}
 	}
 
-	private static final boolean isLookingInGeneralDirection(final Entity entity){ // Accessor: MixinItemFrameRenderer
+	private static final boolean isLookingInGeneralDirection(final Entity entity){ // Accessed by: MixinItemFrameRenderer
 //		Entity player = MinecraftClient.getInstance().player;
 //		Vec3d vec3d2 = new Vec3d(entity.getX() - player.getX(), entity.getEyeY() - player.getEyeY(), entity.getZ() - player.getZ());
 		// maybe use entity.getCenterPos() instead?

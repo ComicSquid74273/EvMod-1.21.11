@@ -45,7 +45,7 @@ abstract class MixinEntityRendererPearl{
 	private final void fetchPearlOwnerNameInHasLabel_shouldDoThisInOnTickTBH(Entity e, double _distSqToCamera, CallbackInfoReturnable<Boolean> cir){
 		if(isHudHidden(client)) return;
 		if(e instanceof ThrownEnderpearl == false) return;
-		final EpearlLookupFabric eplf = AccessorMain.getInstance().epearlLookup;
+		final EpearlLookupFabric eplf = AccessorMain.getEpearlLookup();
 		if(eplf == null || eplf.isDisabled()) return; // Feature is disabled
 
 		String name = eplf.getOwnerName((ThrownEnderpearl)e);

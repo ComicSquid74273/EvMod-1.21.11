@@ -178,12 +178,14 @@ public final class StaticEntityRenderCache{
 
 	private static final boolean isWithinConfiguredRange(final double distanceSq){return distanceSq <= renderRangeSq;}
 
+	// Accessed by: MixinEntityRendererPearl
 	public static final boolean useConfiguredRenderDistance(
 			final boolean original, final Entity entity, final double cameraX, final double cameraY, final double cameraZ){
 		return renderRange > 0 && isCacheable(entity)
 				? isWithinConfiguredRange(entity.distanceToSqr(cameraX, cameraY, cameraZ)) : original;
 	}
 
+	// Accessed by: MixinLevelExtractor
 	public static final boolean shouldRenderInExtendedTerrain(
 			final Entity entity, final Frustum frustum, final double cameraX, final double cameraY, final double cameraZ){
 		if(renderRange == 0 || !isCacheable(entity)
@@ -200,6 +202,7 @@ public final class StaticEntityRenderCache{
 		return frustum.isVisible(boundingBox);
 	}
 
+	// Accessed by: MixinLevelExtractor
 	public static final boolean hasExtendedTerrainAt(final Entity entity, final double cameraX, final double cameraZ){
 		final Minecraft client = Minecraft.getInstance();
 		return renderRange > 0 && isCacheable(entity) && client.level != null && entity.level() == client.level
@@ -207,6 +210,7 @@ public final class StaticEntityRenderCache{
 						client.level, entity.getBlockX(), entity.getBlockZ(), cameraX, cameraZ);
 	}
 
+	// Accessed by: MixinClientLevel
 	public static final Iterable<Entity> includeCachedEntities(final ClientLevel clientLevel, final Iterable<Entity> loadedEntities){
 		if(!isActive()) return loadedEntities;
 		if(level != clientLevel) reset(clientLevel);

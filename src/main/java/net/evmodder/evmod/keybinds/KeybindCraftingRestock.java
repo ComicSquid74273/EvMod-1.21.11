@@ -136,7 +136,8 @@ public final class KeybindCraftingRestock implements TickListener{
 		while(history.size() > MAX_RECIPES_PER_MENU) history.removeLast();
 	}
 
-	public final void checkIfCraftAction(AbstractContainerMenu menu, int slot, int button, ContainerInput action, boolean automated){
+	// Accessed by: MixinMultiPlayerGameMode
+	@SuppressWarnings("unused") private final void checkIfCraftAction(AbstractContainerMenu menu, int slot, int button, ContainerInput action, boolean automated){
 		if(!automated){pendingCraft = null; pendingBulkRepeat = null;}
 		if(menu == null || !willCraftItem(action)) return;
 		final Layout layout = getLayout(menu);
@@ -423,7 +424,8 @@ public final class KeybindCraftingRestock implements TickListener{
 		if(repeat != null && repeat.clickSent && repeat.containerId == containerId
 				&& repeat.initialStateId != stateId && repeat.inputChanged(slot, stack)) repeat.serverConfirmed = true;
 	}
-	public final void onServerSlotUpdate(int containerId, int stateId, int slot, ItemStack result){
+	// Accessed by: MixinClientPacketListener
+	@SuppressWarnings("unused") private final void onServerSlotUpdate(int containerId, int stateId, int slot, ItemStack result){
 		final PendingCraft craft = pendingCraft;
 		if(craft != null && craft.requiresServerConfirmation && craft.containerId == containerId
 				&& craft.initialStateId != stateId && craft.recipe.resultSlot == slot
@@ -431,7 +433,8 @@ public final class KeybindCraftingRestock implements TickListener{
 		confirmBulkRepeat(containerId, stateId, slot, result);
 	}
 
-	public final void onServerContainerContent(){
+	// Accessed by: MixinClientPacketListener
+	@SuppressWarnings("unused") private final void onServerContainerContent(){
 		final Minecraft client = Minecraft.getInstance();
 		final PendingCraft craft = pendingCraft;
 		if(client.player == null) return;

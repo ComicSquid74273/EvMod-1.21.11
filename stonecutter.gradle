@@ -54,8 +54,8 @@ stonecutter.parameters {
 			replace 'source.getWorld()', 'source.getLevel()'
 			replace 'getSource().getWorld()', 'getSource().getLevel()'
 			replace(
-				'context.drawString(font, UpdateContainerContents.customTitle, titleLabelX, titleLabelY, 4210752, false)',
-				'context.text(font, UpdateContainerContents.customTitle, titleLabelX, titleLabelY, 0xFF404040, false)',
+				'context.drawString(font, AccessorUpdateContainerContents.customTitle(), titleLabelX, titleLabelY, 4210752, false)',
+				'context.text(font, AccessorUpdateContainerContents.customTitle(), titleLabelX, titleLabelY, 0xFF404040, false)',
 			)
 		}
 

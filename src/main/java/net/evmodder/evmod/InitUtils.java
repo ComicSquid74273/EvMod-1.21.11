@@ -66,7 +66,7 @@ final class InitUtils{
 		}}, 1l, 50l); // Runs every tick
 	}
 
-	static final int DUMMY_CLIENT_ID = 67; // Accessor: Configs.java (for setting default value)
+	static final int DUMMY_CLIENT_ID = 67; // Accessed by: Configs.java (for setting default value)
 	private static final String DUMMY_CLIENT_KEY = "yesyesyes";
 	private static boolean sendPingRequest = true;
 	static final void refreshRemoteServerSender(final RemoteServerSender rms){
@@ -127,7 +127,7 @@ final class InitUtils{
 		return false;
 	}
 
-	static final void sendRemoteMsg(final RemoteServerSender rms, final String msg){ // Accessor: KeybindCallbacks
+	static final void sendRemoteMsg(final RemoteServerSender rms, final String msg){ // Accessed by: KeybindCallbacks
 		final String[] arr = msg.split(",");
 		if(arr.length < 2){
 			Main.LOGGER.error("Invalid remote msg syntax, expected 'COMMAND,UUID...' got: "+msg);
@@ -149,14 +149,14 @@ final class InitUtils{
 				command.sendsResponse() ? reply->Main.LOGGER.info("RMS response for "+command+": "+Arrays.toString(reply)) : null);
 	}
 
-	static final void sendChatMsg(final String msg){ // Accessor: KeybindCallbacks
+	static final void sendChatMsg(final String msg){ // Accessed by: KeybindCallbacks
 		if(msg.isBlank()) return;
 		Minecraft mc = Minecraft.getInstance();
 		if(msg.charAt(0) == '/') mc.player.connection.sendCommand(msg.substring(1));
 		else mc.player.connection.sendChat(msg);
 	}
 
-	static final void toggleSkinLayer(final PlayerModelPart part){ // Accessor: KeybindCallbacks
+	static final void toggleSkinLayer(final PlayerModelPart part){ // Accessed by: KeybindCallbacks
 		final Minecraft client = Minecraft.getInstance();
 		if(Configs.Hotkeys.SYNC_CAPE_WITH_ELYTRA.getBooleanValue() && part == PlayerModelPart.CAPE
 				&& client.player != null && client.options.isModelPartEnabled(part)){

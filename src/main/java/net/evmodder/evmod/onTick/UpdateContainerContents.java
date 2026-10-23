@@ -33,11 +33,12 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 public final class UpdateContainerContents implements TickListener{
 	private static final HashSet<UUID> duplicatesInContainer = new HashSet<>(), inContainerAndInInv = new HashSet<>();
 	private static int mapsInContainerHash;
-	public static MutableComponent customTitle; // Accessor: MixinAbstractContainerScreenGhostItems
+	// Accessed by: MixinAbstractContainerScreenGhostItems
+	@SuppressWarnings("unused") private static MutableComponent customTitle;
 
-	public static final int getMapsInContainerHash(){return mapsInContainerHash;} // Accessors: TooltipMapNameColor, TooltipMapLoreMetadata
-	public static final boolean hasDuplicateInContainer(final UUID colorsId){return duplicatesInContainer.contains(colorsId);} // Accessor: TooltipMapNameColor
-	public static final boolean isInInvAndContainer(final UUID colorsId){return inContainerAndInInv.contains(colorsId);} // Accessor: TooltipMapNameColor
+	public static final int getMapsInContainerHash(){return mapsInContainerHash;} // Accessed by: TooltipMapNameColor, TooltipMapLoreMetadata
+	public static final boolean hasDuplicateInContainer(final UUID colorsId){return duplicatesInContainer.contains(colorsId);} // Accessed by: TooltipMapNameColor
+	public static final boolean isInInvAndContainer(final UUID colorsId){return inContainerAndInInv.contains(colorsId);} // Accessed by: TooltipMapNameColor
 
 	// Constantly-recycled; defined here to avoid frequent calls to "new"
 	private final HashSet<UUID> uniqueMapIds = new HashSet<>();
@@ -114,7 +115,7 @@ public final class UpdateContainerContents implements TickListener{
 			if(states.stream().anyMatch(MapGroupUtils::shouldHighlightNotInCurrentGroup)) asterisks.add(Configs.Visuals.MAP_COLOR_NOT_IN_GROUP.getIntegerValue());
 			if(states.stream().anyMatch(s -> !s.locked)) asterisks.add(Configs.Visuals.MAP_COLOR_UNLOCKED.getIntegerValue());
 			if(mapItems.size() > states.size() + (!Configs.Generic.SKIP_NULL_MAPS.getBooleanValue() ? 0
-					: mapItems.stream().filter(stack -> MapGroupUtils.nullMapIds.contains(stack.get(DataComponents.MAP_ID).id())).count()
+					: mapItems.stream().filter(stack -> MapGroupUtils.isConfirmedNull(stack.get(DataComponents.MAP_ID).id())).count()
 			)){
 				asterisks.add(Configs.Visuals.MAP_COLOR_UNLOADED.getIntegerValue());
 			}

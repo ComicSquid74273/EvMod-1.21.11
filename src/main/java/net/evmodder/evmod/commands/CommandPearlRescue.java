@@ -159,7 +159,8 @@ public final class CommandPearlRescue{
 		return 1;
 	}
 
-	public static void onPlayerInfo(final ClientPacketListener connection, final ClientboundPlayerInfoUpdatePacket packet){
+	// Accessed by: MixinClientPacketListener
+	@SuppressWarnings("unused") private static void onPlayerInfo(final ClientPacketListener connection, final ClientboundPlayerInfoUpdatePacket packet){
 		final Armed watch = armed;
 		if(watch == null || watch.connection != connection) return;
 		final boolean added = packet.actions().contains(Action.ADD_PLAYER);

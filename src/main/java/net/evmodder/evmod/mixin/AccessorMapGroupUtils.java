@@ -1,13 +1,11 @@
 package net.evmodder.evmod.mixin;
 
-import java.util.HashSet;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import net.evmodder.evmod.apis.MapGroupUtils;
 
 // Used by MixinClientPacketListener
 @Mixin(value=MapGroupUtils.class, remap=false)
 interface AccessorMapGroupUtils{
-	@Accessor("loadedMapIds") static HashSet<Integer> loadedMapIds(){throw new AssertionError();}
-	@Accessor("nullMapIds") static HashSet<Integer> nullMapIds(){throw new AssertionError();}
+	@Invoker("markMapLoaded") static boolean callMarkMapLoaded(int id){throw new AssertionError();}
 }

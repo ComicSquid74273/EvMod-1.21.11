@@ -28,9 +28,6 @@ import net.minecraft.world.item.ItemStack;
 @Mixin(MultiPlayerGameMode.class)
 abstract class MixinMultiPlayerGameMode{
 
-//	public static final class Friend{private Friend(){}}
-//	private static final Friend friend = new Friend();
-
 	private final AtomicInteger discardedClicks = new AtomicInteger();
 
 	@WrapOperation(method="handleContainerInput", at=@At(value="INVOKE",
@@ -50,7 +47,7 @@ abstract class MixinMultiPlayerGameMode{
 		if(player.isCreative()) return;
 //		if(action == SlotActionType.CLONE/* || action == SlotActionType.THROW || action == SlotActionType.QUICK_CRAFT*/) return;
 		if(syncId != player.containerMenu.containerId) return; // Vanilla sends no packet for a mismatched menu.
-		final boolean isBotted = ClickUtils.isThisClickBotted(/*friend*/);
+		final boolean isBotted = ClickUtils.isThisClickBotted();
 		if(Configs.Generic.CLICK_FILTER_USER_INPUT.getBooleanValue() && !isBotted && ClickUtils.hasOngoingClicks()){
 			ci.cancel();
 			if(syncId == 0 && slot == 0 && button == 0 && action == ContainerInput.QUICK_MOVE) return; // QUICK_CRAFT sometimes sends duplicate fake QUICK_MOVE?
@@ -58,11 +55,11 @@ abstract class MixinMultiPlayerGameMode{
 //			MinecraftClient.getInstance().player.sendMessage(Text.literal("syncId="+syncId+",slot="+slot+",button="+button+",action="+action.name()), false);
 			return;
 		}
-		final boolean success = ClickUtils.addClick(/*action, */isBotted || !Configs.Generic.CLICK_LIMIT_USER_INPUT.getBooleanValue());
+		final boolean success = AccessorClickUtils.callAddClick(/*action, */isBotted || !Configs.Generic.CLICK_LIMIT_USER_INPUT.getBooleanValue());
 
 		if(success){
-			if(AccessorMain.getInstance().kbCraftRestock != null && Configs.Hotkeys.CRAFT_RESTOCK.getKeybind().isValid())
-				AccessorMain.getInstance().kbCraftRestock.checkIfCraftAction(player.containerMenu, slot, button, action, isBotted);
+			if(AccessorMain.getKbCraftRestock() != null && Configs.Hotkeys.CRAFT_RESTOCK.getKeybind().isValid())
+				((AccessorKeybindCraftingRestock)(Object)AccessorMain.getKbCraftRestock()).callCheckIfCraftAction(player.containerMenu, slot, button, action, isBotted);
 		}
 		else{
 			if(isBotted){

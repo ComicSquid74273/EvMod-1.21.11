@@ -68,11 +68,11 @@ public final class KeybindMapMove{
 				if(isFillerMap(slots, stack, client.level)){++fillerInInv; continue;}
 				final MapId mapId = stack.get(DataComponents.MAP_ID);
 				if(client.level.getMapData(mapId) == null){
-					MapGroupUtils.nullMapIds.add(mapId.id());
+					MapGroupUtils.markMapMissing(mapId.id());
 					Main.LOGGER.warn("MapMove: Unloaded map in player inventory!");
 //					return;
 				}
-				else MapGroupUtils.nullMapIds.remove(mapId.id());
+				else MapGroupUtils.markMapAvailable(mapId.id());
 				++numInInv;
 				final int count = stack.getCount();
 				countsInInv.add(count);

@@ -49,10 +49,12 @@ public final class ClickUtils{
 	private static final int OUTTA_CLICKS_COLOR = 15777300, SYNC_ID_CHANGED_COLOR = 16733525;
 //	private static final double C_PER_T;
 	public static volatile long TICK_DURATION_NANOS = 50_100_000l;
-	private static boolean IS_NEW_TICK; // TODO: friend MixinMultiPlayerGameMode?
+	private static boolean IS_NEW_TICK;
 
+	// Accessed by: MixinMultiPlayerGameMode
 	private static boolean thisClickIsBotted;
-	public static final boolean isThisClickBotted(/*MixinMultiPlayerGameMode.Friend friend*/){return thisClickIsBotted;}
+	// Accessed by: MixinMultiPlayerGameMode
+	public static final boolean isThisClickBotted(){return thisClickIsBotted;}
 
 	public static final void refreshLimits(final int MAX_CLICKS, int FOR_TICKS){
 		synchronized(CLICK_LOCK){
@@ -111,7 +113,8 @@ public final class ClickUtils{
 		}
 	}
 	/** Count permitted user clicks even over budget, so automation waits for that debt. */
-	public static final boolean addClick(/*SlotActionType type, */final boolean allowOverLimit){ // friend MixinMultiPlayerGameMode?
+	// Accessed by: MixinMultiPlayerGameMode
+	private static final boolean addClick(/*SlotActionType type, */final boolean allowOverLimit){
 //		assert type != null; // unused
 
 		if(tickDurationArr == null) return true;
@@ -126,7 +129,6 @@ public final class ClickUtils{
 		}
 	}
 	public static final boolean addClick(/*SlotActionType type*/){return addClick(/*type, */false);}
-	public static final boolean isNewTick(){return IS_NEW_TICK;} // friend MixinMultiPlayerGameMode?
 
 	private static final void adjustTickRate(final long msPerTick){
 		synchronized(CLICK_LOCK){
